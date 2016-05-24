@@ -1,0 +1,8 @@
+document.write('<script src="js/node_modules/underscore.js"></script>')
+document.write('<script src="js/node_modules/jquery.js"></script>')
+document.write('<script src="js/main.js"></script>')
+document.write('<script src="js/loader.js"></script>')
+document.write('<script src="js/helper.js"></script>')
+document.write('<script src="js/engine.js"></script>')
+document.write('<script src="js/config.js"></script>')
+document.write('<script src="js/assets.js"></script>')
