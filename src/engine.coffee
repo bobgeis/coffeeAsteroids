@@ -12,37 +12,46 @@ _first.offer('engine',E)
 # requesting
 C = _first.request('config')
 H = _first.request('helper')
-L = _first.request('loader')
+S = _first.request('state')
 
-MODE = {
-	'load' : 1
-	'splash' : 2
-	'play' : 2
-}
 
 class Engine 
+
+	state : null
 	constructor : (@ctx) ->
-		@mode = 1
-		@ctx.canvas.width = C.WID
-		@ctx.canvas.height = C.HEI
+		@ctx.canvas.width = C.winSize.wid
+		@ctx.canvas.height = C.winSize.hei
+		S.initStates this
+		@bindEvent 'keydown'
+		# @bindEvent 'keypress'
 
 	draw : ->
 		"Draw the game state to the canvas"
-		@ctx.fillStyle = "#000000"
-		@ctx.fillRect(0,0,@ctx.canvas.width,@ctx.canvas.height)
-		x = 50
-		y = 50
-		# console.log L.ship
-		for key, img of L.img.ship 
-			@ctx.drawImage img, x, y
-			x += 30
-			y += 30
+		@state.draw(@ctx)
 
 	update : (dt) ->
 		"Update the game state by dt"
+		step = C.timeStep * 1.5
+		while dt > step
+			@state.update(step)
+			dt = dt - step
+		@state.update(dt)
 
-	input : ->
+	input : (type,data) ->
 		"Handle user input"
+		@state.input(type,data)
+
+	changeState : (newState) ->
+		"Change between game states"
+		if @state then @state.exit()
+		@state = newState
+		@state.enter()
+
+	bindEvent : (eventType) =>
+		window.addEventListener(eventType, (eventData)=>
+			if @state
+				@state.input eventType, eventData
+				)
 
 E.Engine = Engine
 

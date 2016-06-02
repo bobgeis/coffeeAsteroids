@@ -1,34 +1,75 @@
+"""
+This loads images and sound assets.
+"""
+
+
+
 A = {}
 _first.offer('assets',A)
-A.imgFolders = ['ship','space','star',]
-A.sndFolders = []
-A.ship = {}
-A.ship.basebuild = "./asset/img/ship/basebuild.png"
-A.ship.baselucky = "./asset/img/ship/baselucky.png"
-A.ship.dropbuild = "./asset/img/ship/dropbuild.png"
-A.ship.dropciv = "./asset/img/ship/dropciv.png"
-A.ship.dropmed = "./asset/img/ship/dropmed.png"
-A.ship.dropmine = "./asset/img/ship/dropmine.png"
-A.ship.dropsci = "./asset/img/ship/dropsci.png"
-A.ship.lifeboat = "./asset/img/ship/lifeboat.png"
-A.ship.podblue = "./asset/img/ship/podblue.png"
-A.ship.raybuild = "./asset/img/ship/raybuild.png"
-A.ship.raymine = "./asset/img/ship/raymine.png"
-A.space = {}
-A.space.cr0 = "./asset/img/space/cr0.png"
-A.space.cr1 = "./asset/img/space/cr1.png"
-A.space.cr2 = "./asset/img/space/cr2.png"
-A.space.cr3 = "./asset/img/space/cr3.png"
-A.star = {}
-A.star.dA = "./asset/img/star/dA.png"
-A.star.dB = "./asset/img/star/dB.png"
-A.star.dF = "./asset/img/star/dF.png"
-A.star.dK = "./asset/img/star/dK.png"
-A.star.dM = "./asset/img/star/dM.png"
-A.star.dO = "./asset/img/star/dO.png"
-A.star.gA = "./asset/img/star/gA.png"
-A.star.gB = "./asset/img/star/gB.png"
-A.star.gF = "./asset/img/star/gF.png"
-A.star.gK = "./asset/img/star/gK.png"
-A.star.gM = "./asset/img/star/gM.png"
-A.star.gO = "./asset/img/star/gO.png"
+aM = _first.request('assetMap')
+C = _first.request('config')
+H = _first.request('helper')
+
+
+A.img = {}
+A.snd = {}
+
+
+thingsToLoad = 0
+thingsLoaded = 0
+
+A.loadingFinished = ->
+	return thingsToLoad == thingsLoaded
+
+A.loadAllImgs = ->
+	# get image files and put them in canvases
+	console.log "loading images"
+	for folder in aM.imgFolders
+		loadImgFolder folder
+	# console.log "things to load = #{thingsToLoad}"
+
+loadImgFolder = (folder) ->
+	if !aM[folder]  
+		console.log "Image folder: #{folder} not found in assets."
+		return false
+	A.img[folder] = {}
+	# console.log L
+	for name, src of aM[folder]
+		loadImg folder, name, src
+
+loadImg = (folder,name,src) ->
+	thingsToLoad++
+	img = new Image()
+	img.src = src
+	img.onload = ->
+		ctx = H.createCanvas().getContext '2d'
+		ctx.canvas.width = img.width
+		ctx.canvas.height = img.width
+		ctx.save()
+		# you need to translate the origin before you rotate 
+		ctx.translate img.width/2, img.width/2  
+		ctx.rotate H.HALFPI
+		ctx.drawImage img, -img.width/2, -img.width/2
+		ctx.restore()
+		thingsLoaded++
+		# console.log "#{name} loaded"
+		# console.log "Things loaded = #{thingsLoaded}"
+		A.img[folder][name] = ctx
+
+A.createBgTiles = ->
+	"create a starfield background"
+	A.img.bg = {}
+	ctx = H.createCanvas().getContext '2d'
+	ctx.canvas.width = C.tileSize
+	ctx.canvas.height = C.tileSize
+	for i in [0...C.tileDensity]
+		star = H.getRandomObjValue(A.img.star)
+		pos = H.getRandomPos(C.tileSize,C.tileSize)
+		H.drawImg ctx, star, pos.x, pos.y, 0
+		# ctx.drawImage star, pos.x, pos.y
+	# console.log pos
+	A.img.bg.tile = ctx
+
+
+
+

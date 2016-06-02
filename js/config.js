@@ -7,8 +7,15 @@
 
   _first.offer('config', C);
 
-  C.WID = 800;
+  C.winSize = {
+    'wid': 800,
+    'hei': 650
+  };
 
-  C.HEI = 650;
+  C.tileSize = 1000;
+
+  C.tileDensity = 1000;
+
+  C.timeStep = 1 / 60.0;
 
 }).call(this);

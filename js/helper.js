@@ -44,6 +44,18 @@
     return Math.atan(obj2.y - obj1.y, obj2.x - obj1.x);
   };
 
+  H.randInt = function(max) {
+    return Math.floor(Math.random() * max);
+  };
+
+  H.getRandomPos = function(xMax, yMax) {
+    var pos;
+    pos = {};
+    pos.x = Math.floor(Math.random() * xMax);
+    pos.y = Math.floor(Math.random() * yMax);
+    return pos;
+  };
+
   H.remove = function(list, item) {
     var i;
     i = list.indexOf(item);
@@ -62,8 +74,26 @@
     return l.reverse();
   };
 
+  H.getRandomListValue = function(list) {
+    return list[Math.floor(Math.random() * list.length)];
+  };
+
+  H.getRandomObjValue = function(obj) {
+    return obj[H.getRandomListValue(Object.keys(obj))];
+  };
+
   H.createCanvas = function() {
     return document.createElement("canvas");
+  };
+
+  H.drawImg = function(bot, top, x, y, a) {
+    var img;
+    bot.save();
+    img = top.canvas;
+    bot.translate(x, y);
+    bot.rotate(-a);
+    bot.drawImage(img, -Math.floor(img.width / 2), -Math.floor(img.height / 2));
+    return bot.restore();
   };
 
 }).call(this);

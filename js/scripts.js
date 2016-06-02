@@ -4,9 +4,9 @@
 
   document.write('<script src="js/node_modules/jquery.js"></script>');
 
-  document.write('<script src="js/main.js"></script>');
+  document.write('<script src="js/state.js"></script>');
 
-  document.write('<script src="js/loader.js"></script>');
+  document.write('<script src="js/main.js"></script>');
 
   document.write('<script src="js/helper.js"></script>');
 
@@ -15,5 +15,7 @@
   document.write('<script src="js/config.js"></script>');
 
   document.write('<script src="js/assets.js"></script>');
+
+  document.write('<script src="js/assetMap.js"></script>');
 
 }).call(this);

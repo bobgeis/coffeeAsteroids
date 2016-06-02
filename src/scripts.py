@@ -13,7 +13,7 @@ os.chdir("..")
 path = os.path.abspath(os.curdir)
 prefix = "document.write('<script src="
 suffix = "></script>')\n"
-skiplist = ['first.js','second.js','last.js']
+skiplist = ['first.js','scripts.js','last.js']
 
 def in_skiplist(full_name):
 	name = full_name.split('/')[-1]
@@ -38,7 +38,7 @@ def main():
 	for f in files:
 		if not in_skiplist(f):
 	 		commands.append(prefix + '"' + f[2:] + '"' + suffix)
-	file = open('./src/second.coffee', 'w+') 
+	file = open('./src/scripts.coffee', 'w+') 
 	# file.write('"test"')
 	for c in commands:
 		file.write(c)

@@ -16,6 +16,10 @@ offeredModules = {}		# this is what comes in
 requestedModules = {}	# this is what goes out
 appliedModules = {} 	# T/F: [key] was applied?
 
+# put the scripts in js/scripts.js like below
+document.write('<script src="js/scripts.js"></script>')
+
+
 # request an object representing a module
 F.request = (name) ->
 	if !requestedModules[name]
@@ -33,7 +37,6 @@ F.offer = (name,module) ->
 
 # copy an offered object to the requested one
 F.applyModule = (name) ->
-	console.log "Applying #{name}"
 	if !offeredModules[name] 
 		console.log "module never offered: #{name}"
 		return false
@@ -46,11 +49,11 @@ F.applyModule = (name) ->
 	for key, value of offeredModules[name]
 		requestedModules[name][key] = value
 	appliedModules[name] = true
-	# console.log requestedModules[name]
 	return true
 
 # apply all offered objects to their requested ones
 F.applyAllModules = ->
+	console.log "applying modules"
 	for name, module of offeredModules
 		F.applyModule name
 	F.checkAllModulesApplied()
@@ -60,11 +63,9 @@ F.checkAllModulesApplied = ->
 	allApplied = true
 	for name, applied of appliedModules
 		if !applied
-			console.log "module not applied: #{name}"
+			console.log "module not applied: #{name}" 
 			allApplied = false
 	return allApplied
-
-
 
 
 

@@ -44,6 +44,16 @@ H.getAng = (vec) ->
 H.faceAng = (obj1,obj2) ->
 	Math.atan (obj2.y - obj1.y), (obj2.x - obj1.x)	
 
+H.randInt = (max) ->
+	return Math.floor(Math.random()*max)
+
+# get a random position bt x:0-max and y:0-max
+H.getRandomPos = (xMax,yMax) ->
+	pos = {}
+	pos.x = Math.floor(Math.random() * xMax) 
+	pos.y = Math.floor(Math.random() * yMax) 
+	return pos
+
 
 
 # some array functions
@@ -60,10 +70,38 @@ H.flipList = (list) ->
 		l.push item
 	return l.reverse()
 
+# get a random value from a list
+H.getRandomListValue = (list) ->
+	return list[Math.floor(Math.random()*list.length)]
 
-# some dom functions
+# some object functions
+# get a random value from an object
+H.getRandomObjValue = (obj) ->
+	return obj[H.getRandomListValue(Object.keys(obj))]
+
+
+# some canvas functions
+# get a new canvas
 H.createCanvas = ->
 	document.createElement("canvas")
+
+# draw one ctx.canvas onto another at some pos and angle
+H.drawImg = (bot,top,x,y,a) ->
+	bot.save()
+	img = top.canvas
+	bot.translate x,y
+	# bot.translate img.width/2,img.height/2
+	bot.rotate -a
+	# bot.drawImage img, 0, 0
+	bot.drawImage img, -Math.floor(img.width/2), -Math.floor(img.height/2)
+	bot.restore()
+
+	
+
+
+
+
+
 
 
 

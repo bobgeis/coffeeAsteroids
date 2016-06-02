@@ -52,8 +52,8 @@ def write_list(file,name,arglist):
 
 def main():
 	"run!"
-	file = open('./src/assets.coffee','w+') 
-	header = "A = {}\n_first.offer('assets',A)\n"
+	file = open('./src/assetMap.coffee','w+') 
+	header = "A = {}\n_first.offer('assetMap',A)\n"
 	file.write(header)
 	write_list(file,"A.imgFolders",img_folders)
 	write_list(file,"A.sndFolders",snd_folders)

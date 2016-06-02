@@ -15,6 +15,8 @@
 
   appliedModules = {};
 
+  document.write('<script src="js/scripts.js"></script>');
+
   F.request = function(name) {
     if (!requestedModules[name]) {
       requestedModules[name] = {};
@@ -33,7 +35,6 @@
 
   F.applyModule = function(name) {
     var key, ref, value;
-    console.log("Applying " + name);
     if (!offeredModules[name]) {
       console.log("module never offered: " + name);
       return false;
@@ -57,6 +58,7 @@
 
   F.applyAllModules = function() {
     var module, name;
+    console.log("applying modules");
     for (name in offeredModules) {
       module = offeredModules[name];
       F.applyModule(name);
