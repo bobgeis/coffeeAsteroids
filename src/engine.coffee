@@ -12,16 +12,24 @@ _first.offer('engine',E)
 # requesting
 C = _first.request('config')
 H = _first.request('helper')
+M = _first.request('model')
 S = _first.request('state')
 
 
 class Engine 
-
+	
+	player : null
+	model : null
+	
 	state : null
+	lastState : null
+
 	constructor : (@ctx) ->
-		@ctx.canvas.width = C.winSize.wid
-		@ctx.canvas.height = C.winSize.hei
+		@ctx.canvas.width = C.winWid
+		@ctx.canvas.height = C.winHei
 		S.initStates this
+		@timeStep = C.timeStep
+		@timePanic = C.timePanic
 		@bindEvent 'keydown'
 		# @bindEvent 'keypress'
 
@@ -31,10 +39,12 @@ class Engine
 
 	update : (dt) ->
 		"Update the game state by dt"
-		step = C.timeStep * 1.5
-		while dt > step
-			@state.update(step)
-			dt = dt - step
+		while dt > @timeStep
+			@state.update(@timeStep)
+			dt = dt - @timeStep
+			if dt > @timePanic
+				# dump time and start over
+				dt = 0
 		@state.update(dt)
 
 	input : (type,data) ->
@@ -43,9 +53,20 @@ class Engine
 
 	changeState : (newState) ->
 		"Change between game states"
-		if @state then @state.exit()
+		if @state 
+			@state.exit()
+			@lastState = @state
 		@state = newState
 		@state.enter()
+
+	# pushState : (newState) ->
+	# 	return	
+
+	popState : ->
+		if @lastState and @state
+			@state.exit()
+			@state = @lastState
+			@state.enter()
 
 	bindEvent : (eventType) =>
 		window.addEventListener(eventType, (eventData)=>

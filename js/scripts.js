@@ -6,9 +6,13 @@
 
   document.write('<script src="js/state.js"></script>');
 
+  document.write('<script src="js/model.js"></script>');
+
   document.write('<script src="js/main.js"></script>');
 
   document.write('<script src="js/helper.js"></script>');
+
+  document.write('<script src="js/entity.js"></script>');
 
   document.write('<script src="js/engine.js"></script>');
 

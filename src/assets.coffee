@@ -1,5 +1,7 @@
 """
-This loads images and sound assets.
+Assets
+
+This loads images and sound assets and puts them in objects for use.
 """
 
 
@@ -52,8 +54,6 @@ loadImg = (folder,name,src) ->
 		ctx.drawImage img, -img.width/2, -img.width/2
 		ctx.restore()
 		thingsLoaded++
-		# console.log "#{name} loaded"
-		# console.log "Things loaded = #{thingsLoaded}"
 		A.img[folder][name] = ctx
 
 A.createBgTiles = ->
@@ -62,11 +62,10 @@ A.createBgTiles = ->
 	ctx = H.createCanvas().getContext '2d'
 	ctx.canvas.width = C.tileSize
 	ctx.canvas.height = C.tileSize
-	for i in [0...C.tileDensity]
+	for i in [0...C.tileCount]
 		star = H.getRandomObjValue(A.img.star)
-		pos = H.getRandomPos(C.tileSize,C.tileSize)
-		H.drawImg ctx, star, pos.x, pos.y, 0
-		# ctx.drawImage star, pos.x, pos.y
+		pos = H.pt.random(C.tileSize,C.tileSize)
+		H.drawImgStill ctx, star, pos.x, pos.y
 	# console.log pos
 	A.img.bg.tile = ctx
 
