@@ -115,19 +115,37 @@ S.play = {
 
 	enter : ->
 		console.log "enter play"
+		@model = new M.Model()
 	draw : (ctx) ->
 		ctx.fillStyle = "#000000"
 		ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height)
+		if @model
+			@model.draw ctx
 	update : (dt) ->
-		# update the camera
-		if @player
-			H.updateCamera @player.pos
 		# update the model
 		if @model
-			@model.upate dt
-		return false
+			@model.update dt
 	input : (type,data) ->
-		console.log "input: #{type} #{data}"
+		# console.log "input: #{type} #{data}"
+		console.log data
+		if type == "keydown"
+			if data.code == "ArrowLeft"
+				@model.command 1
+			else if data.code == "ArrowRight"
+				@model.command 2
+			else if data.code == "ArrowUp"
+				@model.command 3
+			else if data.code == "ArrowDown"
+				return
+		else if type == "keyup"
+			if data.code == "ArrowLeft"
+				@model.command 11
+			else if data.code == "ArrowRight"
+				@model.command 11
+			else if data.code == "ArrowUp"
+				@model.command 13
+			else if data.code == "ArrowDown"
+				@model.command 13
 	exit : ->
 		console.log "exit play"
 }

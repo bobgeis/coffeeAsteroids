@@ -22,4 +22,6 @@ C.tileSize = 10000
 C.tileDensity = 15	# stars per 100px100px sq
 C.tileCount = Math.floor(C.tileDensity/10000*C.tileSize*C.tileSize)
 
-# player ship attributes?
+# player ship attributes
+C.shipAcc = 5/1000 # px/s/s
+C.shipAngVel = 2/1000 # rad/s

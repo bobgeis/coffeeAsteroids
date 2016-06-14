@@ -224,6 +224,8 @@
 
   pt3 = new Point(0, 0);
 
+  H.origin = new Point(0, 0);
+
   H.blink = function(pos, r) {
     pt1.randomInCircle(r);
     return pos.add(helperPt);
@@ -312,11 +314,15 @@
   H.updateCamera = function(pos) {
     cam.setPos(pos);
     camTL.setXY(pos.x - C.halfWinWid, pos.y - C.halfWinHei);
-    return camBR.setXY(pos.x + C.halfWindWid, pos.y + C.halfWinHei);
+    return camBR.setXY(pos.x + C.halfWinWid, pos.y + C.halfWinHei);
   };
 
   H.onScreen = function(pos) {
     return pos.inBox(camTL.x, camBR.x, camTL.y, camBR.y);
+  };
+
+  H.onScreenEntity = function(pos, r) {
+    return pos.inBox(camTL.x - r, camBR.x + r, camTL.y - r, camBR.y + r);
   };
 
   H.createCanvas = function() {
@@ -355,8 +361,8 @@
 
   H.drawEntity = function(ctx, top, pos, a) {
     var dx, dy;
-    dx = pos.x - cam.x;
-    dy = pos.y - cam.y;
+    dx = pos.x - camTL.x;
+    dy = pos.y - camTL.y;
     return H.drawImg(ctx, top, dx, dy, a);
   };
 

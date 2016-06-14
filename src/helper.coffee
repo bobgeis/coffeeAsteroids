@@ -14,7 +14,7 @@ C = _first.request('config')
 
 # some values
 H.PI = PI = Math.PI
-H.TWOPI = TWOPI = H.PI * 2 
+H.TWOPI = TWOPI = H.PI * 2
 H.TAU = TAU = H.TWOPI
 H.HALFPI = HALFPI = H.PI / 2
 
@@ -43,7 +43,7 @@ H.clear = (list) ->
 # remove an item from an array
 H.remove = (list,item) ->
 	i = list.indexOf item
-	if i != -1 
+	if i != -1
 		list.splice(i,1)
 
 # return a reversed array (no side effects)
@@ -68,7 +68,7 @@ H.getRandomObjValue = (obj) ->
 
 
 # 2D vector, point, or position class
-class Point 
+class Point
 	# we only have x and y fields
 	constructor : (@x,@y) -> this
 
@@ -83,19 +83,19 @@ class Point
 		@y = pos.y
 		this
 
-	# add 
+	# add
 	add : (pos) ->
 		@x += pos.x
 		@y += pos.y
 		this
 
-	# subtract 
+	# subtract
 	sub : (pos) ->
 		@x -= pos.x
 		@y -= pos.y
 		this
 
-	# scale  
+	# scale
 	scale : (scalar) ->
 		@x *= scalar
 		@y *= scalar
@@ -139,7 +139,7 @@ class Point
 		@y += y
 		this
 
-	# set via polar coords	
+	# set via polar coords
 	setPolar : (r,a) ->
 		@x = r * Math.cos a
 		@y = r * Math.sin a
@@ -171,11 +171,11 @@ class Point
 	setUnit : (a) ->
 		@setPolar 1,a
 
-	# rotate by an angle 
+	# rotate by an angle
 	rotate : (a) ->
 		@setA(a + @a())
 
-	# calc distance 
+	# calc distance
 	distance : (pos) ->
 		Math.hypot pos.x - @x, pos.y - @y
 
@@ -191,11 +191,13 @@ class Point
 
 	# T/F: is the point w/in the box? m = min, M = MAX
 	inBox : (xm,xM,ym,yM) ->
+		# console.log "x: #{xm} #{xM}"
+		# console.log "y: #{ym} #{yM}"
 		@x < xM and @x > xm and @y < yM and @y > ym
 
 	# move to a random position bt (0,0) and (xMax,yMax)
 	random : (xMax,yMax) ->
-		@x = H.randInt xMax 
+		@x = H.randInt xMax
 		@y = H.randInt yMax
 		this
 
@@ -223,6 +225,7 @@ H.pt = pt = new Point(0,0)
 pt1 = new Point(0,0)
 pt2 = new Point(0,0)
 pt3 = new Point(0,0)
+H.origin = new Point(0,0)
 
 # move a Point randomly within r of its current position
 H.blink = (pos,r) ->
@@ -232,7 +235,7 @@ H.blink = (pos,r) ->
 
 
 # a class that represents a line segment
-class Line 
+class Line
 
 	constructor : (start,stop) ->
 		@start = start.copyPos()
@@ -273,9 +276,9 @@ class Line
 			return @distance pos < r
 		else if @start.collide pos,r
 			return true
-		else if @stop.collide pos,r 
+		else if @stop.collide pos,r
 			return true
-		else 
+		else
 			return false
 
 	# draw the line onto a canvas using stroke
@@ -285,7 +288,7 @@ class Line
 		ctx.beginPath()
 		if offset
 			dx = offset.x
-			dy = offset.y 
+			dy = offset.y
 		else
 			dx = 0
 			dy = 0
@@ -303,7 +306,7 @@ H.newLineRA = (start,r,a) ->
 # this is a helper line, similar to pt,pt1,pt2,pt3 above
 H.line = line = new Line(pt1,pt2)
 
-# the cam Point represents the camera in the game world 
+# the cam Point represents the camera in the game world
 H.cam = cam = new Point(0,0)
 H.camTL = camTL = new Point(0,0)
 H.camBR = camBR = new Point(0,0)
@@ -312,12 +315,14 @@ H.camBR = camBR = new Point(0,0)
 H.updateCamera = (pos) ->
 	cam.setPos pos
 	camTL.setXY (pos.x - C.halfWinWid),(pos.y - C.halfWinHei)
-	camBR.setXY (pos.x + C.halfWindWid),(pos.y + C.halfWinHei)
+	camBR.setXY (pos.x + C.halfWinWid),(pos.y + C.halfWinHei)
 
 # T/F: is this Point on screen? (assuming the camera point is updated)
 H.onScreen = (pos) ->
 	pos.inBox camTL.x, camBR.x, camTL.y, camBR.y
 
+H.onScreenEntity = (pos,r) ->
+	pos.inBox camTL.x-r, camBR.x+r, camTL.y-r, camBR.y+r
 
 # some canvas functions
 
@@ -356,9 +361,9 @@ H.drawImgStill = (ctx,top,x,y) ->
 
 # draw an entity onto the game screen, this requires calculating offset from the camera
 H.drawEntity = (ctx,top,pos,a) ->
-	dx = pos.x - cam.x
-	dy = pos.y - cam.y
-	H.drawImg ctx, top, dx, dy,a
+	dx = pos.x - camTL.x
+	dy = pos.y - camTL.y
+	H.drawImg ctx, top, dx, dy, a
 
 H.drawLineEntity = (ctx,line,wid,color) ->
 	line.draw ctx, wid, color, cam

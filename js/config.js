@@ -25,4 +25,8 @@
 
   C.tileCount = Math.floor(C.tileDensity / 10000 * C.tileSize * C.tileSize);
 
+  C.shipAcc = 5 / 1000;
+
+  C.shipAngVel = 2 / 1000;
+
 }).call(this);

@@ -154,23 +154,44 @@
     player: null,
     model: null,
     enter: function() {
-      return console.log("enter play");
+      console.log("enter play");
+      return this.model = new M.Model();
     },
     draw: function(ctx) {
       ctx.fillStyle = "#000000";
-      return ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      if (this.model) {
+        return this.model.draw(ctx);
+      }
     },
     update: function(dt) {
-      if (this.player) {
-        H.updateCamera(this.player.pos);
-      }
       if (this.model) {
-        this.model.upate(dt);
+        return this.model.update(dt);
       }
-      return false;
     },
     input: function(type, data) {
-      return console.log("input: " + type + " " + data);
+      console.log(data);
+      if (type === "keydown") {
+        if (data.code === "ArrowLeft") {
+          return this.model.command(1);
+        } else if (data.code === "ArrowRight") {
+          return this.model.command(2);
+        } else if (data.code === "ArrowUp") {
+          return this.model.command(3);
+        } else if (data.code === "ArrowDown") {
+
+        }
+      } else if (type === "keyup") {
+        if (data.code === "ArrowLeft") {
+          return this.model.command(11);
+        } else if (data.code === "ArrowRight") {
+          return this.model.command(11);
+        } else if (data.code === "ArrowUp") {
+          return this.model.command(13);
+        } else if (data.code === "ArrowDown") {
+          return this.model.command(13);
+        }
+      }
     },
     exit: function() {
       return console.log("exit play");

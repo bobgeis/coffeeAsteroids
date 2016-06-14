@@ -34,6 +34,7 @@
       this.timeStep = C.timeStep;
       this.timePanic = C.timePanic;
       this.bindEvent('keydown');
+      this.bindEvent('keyup');
     }
 
     Engine.prototype.draw = function() {

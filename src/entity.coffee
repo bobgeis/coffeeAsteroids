@@ -24,30 +24,32 @@ class Entity
 	img : null
 
 	constructor : (pos) ->
-		@pos = pos.copy()
-		@alive = true
+        console.log pos
+        @pos = pos.copyPos()
+        @alive = true
 
 	setImg : (@img) ->
+        @r_img = @img.canvas.width/2
 
 	getImg : ->
-		@img		
+		@img
 
 	update : (dt) ->
-		if not @alive
-			return false
-		return true
+        if not @alive
+            return false
+        return true
 
 	draw : (ctx) ->
-		if H.onScreen @pos
-			H.drawEntity ctx, @getImg(), @pos
+        if H.onScreenEntity @pos, @r_img
+            H.drawEntity ctx, @getImg(), @pos
 
 	centerCamera : ->
 		H.updateCamera @pos
-
+E.Entity = Entity
 
 
 # beams are game objects that are line segments: eg targeting beam, disruptor beam, etc.
-class Beam 
+class Beam
 
 	# some default fields
 	wid : null
@@ -70,5 +72,46 @@ class Beam
 	draw : (ctx) ->
         H.drawLineEntity ctx, @line, @getWidth(), @getColor()
 
+E.Beam = Beam
 
 
+class MovingEntity extends Entity
+
+    constructor : (pos,@a,vel,@va) ->
+        super pos
+        @vel = vel.copyPos()
+
+    update : (dt) ->
+        @pos.transXY @vel.x*dt, -@vel.y*dt
+        @a += @va * dt
+        if @thrust
+            @vel.transPolar @acc,@a
+        if @drag
+            @vel.scale @drag*dt
+        super dt
+
+    setAcc : (@acc) ->
+        if @acc and @acc != 0
+            @thrust = true
+        else
+            @thrust = false
+
+    draw : (ctx) ->
+        if H.onScreenEntity @pos, @r_img
+            H.drawEntity ctx, @getImg(), @pos, @a
+
+E.MovingEntity = MovingEntity
+
+
+
+E.PlayerShip = () ->
+    playerShip = new MovingEntity(H.origin,0,H.origin,0)
+    playerShip.setImg A.img.ship.dropciv
+    return playerShip
+
+
+
+E.LuckyBase = ->
+    luckyBase = new MovingEntity(H.origin,0,H.origin,0)
+    luckyBase.setImg A.img.ship.baselucky
+    return luckyBase

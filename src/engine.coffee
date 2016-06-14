@@ -16,11 +16,11 @@ M = _first.request('model')
 S = _first.request('state')
 
 
-class Engine 
-	
+class Engine
+
 	player : null
 	model : null
-	
+
 	state : null
 	lastState : null
 
@@ -31,7 +31,7 @@ class Engine
 		@timeStep = C.timeStep
 		@timePanic = C.timePanic
 		@bindEvent 'keydown'
-		# @bindEvent 'keypress'
+		@bindEvent 'keyup'
 
 	draw : ->
 		"Draw the game state to the canvas"
@@ -53,14 +53,14 @@ class Engine
 
 	changeState : (newState) ->
 		"Change between game states"
-		if @state 
+		if @state
 			@state.exit()
 			@lastState = @state
 		@state = newState
 		@state.enter()
 
 	# pushState : (newState) ->
-	# 	return	
+	# 	return
 
 	popState : ->
 		if @lastState and @state
