@@ -19,7 +19,7 @@
 
   C.halfWinHei = C.winHei / 2;
 
-  C.tileSize = 10000;
+  C.tileSize = 3000;
 
   C.tileDensity = 15;
 
@@ -28,5 +28,7 @@
   C.shipAcc = 5 / 1000;
 
   C.shipAngVel = 2 / 1000;
+
+  C.shipDrag = .1 / 1000;
 
 }).call(this);

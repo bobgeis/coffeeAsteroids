@@ -18,6 +18,8 @@
   Model = (function() {
     Model.prototype.player = null;
 
+    Model.prototype.bg = [];
+
     Model.prototype.bases = [];
 
     Model.prototype.ships = [];
@@ -32,10 +34,12 @@
 
     function Model() {
       "Build the initial state.";
-      this.entitiesSuperList = [this.bases, this.loot, this.rocks, this.shots, this.ships, this.booms];
+      this.entitiesSuperList = [this.bg, this.bases, this.loot, this.rocks, this.shots, this.ships, this.booms];
       this.player = E.PlayerShip();
       this.ships.push(this.player);
       this.bases.push(new E.LuckyBase());
+      this.bases.push(new E.BuildBase());
+      this.bg.push(new E.BgTile());
     }
 
     Model.prototype.update = function(dt) {
@@ -62,7 +66,6 @@
       "Draw the model.";
       var i, item, len, list, ref, results;
       this.player.centerCamera();
-      H.drawEntity(ctx, A.img.bg.tile, H.origin);
       ref = this.entitiesSuperList;
       results = [];
       for (i = 0, len = ref.length; i < len; i++) {

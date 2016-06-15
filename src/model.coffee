@@ -16,16 +16,18 @@ H = _first.request('helper')
 
 
 class Model
-	player : null
-	bases : []
-	ships : []
-	rocks : []
-	booms : []
-	shots : []
-	loot : []
-	constructor : ->
+    player : null
+    bg : []
+    bases : []
+    ships : []
+    rocks : []
+    booms : []
+    shots : []
+    loot : []
+    constructor : ->
         "Build the initial state."
         @entitiesSuperList = [
+            @bg
             @bases
             @loot
             @rocks
@@ -36,6 +38,8 @@ class Model
         @player = E.PlayerShip()
         @ships.push @player
         @bases.push new E.LuckyBase()
+        @bases.push new E.BuildBase()
+        @bg.push new E.BgTile()
 
     update: (dt) ->
         "update by dt"
@@ -46,12 +50,12 @@ class Model
         # collisions etc
         # cull
 
-	draw : (ctx) ->
+    draw : (ctx) ->
         "Draw the model."
         # update camera
         @player.centerCamera()
         # draw bg
-        H.drawEntity ctx, A.img.bg.tile, H.origin
+        # H.drawEntity ctx, A.img.bg.tile, H.origin
         # draw entities in order
         for list in @entitiesSuperList
             for item in list

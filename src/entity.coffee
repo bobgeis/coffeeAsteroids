@@ -21,30 +21,31 @@ H = _first.request('helper')
 class Entity
 
 	# some default fields
-	img : null
+    img : null
 
-	constructor : (pos) ->
-        console.log pos
+    constructor : (pos) ->
         @pos = pos.copyPos()
         @alive = true
-
-	setImg : (@img) ->
+    setImg : (@img) ->
         @r_img = @img.canvas.width/2
 
-	getImg : ->
-		@img
-
-	update : (dt) ->
+    getImg : ->
+        @img
+    update : (dt) ->
         if not @alive
             return false
         return true
+    draw : (ctx) ->
+        for row in @setClones()
+            for pt in row
+                if H.onScreenEntity pt, @r_img
+                    H.drawEntity ctx, @getImg(), pt
+    centerCamera : ->
+        H.updateCamera @pos
 
-	draw : (ctx) ->
-        if H.onScreenEntity @pos, @r_img
-            H.drawEntity ctx, @getImg(), @pos
+    setClones : ->
+        H.setClones @pos
 
-	centerCamera : ->
-		H.updateCamera @pos
 E.Entity = Entity
 
 
@@ -87,7 +88,8 @@ class MovingEntity extends Entity
         if @thrust
             @vel.transPolar @acc,@a
         if @drag
-            @vel.scale @drag*dt
+            @vel.scale (1-@drag*dt)
+        @wrap()
         super dt
 
     setAcc : (@acc) ->
@@ -97,16 +99,37 @@ class MovingEntity extends Entity
             @thrust = false
 
     draw : (ctx) ->
-        if H.onScreenEntity @pos, @r_img
-            H.drawEntity ctx, @getImg(), @pos, @a
+        for row in @setClones()
+            for pt in row
+                if H.onScreenEntity pt, @r_img
+                    if @watch then console.log pt
+                    H.drawEntity ctx, @getImg(), pt, @a
+
+    wrap : ->
+        if @pos.x < -C.tileSize/2
+            @pos.x += C.tileSize
+        if @pos.x > C.tileSize/2
+            @pos.x -= C.tileSize
+        if @pos.y < -C.tileSize/2
+            @pos.y += C.tileSize
+        if @pos.y > C.tileSize/2
+            @pos.y -= C.tileSize
 
 E.MovingEntity = MovingEntity
 
 
+E.BgTile = ->
+    bgTile = new Entity(H.origin)
+    bgTile.setImg A.img.bg.tile
+    return bgTile
 
-E.PlayerShip = () ->
+
+
+
+E.PlayerShip = ->
     playerShip = new MovingEntity(H.origin,0,H.origin,0)
     playerShip.setImg A.img.ship.dropciv
+    playerShip.drag = C.shipDrag
     return playerShip
 
 
@@ -115,3 +138,14 @@ E.LuckyBase = ->
     luckyBase = new MovingEntity(H.origin,0,H.origin,0)
     luckyBase.setImg A.img.ship.baselucky
     return luckyBase
+
+E.BuildBase = ->
+    buildBase = new MovingEntity(H.pt.setXY(1450,1450),0,H.origin,0)
+    buildBase.setImg A.img.ship.basebuild
+    buildBase.watch = true
+    return buildBase
+
+
+
+
+

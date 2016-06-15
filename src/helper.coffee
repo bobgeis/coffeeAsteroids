@@ -311,6 +311,7 @@ H.cam = cam = new Point(0,0)
 H.camTL = camTL = new Point(0,0)
 H.camBR = camBR = new Point(0,0)
 
+
 # update the camera position
 H.updateCamera = (pos) ->
 	cam.setPos pos
@@ -370,5 +371,32 @@ H.drawLineEntity = (ctx,line,wid,color) ->
 
 
 
+# clone points are used to create the 9 tiles
+
+makeClones = ->
+	row = -> [
+				new Point(0,0)
+	  			new Point(0,0)
+	  			new Point(0,0)
+	  		]
+	return [row(),row(),row()]
+
+H.clones = makeClones()
+
+H.setClones = (pos) ->
+	s = C.tileSize
+	x = pos.x
+	y = pos.y
+	d = (i) ->
+		if i == 0
+			-s
+		else if i == 1
+			0
+		else
+			s
+	for row,i in H.clones
+		for pt,j in row
+			pt.setXY x+d(i),y+d(j)
+	return H.clones
 
 

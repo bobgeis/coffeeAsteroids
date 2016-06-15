@@ -19,7 +19,6 @@
     Entity.prototype.img = null;
 
     function Entity(pos) {
-      console.log(pos);
       this.pos = pos.copyPos();
       this.alive = true;
     }
@@ -41,13 +40,34 @@
     };
 
     Entity.prototype.draw = function(ctx) {
-      if (H.onScreenEntity(this.pos, this.r_img)) {
-        return H.drawEntity(ctx, this.getImg(), this.pos);
+      var i, len, pt, ref, results, row;
+      ref = this.setClones();
+      results = [];
+      for (i = 0, len = ref.length; i < len; i++) {
+        row = ref[i];
+        results.push((function() {
+          var j, len1, results1;
+          results1 = [];
+          for (j = 0, len1 = row.length; j < len1; j++) {
+            pt = row[j];
+            if (H.onScreenEntity(pt, this.r_img)) {
+              results1.push(H.drawEntity(ctx, this.getImg(), pt));
+            } else {
+              results1.push(void 0);
+            }
+          }
+          return results1;
+        }).call(this));
       }
+      return results;
     };
 
     Entity.prototype.centerCamera = function() {
       return H.updateCamera(this.pos);
+    };
+
+    Entity.prototype.setClones = function() {
+      return H.setClones(this.pos);
     };
 
     return Entity;
@@ -108,8 +128,9 @@
         this.vel.transPolar(this.acc, this.a);
       }
       if (this.drag) {
-        this.vel.scale(this.drag * dt);
+        this.vel.scale(1 - this.drag * dt);
       }
+      this.wrap();
       return MovingEntity.__super__.update.call(this, dt);
     };
 
@@ -123,8 +144,43 @@
     };
 
     MovingEntity.prototype.draw = function(ctx) {
-      if (H.onScreenEntity(this.pos, this.r_img)) {
-        return H.drawEntity(ctx, this.getImg(), this.pos, this.a);
+      var i, len, pt, ref, results, row;
+      ref = this.setClones();
+      results = [];
+      for (i = 0, len = ref.length; i < len; i++) {
+        row = ref[i];
+        results.push((function() {
+          var j, len1, results1;
+          results1 = [];
+          for (j = 0, len1 = row.length; j < len1; j++) {
+            pt = row[j];
+            if (H.onScreenEntity(pt, this.r_img)) {
+              if (this.watch) {
+                console.log(pt);
+              }
+              results1.push(H.drawEntity(ctx, this.getImg(), pt, this.a));
+            } else {
+              results1.push(void 0);
+            }
+          }
+          return results1;
+        }).call(this));
+      }
+      return results;
+    };
+
+    MovingEntity.prototype.wrap = function() {
+      if (this.pos.x < -C.tileSize / 2) {
+        this.pos.x += C.tileSize;
+      }
+      if (this.pos.x > C.tileSize / 2) {
+        this.pos.x -= C.tileSize;
+      }
+      if (this.pos.y < -C.tileSize / 2) {
+        this.pos.y += C.tileSize;
+      }
+      if (this.pos.y > C.tileSize / 2) {
+        return this.pos.y -= C.tileSize;
       }
     };
 
@@ -134,10 +190,18 @@
 
   E.MovingEntity = MovingEntity;
 
+  E.BgTile = function() {
+    var bgTile;
+    bgTile = new Entity(H.origin);
+    bgTile.setImg(A.img.bg.tile);
+    return bgTile;
+  };
+
   E.PlayerShip = function() {
     var playerShip;
     playerShip = new MovingEntity(H.origin, 0, H.origin, 0);
     playerShip.setImg(A.img.ship.dropciv);
+    playerShip.drag = C.shipDrag;
     return playerShip;
   };
 
@@ -146,6 +210,14 @@
     luckyBase = new MovingEntity(H.origin, 0, H.origin, 0);
     luckyBase.setImg(A.img.ship.baselucky);
     return luckyBase;
+  };
+
+  E.BuildBase = function() {
+    var buildBase;
+    buildBase = new MovingEntity(H.pt.setXY(1450, 1450), 0, H.origin, 0);
+    buildBase.setImg(A.img.ship.basebuild);
+    buildBase.watch = true;
+    return buildBase;
   };
 
 }).call(this);
