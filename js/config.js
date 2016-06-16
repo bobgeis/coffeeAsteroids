@@ -19,7 +19,7 @@
 
   C.halfWinHei = C.winHei / 2;
 
-  C.tileSize = 3000;
+  C.tileSize = 1600;
 
   C.tileDensity = 15;
 
@@ -30,5 +30,13 @@
   C.shipAngVel = 2 / 1000;
 
   C.shipDrag = .1 / 1000;
+
+  C.rockAngVel = 2 / 1000;
+
+  C.rockVel = 100 / 1000;
+
+  C.rockRad = 30;
+
+  C.rockSpawnChance = 3 / 1000;
 
 }).call(this);

@@ -104,7 +104,7 @@
     },
     update: function(dt) {
       if (A.loadingFinished()) {
-        A.createBgTiles();
+        A.afterLoad();
         return changeState(S.splash);
       }
     },
@@ -170,7 +170,6 @@
       }
     },
     input: function(type, data) {
-      console.log(data);
       if (type === "keydown") {
         if (data.code === "ArrowLeft") {
           return this.model.command(1);

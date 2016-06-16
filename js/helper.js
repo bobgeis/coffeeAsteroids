@@ -203,7 +203,7 @@
     };
 
     Point.prototype.randomInCircle = function(rM) {
-      return this.setPolar(H.randInt(rM), H.randAng(TAU));
+      return this.setPolar(Math.random() * rM, H.randAng(TAU));
     };
 
     return Point;
@@ -218,11 +218,11 @@
 
   H.pt = pt = new Point(0, 0);
 
-  pt1 = new Point(0, 0);
+  H.pt1 = pt1 = new Point(0, 0);
 
-  pt2 = new Point(0, 0);
+  H.pt2 = pt2 = new Point(0, 0);
 
-  pt3 = new Point(0, 0);
+  H.pt3 = pt3 = new Point(0, 0);
 
   H.origin = new Point(0, 0);
 

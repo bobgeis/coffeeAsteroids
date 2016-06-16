@@ -34,9 +34,10 @@
 
     function Model() {
       "Build the initial state.";
-      this.entitiesSuperList = [this.bg, this.bases, this.loot, this.rocks, this.shots, this.ships, this.booms];
+      this.entitiesSuperList = [this.bg, this.bases, this.loot, this.shots, this.rocks, this.ships, this.booms];
       this.player = E.PlayerShip();
       this.ships.push(this.player);
+      this.rocks.push(new E.RandRock());
       this.bases.push(new E.LuckyBase());
       this.bases.push(new E.BuildBase());
       this.bg.push(new E.BgTile());
@@ -44,22 +45,19 @@
 
     Model.prototype.update = function(dt) {
       "update by dt";
-      var i, item, len, list, ref, results;
+      var i, item, j, len, len1, list, ref;
       ref = this.entitiesSuperList;
-      results = [];
       for (i = 0, len = ref.length; i < len; i++) {
         list = ref[i];
-        results.push((function() {
-          var j, len1, results1;
-          results1 = [];
-          for (j = 0, len1 = list.length; j < len1; j++) {
-            item = list[j];
-            results1.push(item.update(dt));
-          }
-          return results1;
-        })());
+        for (j = 0, len1 = list.length; j < len1; j++) {
+          item = list[j];
+          item.update(dt);
+        }
       }
-      return results;
+      if (E.spawnRock(dt)) {
+        this.rocks.push(new E.RandRock());
+        return console.log("" + this.rocks.length);
+      }
     };
 
     Model.prototype.draw = function(ctx) {

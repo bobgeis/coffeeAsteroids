@@ -140,12 +140,21 @@ E.LuckyBase = ->
     return luckyBase
 
 E.BuildBase = ->
-    buildBase = new MovingEntity(H.pt.setXY(1450,1450),0,H.origin,0)
+    p = C.tileSize /2 - 20
+    buildBase = new MovingEntity(H.pt.setXY(p,p),0,H.origin,0)
     buildBase.setImg A.img.ship.basebuild
     buildBase.watch = true
     return buildBase
 
+E.RandRock = ->
+    p = C.tileSize /2
+    rock = new MovingEntity(H.pt1.randomInBox(-p,p,-p,p),0,
+                            H.pt2.randomInCircle(C.rockVel),0)
+    rock.setImg A.img.space.r0
+    # console.log rock
+    return rock
 
-
-
+E.spawnRock = (dt) ->
+    # console.log C.rockSpawnChance * dt
+    Math.random() < C.rockSpawnChance * dt
 

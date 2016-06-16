@@ -70,7 +70,7 @@ S.preload = {
 									Math.floor(ctx.canvas.height/2)-15
 	update : (dt) ->
 		if A.loadingFinished()
-			A.createBgTiles()
+			A.afterLoad()
 			changeState S.splash
 	input : (type,data) ->
 		console.log "input: #{type} #{data}"
@@ -127,7 +127,7 @@ S.play = {
 			@model.update dt
 	input : (type,data) ->
 		# console.log "input: #{type} #{data}"
-		console.log data
+		# console.log data
 		if type == "keydown"
 			if data.code == "ArrowLeft"
 				@model.command 1

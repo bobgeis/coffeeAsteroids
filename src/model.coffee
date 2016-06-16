@@ -30,13 +30,14 @@ class Model
             @bg
             @bases
             @loot
-            @rocks
             @shots
+            @rocks
             @ships
             @booms
             ]
         @player = E.PlayerShip()
         @ships.push @player
+        @rocks.push new E.RandRock()
         @bases.push new E.LuckyBase()
         @bases.push new E.BuildBase()
         @bg.push new E.BgTile()
@@ -48,14 +49,16 @@ class Model
             for item in list
                 item.update(dt)
         # collisions etc
+        # maybe spawn rock
+        if E.spawnRock(dt)
+            @rocks.push new E.RandRock()
+            console.log "#{@rocks.length}"
         # cull
 
     draw : (ctx) ->
         "Draw the model."
         # update camera
         @player.centerCamera()
-        # draw bg
-        # H.drawEntity ctx, A.img.bg.tile, H.origin
         # draw entities in order
         for list in @entitiesSuperList
             for item in list

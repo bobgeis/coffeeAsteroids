@@ -209,7 +209,7 @@ class Point
 
 	# move to a random pos w/in rM distance
 	randomInCircle : (rM) ->
-		@setPolar(H.randInt(rM),H.randAng(TAU))
+		@setPolar(Math.random()*rM,H.randAng(TAU))
 
 # export Point
 H.Point = Point
@@ -222,9 +222,9 @@ H.newPointPolar = (r,a) ->
 
 # these helper points should be used wherever generic Points are needed
 H.pt = pt = new Point(0,0)
-pt1 = new Point(0,0)
-pt2 = new Point(0,0)
-pt3 = new Point(0,0)
+H.pt1 = pt1 = new Point(0,0)
+H.pt2 = pt2 = new Point(0,0)
+H.pt3 = pt3 = new Point(0,0)
 H.origin = new Point(0,0)
 
 # move a Point randomly within r of its current position

@@ -73,6 +73,11 @@
     };
   };
 
+  A.afterLoad = function() {
+    A.createBgTiles();
+    return A.createRocks();
+  };
+
   A.createBgTiles = function() {
     "create a starfield background";
     var ctx, i, j, pos, ref, star;
@@ -86,6 +91,23 @@
       H.drawImgStill(ctx, star, pos.x, pos.y);
     }
     return A.img.bg.tile = ctx;
+  };
+
+  A.createRocks = function() {
+    var ctx, grad, r;
+    r = C.rockRad;
+    ctx = H.createCanvas().getContext('2d');
+    ctx.canvas.width = r * 2;
+    ctx.canvas.height = r * 2;
+    grad = ctx.createRadialGradient(r / 2, r / 2, r, r, r, 0);
+    grad.addColorStop(0, "rgba(140, 90, 29, 1)");
+    grad.addColorStop(1, "rgba(180, 120, 35, 1)");
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(r, r, r, 0, H.TAU);
+    ctx.fill();
+    ctx.closePath();
+    return A.img.space.r0 = ctx;
   };
 
 }).call(this);

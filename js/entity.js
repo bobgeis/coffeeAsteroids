@@ -213,11 +213,24 @@
   };
 
   E.BuildBase = function() {
-    var buildBase;
-    buildBase = new MovingEntity(H.pt.setXY(1450, 1450), 0, H.origin, 0);
+    var buildBase, p;
+    p = C.tileSize / 2 - 20;
+    buildBase = new MovingEntity(H.pt.setXY(p, p), 0, H.origin, 0);
     buildBase.setImg(A.img.ship.basebuild);
     buildBase.watch = true;
     return buildBase;
+  };
+
+  E.RandRock = function() {
+    var p, rock;
+    p = C.tileSize / 2;
+    rock = new MovingEntity(H.pt1.randomInBox(-p, p, -p, p), 0, H.pt2.randomInCircle(C.rockVel), 0);
+    rock.setImg(A.img.space.r0);
+    return rock;
+  };
+
+  E.spawnRock = function(dt) {
+    return Math.random() < C.rockSpawnChance * dt;
   };
 
 }).call(this);
