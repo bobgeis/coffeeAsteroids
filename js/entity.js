@@ -18,6 +18,8 @@
   Entity = (function() {
     Entity.prototype.img = null;
 
+    Entity.prototype.r_img = 0;
+
     function Entity(pos) {
       this.pos = pos.copyPos();
       this.alive = true;
@@ -114,8 +116,18 @@
   MovingEntity = (function(superClass) {
     extend(MovingEntity, superClass);
 
-    function MovingEntity(pos, a, vel, va) {
-      this.a = a;
+    MovingEntity.prototype.acc = 0;
+
+    MovingEntity.prototype.r = 0;
+
+    MovingEntity.prototype.m = 0;
+
+    MovingEntity.prototype.thrust = false;
+
+    MovingEntity.prototype.drag = false;
+
+    function MovingEntity(pos, a1, vel, va) {
+      this.a = a1;
       this.va = va;
       MovingEntity.__super__.constructor.call(this, pos);
       this.vel = vel.copyPos();
@@ -141,6 +153,14 @@
       } else {
         return this.thrust = false;
       }
+    };
+
+    MovingEntity.prototype.setR = function(r1) {
+      this.r = r1;
+    };
+
+    MovingEntity.prototype.setM = function(m) {
+      this.m = m;
     };
 
     MovingEntity.prototype.draw = function(ctx) {
@@ -184,6 +204,32 @@
       }
     };
 
+    MovingEntity.prototype.collide = function(obj) {
+      return this.pos.collide(obj.pos, this.r + obj.r);
+    };
+
+    MovingEntity.prototype.bounce = function(obj) {
+      this.bouncePos(obj);
+      return this.bounceVel(obj);
+    };
+
+    MovingEntity.prototype.bouncePos = function(obj) {
+      var a, r;
+      a = obj.pos.getFaceAngle(this.pos);
+      r = obj.r + this.r;
+      H.pt.setPos(obj.pos);
+      return this.pos.setPos(H.pt.transPolar(r, a));
+    };
+
+    MovingEntity.prototype.bounceVel = function(obj) {
+      var ma, mb, vxf, vyf;
+      ma = (this.m - obj.m) / (this.m + obj.m);
+      mb = obj.m * 2 / (this.m + obj.m);
+      vxf = ma * this.vel.x + mb * obj.vel.x;
+      vyf = ma * this.vel.y + mb * obj.vel.y;
+      return this.vel.setXY(vxf, vyf);
+    };
+
     return MovingEntity;
 
   })(Entity);
@@ -200,7 +246,9 @@
   E.PlayerShip = function() {
     var playerShip;
     playerShip = new MovingEntity(H.origin, 0, H.origin, 0);
-    playerShip.setImg(A.img.ship.dropciv);
+    playerShip.setImg(A.img.ship.raymine);
+    playerShip.setR(playerShip.r_img);
+    playerShip.setM(C.shipMass);
     playerShip.drag = C.shipDrag;
     return playerShip;
   };
@@ -209,6 +257,8 @@
     var luckyBase;
     luckyBase = new MovingEntity(H.origin, 0, H.origin, 0);
     luckyBase.setImg(A.img.ship.baselucky);
+    luckyBase.setR(luckyBase.r_img);
+    luckyBase.setM(C.baseMass);
     return luckyBase;
   };
 
@@ -217,7 +267,8 @@
     p = C.tileSize / 2 - 20;
     buildBase = new MovingEntity(H.pt.setXY(p, p), 0, H.origin, 0);
     buildBase.setImg(A.img.ship.basebuild);
-    buildBase.watch = true;
+    buildBase.setR(buildBase.r_img);
+    buildBase.setM(C.baseMass);
     return buildBase;
   };
 
@@ -226,6 +277,8 @@
     p = C.tileSize / 2;
     rock = new MovingEntity(H.pt1.randomInBox(-p, p, -p, p), 0, H.pt2.randomInCircle(C.rockVel), 0);
     rock.setImg(A.img.space.r0);
+    rock.setR(rock.r_img);
+    rock.setM(C.rockMass);
     return rock;
   };
 

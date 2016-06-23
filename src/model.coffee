@@ -48,11 +48,21 @@ class Model
         for list in @entitiesSuperList
             for item in list
                 item.update(dt)
-        # collisions etc
+        # collisions
+        # ships with rocks
+        for ship in @ships
+            for rock in @rocks
+                if ship.collide rock
+                    console.log "collision!"
+                    ship.bounce rock
+        for base in @bases
+            for rock in @rocks
+                if base.collide rock
+                    rock.bounce base
         # maybe spawn rock
         if E.spawnRock(dt)
             @rocks.push new E.RandRock()
-            console.log "#{@rocks.length}"
+            # console.log "#{@rocks.length}"
         # cull
 
     draw : (ctx) ->

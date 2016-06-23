@@ -399,4 +399,6 @@ H.setClones = (pos) ->
 			pt.setXY x+d(i),y+d(j)
 	return H.clones
 
-
+nullvar = null
+und = undefined
+zero = 0

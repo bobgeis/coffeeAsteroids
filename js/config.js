@@ -25,11 +25,15 @@
 
   C.tileCount = Math.floor(C.tileDensity / 10000 * C.tileSize * C.tileSize);
 
+  C.baseMass = 10000;
+
   C.shipAcc = 5 / 1000;
 
   C.shipAngVel = 2 / 1000;
 
   C.shipDrag = .1 / 1000;
+
+  C.shipMass = 10;
 
   C.rockAngVel = 2 / 1000;
 
@@ -38,5 +42,7 @@
   C.rockRad = 30;
 
   C.rockSpawnChance = 3 / 1000;
+
+  C.rockMass = 100;
 
 }).call(this);

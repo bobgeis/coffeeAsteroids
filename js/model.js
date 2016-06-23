@@ -45,7 +45,7 @@
 
     Model.prototype.update = function(dt) {
       "update by dt";
-      var i, item, j, len, len1, list, ref;
+      var base, i, item, j, k, l, len, len1, len2, len3, len4, len5, list, m, n, ref, ref1, ref2, ref3, ref4, rock, ship;
       ref = this.entitiesSuperList;
       for (i = 0, len = ref.length; i < len; i++) {
         list = ref[i];
@@ -54,9 +54,31 @@
           item.update(dt);
         }
       }
+      ref1 = this.ships;
+      for (k = 0, len2 = ref1.length; k < len2; k++) {
+        ship = ref1[k];
+        ref2 = this.rocks;
+        for (l = 0, len3 = ref2.length; l < len3; l++) {
+          rock = ref2[l];
+          if (ship.collide(rock)) {
+            console.log("collision!");
+            ship.bounce(rock);
+          }
+        }
+      }
+      ref3 = this.bases;
+      for (m = 0, len4 = ref3.length; m < len4; m++) {
+        base = ref3[m];
+        ref4 = this.rocks;
+        for (n = 0, len5 = ref4.length; n < len5; n++) {
+          rock = ref4[n];
+          if (base.collide(rock)) {
+            rock.bounce(base);
+          }
+        }
+      }
       if (E.spawnRock(dt)) {
-        this.rocks.push(new E.RandRock());
-        return console.log("" + this.rocks.length);
+        return this.rocks.push(new E.RandRock());
       }
     };
 
