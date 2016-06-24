@@ -24,6 +24,8 @@
 
     Model.prototype.ships = [];
 
+    Model.prototype.boats = [];
+
     Model.prototype.rocks = [];
 
     Model.prototype.booms = [];
@@ -34,7 +36,7 @@
 
     function Model() {
       "Build the initial state.";
-      this.entitiesSuperList = [this.bg, this.bases, this.loot, this.shots, this.rocks, this.ships, this.booms];
+      this.entitiesSuperList = [this.bg, this.bases, this.loot, this.boats, this.shots, this.rocks, this.ships, this.booms];
       this.player = E.PlayerShip();
       this.ships.push(this.player);
       this.rocks.push(new E.RandRock());
@@ -61,7 +63,6 @@
         for (l = 0, len3 = ref2.length; l < len3; l++) {
           rock = ref2[l];
           if (ship.collide(rock)) {
-            console.log("collision!");
             ship.bounce(rock);
           }
         }
@@ -84,7 +85,7 @@
 
     Model.prototype.draw = function(ctx) {
       "Draw the model.";
-      var i, item, len, list, ref, results;
+      var entity, i, len, list, ref, results;
       this.player.centerCamera();
       ref = this.entitiesSuperList;
       results = [];
@@ -94,8 +95,8 @@
           var j, len1, results1;
           results1 = [];
           for (j = 0, len1 = list.length; j < len1; j++) {
-            item = list[j];
-            results1.push(item.draw(ctx));
+            entity = list[j];
+            results1.push(entity.draw(ctx));
           }
           return results1;
         })());
@@ -110,6 +111,8 @@
         return this.player.va = -C.shipAngVel;
       } else if (cmd === 3) {
         return this.player.setAcc(C.shipAcc);
+      } else if (cmd === 4) {
+        return this.player.setAcc(-C.shipRetro);
       } else if (cmd === 11) {
         return this.player.va = 0;
       } else if (cmd === 13) {

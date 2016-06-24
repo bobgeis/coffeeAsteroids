@@ -23,6 +23,8 @@
     function Entity(pos) {
       this.pos = pos.copyPos();
       this.alive = true;
+      this.clones = [H.newPt(), H.newPt(), H.newPt(), H.newPt(), H.newPt(), H.newPt(), H.newPt(), H.newPt(), H.newPt()];
+      this.setClones();
     }
 
     Entity.prototype.setImg = function(img) {
@@ -42,24 +44,16 @@
     };
 
     Entity.prototype.draw = function(ctx) {
-      var i, len, pt, ref, results, row;
+      var i, len, pt, ref, results;
       ref = this.setClones();
       results = [];
       for (i = 0, len = ref.length; i < len; i++) {
-        row = ref[i];
-        results.push((function() {
-          var j, len1, results1;
-          results1 = [];
-          for (j = 0, len1 = row.length; j < len1; j++) {
-            pt = row[j];
-            if (H.onScreenEntity(pt, this.r_img)) {
-              results1.push(H.drawEntity(ctx, this.getImg(), pt));
-            } else {
-              results1.push(void 0);
-            }
-          }
-          return results1;
-        }).call(this));
+        pt = ref[i];
+        if (H.onScreenEntity(pt, this.r_img)) {
+          results.push(H.drawEntity(ctx, this.getImg(), pt));
+        } else {
+          results.push(void 0);
+        }
       }
       return results;
     };
@@ -69,7 +63,20 @@
     };
 
     Entity.prototype.setClones = function() {
-      return H.setClones(this.pos);
+      var s, x, y;
+      s = C.tileSize;
+      x = this.pos.x;
+      y = this.pos.y;
+      this.clones[0].setXY(x - s, y - s);
+      this.clones[1].setXY(x - s, y);
+      this.clones[2].setXY(x - s, y + s);
+      this.clones[3].setXY(x, y - s);
+      this.clones[4].setXY(x, y);
+      this.clones[5].setXY(x, y + s);
+      this.clones[6].setXY(x + s, y - s);
+      this.clones[7].setXY(x + s, y);
+      this.clones[8].setXY(x + s, y + s);
+      return this.clones;
     };
 
     return Entity;
@@ -143,6 +150,7 @@
         this.vel.scale(1 - this.drag * dt);
       }
       this.wrap();
+      this.setClones();
       return MovingEntity.__super__.update.call(this, dt);
     };
 
@@ -164,29 +172,15 @@
     };
 
     MovingEntity.prototype.draw = function(ctx) {
-      var i, len, pt, ref, results, row;
-      ref = this.setClones();
-      results = [];
+      var i, len, pt, ref;
+      ref = this.clones;
       for (i = 0, len = ref.length; i < len; i++) {
-        row = ref[i];
-        results.push((function() {
-          var j, len1, results1;
-          results1 = [];
-          for (j = 0, len1 = row.length; j < len1; j++) {
-            pt = row[j];
-            if (H.onScreenEntity(pt, this.r_img)) {
-              if (this.watch) {
-                console.log(pt);
-              }
-              results1.push(H.drawEntity(ctx, this.getImg(), pt, this.a));
-            } else {
-              results1.push(void 0);
-            }
-          }
-          return results1;
-        }).call(this));
+        pt = ref[i];
+        if (H.onScreenEntity(pt, this.r_img)) {
+          H.drawEntity(ctx, this.getImg(), pt, this.a);
+          return;
+        }
       }
-      return results;
     };
 
     MovingEntity.prototype.wrap = function() {
@@ -205,28 +199,45 @@
     };
 
     MovingEntity.prototype.collide = function(obj) {
-      return this.pos.collide(obj.pos, this.r + obj.r);
+      var i, len, pt, ref;
+      ref = obj.clones;
+      for (i = 0, len = ref.length; i < len; i++) {
+        pt = ref[i];
+        if (this.pos.collide(pt, this.r + obj.r)) {
+          return pt;
+        }
+      }
+      return false;
     };
 
     MovingEntity.prototype.bounce = function(obj) {
-      this.bouncePos(obj);
-      return this.bounceVel(obj);
+      var pt;
+      pt = this.collide(obj);
+      if (pt) {
+        this.bouncePos(obj, pt);
+        return this.bounceVel(obj, pt);
+      }
     };
 
-    MovingEntity.prototype.bouncePos = function(obj) {
+    MovingEntity.prototype.bouncePos = function(obj, pt) {
       var a, r;
-      a = obj.pos.getFaceAngle(this.pos);
+      a = pt.getFaceAngle(this.pos);
       r = obj.r + this.r;
-      H.pt.setPos(obj.pos);
+      H.pt.setPos(pt);
       return this.pos.setPos(H.pt.transPolar(r, a));
     };
 
-    MovingEntity.prototype.bounceVel = function(obj) {
-      var ma, mb, vxf, vyf;
+    MovingEntity.prototype.bounceVel = function(obj, pt) {
+      var a, ma, mb, ovu, vu, vuf, vw, vxf, vyf;
       ma = (this.m - obj.m) / (this.m + obj.m);
       mb = obj.m * 2 / (this.m + obj.m);
-      vxf = ma * this.vel.x + mb * obj.vel.x;
-      vyf = ma * this.vel.y + mb * obj.vel.y;
+      a = this.pos.getFaceAngle(pt);
+      vu = this.vel.x * Math.cos(a) - this.vel.y * Math.sin(a);
+      vw = this.vel.x * Math.sin(a) + this.vel.y * Math.cos(a);
+      ovu = obj.vel.x * Math.cos(a) - obj.vel.y * Math.sin(a);
+      vuf = ma * vu + mb * ovu;
+      vxf = vuf * Math.cos(a) + vw * Math.sin(a);
+      vyf = -vuf * Math.sin(a) + vw * Math.cos(a);
       return this.vel.setXY(vxf, vyf);
     };
 
@@ -245,8 +256,8 @@
 
   E.PlayerShip = function() {
     var playerShip;
-    playerShip = new MovingEntity(H.origin, 0, H.origin, 0);
-    playerShip.setImg(A.img.ship.raymine);
+    playerShip = new MovingEntity(H.origin, H.HALFPI, H.pt.setXY(0, 0.5), 0);
+    playerShip.setImg(A.img.ship.rayciv);
     playerShip.setR(playerShip.r_img);
     playerShip.setM(C.shipMass);
     playerShip.drag = C.shipDrag;
@@ -254,8 +265,9 @@
   };
 
   E.LuckyBase = function() {
-    var luckyBase;
-    luckyBase = new MovingEntity(H.origin, 0, H.origin, 0);
+    var luckyBase, p;
+    p = -900;
+    luckyBase = new MovingEntity(H.pt.setXY(0, p), 0, H.origin, 0);
     luckyBase.setImg(A.img.ship.baselucky);
     luckyBase.setR(luckyBase.r_img);
     luckyBase.setM(C.baseMass);

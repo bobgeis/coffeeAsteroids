@@ -170,6 +170,8 @@ class Point
 	# set to unit vector along an angle
 	setUnit : (a) ->
 		@setPolar 1,a
+	unitVector : (a) ->
+		@setPolar 1,a
 
 	# rotate by an angle
 	rotate : (a) ->
@@ -219,6 +221,8 @@ H.Point = Point
 H.newPointPolar = (r,a) ->
 	new Point( r * Math.cos a, r * Math.sin a )
 
+# used to get a point which will be set later
+H.newPt = -> new Point(0,0)
 
 # these helper points should be used wherever generic Points are needed
 H.pt = pt = new Point(0,0)
@@ -399,6 +403,9 @@ H.setClones = (pos) ->
 			pt.setXY x+d(i),y+d(j)
 	return H.clones
 
-nullvar = null
-und = undefined
-zero = 0
+H.cloneCollide = (pos1, pos2, r) ->
+	for row in H.setClones pos1
+		for clone in row
+			if clone.collide pos2,r
+				return clone
+	return false

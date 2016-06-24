@@ -18,7 +18,7 @@ C.halfWinWid = C.winWid/2
 C.halfWinHei = C.winHei/2
 
 # bg star field
-C.tileSize = 1600
+C.tileSize = 2000
 C.tileDensity = 15	# stars per 100px100px sq
 C.tileCount = Math.floor(C.tileDensity/10000*C.tileSize*C.tileSize)
 
@@ -27,6 +27,7 @@ C.baseMass = 10000
 
 # player ship attributes
 C.shipAcc = 5       /1000       # px/s/s
+C.shipRetro = C.shipAcc/3
 C.shipAngVel = 2    /1000       # rad/s
 C.shipDrag = .1     /1000       #
 C.shipMass = 10                 # mass in arbitrary units

@@ -91,7 +91,8 @@ S.splash = {
 		ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height)
 		H.drawImg ctx, A.img.bg.tile, ctx.canvas.width/2, ctx.canvas.height/2 + @y
 		H.drawImg ctx, A.img.bg.tile, ctx.canvas.width/2, ctx.canvas.height/2 + @y - C.tileSize
-		img = A.img.ship.dropciv
+		# img = A.img.ship.dropciv
+		img = A.img.ship.rayciv
 		a = H.HALFPI
 		H.drawImg ctx, img, ctx.canvas.width/2, ctx.canvas.height/2, a
 	update : (dt) ->
@@ -126,8 +127,6 @@ S.play = {
 		if @model
 			@model.update dt
 	input : (type,data) ->
-		# console.log "input: #{type} #{data}"
-		# console.log data
 		if type == "keydown"
 			if data.code == "ArrowLeft"
 				@model.command 1
@@ -136,7 +135,7 @@ S.play = {
 			else if data.code == "ArrowUp"
 				@model.command 3
 			else if data.code == "ArrowDown"
-				return
+				@model.command 4
 		else if type == "keyup"
 			if data.code == "ArrowLeft"
 				@model.command 11

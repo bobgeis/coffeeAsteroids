@@ -32,6 +32,8 @@
 
   A.ship.raybuild = "./asset/img/ship/raybuild.png";
 
+  A.ship.rayciv = "./asset/img/ship/rayciv.png";
+
   A.ship.raymine = "./asset/img/ship/raymine.png";
 
   A.space = {};

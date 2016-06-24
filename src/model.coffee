@@ -20,16 +20,19 @@ class Model
     bg : []
     bases : []
     ships : []
+    boats : []
     rocks : []
     booms : []
     shots : []
     loot : []
     constructor : ->
         "Build the initial state."
+        # they will be drawn in this order
         @entitiesSuperList = [
             @bg
             @bases
             @loot
+            @boats
             @shots
             @rocks
             @ships
@@ -53,8 +56,8 @@ class Model
         for ship in @ships
             for rock in @rocks
                 if ship.collide rock
-                    console.log "collision!"
                     ship.bounce rock
+        # rocks with bases
         for base in @bases
             for rock in @rocks
                 if base.collide rock
@@ -71,8 +74,8 @@ class Model
         @player.centerCamera()
         # draw entities in order
         for list in @entitiesSuperList
-            for item in list
-                item.draw(ctx)
+            for entity in list
+                entity.draw(ctx)
         # draw hud
 
     command : (cmd) ->
@@ -82,6 +85,8 @@ class Model
             @player.va = -C.shipAngVel
         else if cmd == 3
             @player.setAcc C.shipAcc
+        else if cmd == 4
+            @player.setAcc -C.shipRetro
         else if cmd == 11
             @player.va = 0
         else if cmd == 13

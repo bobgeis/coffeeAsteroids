@@ -13,6 +13,7 @@ A.ship.dropsci = "./asset/img/ship/dropsci.png"
 A.ship.lifeboat = "./asset/img/ship/lifeboat.png"
 A.ship.podblue = "./asset/img/ship/podblue.png"
 A.ship.raybuild = "./asset/img/ship/raybuild.png"
+A.ship.rayciv = "./asset/img/ship/rayciv.png"
 A.ship.raymine = "./asset/img/ship/raymine.png"
 A.space = {}
 A.space.cr0 = "./asset/img/space/cr0.png"
