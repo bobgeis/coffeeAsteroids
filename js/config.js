@@ -29,6 +29,8 @@
 
   C.baseMass = 10000;
 
+  C.baseAngVel = 0.1 / 1000;
+
   C.shipAcc = 5 / 1000;
 
   C.shipRetro = C.shipAcc / 3;
@@ -45,36 +47,50 @@
 
   C.shipBeamCoolDown = 1 * 1000;
 
+  C.shipInvincibleDuration = 300;
+
   C.beamDamage = 1;
 
   C.beamRange = 500;
 
-  C.beamDuration = 180;
+  C.beamDuration = 150;
 
-  C.beamColors = ["rgba(100, 255, 255, 1)", "rgba(  0, 225, 255, 1)", "rgba( 25, 175, 175, 1)", "rgba( 50, 125, 125, 1)", "rgba( 25,  50,  50, 1)", "rgba(  0,   0,   0, 0)"];
+  C.beamScatter = 5 / 100;
 
-  C.beamWidths = [4, 3, 2, 1, 1, 0];
+  C.beamCoolDown = 80;
+
+  C.beamEnergyMax = 10;
+
+  C.beamEnergyRegen = 2 / 1000;
+
+  C.beamColors = ["rgba(100, 255, 255, 1)", "rgba(  0, 225, 255, 1)", "rgba( 25, 175, 200, 1)", "rgba( 25, 125, 175, 1)", "rgba( 25, 100, 100, 1)", "rgba(  0,  50,  50, 1)"];
+
+  C.beamWidths = [4, 3, 2, 1, 1, 1];
+
+  C.rockCollisionDamage = 5;
 
   C.rockAngVel = 2 / 1000;
 
-  C.rockVel = 100 / 1000;
+  C.rockVel = 200 / 1000;
 
   C.rockRad = 30;
 
-  C.rockRadii = [10, 15, 19, 29, 40];
+  C.rockRadii = [12, 15, 20, 26, 36];
+
+  C.rockMasses = [5, 10, 20, 40, 100];
 
   C.rockSpawnChance = 3 / 1000;
 
-  C.rockMass = 100;
+  C.rockMass = 25;
 
   C.rockArmor = 5;
 
   C.rockRegen = 1 / 100;
 
   C.rockMaxDamage = {
-    C: [1.0, 1.0, 1.5, 1.5, 2.0],
-    S: [1.0, 1.5, 1.5, 2.0, 2.5],
-    M: [1.5, 1.5, 2.0, 2.5, 3.0]
+    C: [1.0, 1.4, 2.0, 2.5, 3.0],
+    S: [1.5, 2.0, 3.0, 4.0, 5.0],
+    M: [2.0, 3.0, 4.5, 6.0, 8.0]
   };
 
   C.rockBaseColors = {

@@ -161,8 +161,9 @@
   B.DisruptorBeam = DisruptorBeam;
 
   B.newDisruptor = function(obj) {
-    var pew;
-    pew = new DisruptorBeam(obj.pos, C.beamRange, -obj.a);
+    var a, pew;
+    a = -obj.a + H.randPlusMinus(C.beamScatter);
+    pew = new DisruptorBeam(obj.pos, C.beamRange, a);
     pew.setDamage(C.beamDamage);
     return pew;
   };

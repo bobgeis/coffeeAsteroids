@@ -46,6 +46,10 @@ H.randIntRange = (min,max) ->
 H.randAng = (a = TAU) ->
 	Math.random() * a
 
+# get a random number within +/- x
+H.randPlusMinus = (x) ->
+	Math.random()*2*x - x
+
 
 # some array functions
 

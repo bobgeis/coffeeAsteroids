@@ -10,6 +10,8 @@
 
   document.write('<script src="js/main.js"></script>');
 
+  document.write('<script src="js/hud.js"></script>');
+
   document.write('<script src="js/helper.js"></script>');
 
   document.write('<script src="js/entity.js"></script>');

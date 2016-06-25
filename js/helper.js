@@ -32,6 +32,10 @@
     return Math.random() * a;
   };
 
+  H.randPlusMinus = function(x) {
+    return Math.random() * 2 * x - x;
+  };
+
   H.clear = function(list) {
     return list.length = 0;
   };

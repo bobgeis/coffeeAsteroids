@@ -1,5 +1,5 @@
 """
-Config
+ Config
 
 Configuration values
 """
@@ -32,6 +32,7 @@ C.spectralTypes = [
 
 # starbase attributes
 C.baseMass = 10000
+C.baseAngVel = 0.1/1000           # rad/ms
 
 # player ship attributes
 C.shipAcc = 5       /1000       # px/s/s
@@ -42,18 +43,23 @@ C.shipMass = 10                 # mass in arbitrary units
 C.shipShields = 10
 C.shipRegen = 0.5    /1000
 C.shipBeamCoolDown = 1 * 1000
+C.shipInvincibleDuration = 300 # ms  minimum time bt taking damage for ships
 
 # disruptor beam attributes
 C.beamDamage = 1                #
 C.beamRange = 500               # px
-C.beamDuration = 180            # ms
+C.beamDuration = 150            # ms
+C.beamScatter = 5/100           # radians
+C.beamCoolDown = 80             # ms
+C.beamEnergyMax = 10            # shots
+C.beamEnergyRegen = 2/1000      # shots/ms
 C.beamColors = [
         "rgba(100, 255, 255, 1)"
         "rgba(  0, 225, 255, 1)"
-        "rgba( 25, 175, 175, 1)"
-        "rgba( 50, 125, 125, 1)"
-        "rgba( 25,  50,  50, 1)"
-        "rgba(  0,   0,   0, 0)"
+        "rgba( 25, 175, 200, 1)"
+        "rgba( 25, 125, 175, 1)"
+        "rgba( 25, 100, 100, 1)"
+        "rgba(  0,  50,  50, 1)"
     ]
 C.beamWidths = [                # px
         4
@@ -61,23 +67,25 @@ C.beamWidths = [                # px
         2
         1
         1
-        0
+        1
     ]
 
 # rock attributes
+C.rockCollisionDamage = 5       # dmg per velocity
 C.rockAngVel = 2/1000           # rad/ms
-C.rockVel = 100/1000            # px/ms
+C.rockVel = 200/1000            # px/ms
 C.rockRad = 30                  # px
-C.rockRadii = [10,15,19,29,40]    # radii in px from smallest to largest
+C.rockRadii = [12,15,20,26,36]    # radii in px from smallest to largest
+C.rockMasses = [5,10,20,40,100]
 C.rockSpawnChance = 3/1000      # spawn chance /ms
-C.rockMass = 100                # mass
+C.rockMass = 25                # mass
 C.rockArmor = 5                 # dmg
 C.rockRegen = 1/100             # dmg/ms
 C.rockMaxDamage =
     {
-        C : [1.0,1.0,1.5,1.5,2.0]
-        S : [1.0,1.5,1.5,2.0,2.5]
-        M : [1.5,1.5,2.0,2.5,3.0]
+        C : [1.0, 1.4, 2.0, 2.5, 3.0]
+        S : [1.5, 2.0, 3.0, 4.0, 5.0]
+        M : [2.0, 3.0, 4.5, 6.0, 8.0]
     }
 C.rockBaseColors =
     {

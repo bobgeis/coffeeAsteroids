@@ -3,6 +3,7 @@ Entity
 
 An entity is a thing in the game world.
 The player ship, rocks, shots, etc are all entities.
+
 """
 
 
@@ -86,24 +87,15 @@ E.Entity = Entity
 
 class MovingEntity extends Entity
 
-    acc : 0     # acceleration
-    r : 0       # radius
-    m : 0       # mass
-    thrust : false  # thrusting?
-    drag : false    # affected by drag?
-
-
     constructor : (pos,@a,vel,@va) ->
         super pos
         @vel = vel.copyPos()
+        @r = 0       # radius
+        @m = 0       # mass
 
     update : (dt) ->
         @pos.transXY @vel.x*dt, -@vel.y*dt
         @a += @va * dt
-        if @thrust
-            @vel.transPolar @acc,@a
-        if @drag
-            @vel.scale (1-@drag*dt)
         @wrap()
         @setClones()
         super dt
@@ -236,6 +228,7 @@ class DestructibleEntity extends MovingEntity
 
 
     applyDamage : (dmg) ->
+        console.log dmg
         @damage += dmg
         return @isDestroyed()
 
@@ -249,9 +242,9 @@ class RockEntity extends DestructibleEntity
     constructor : (@type,@size,pos,a,vel,va) ->
         super pos,a,vel,va
         @imgList = A.img.rock[@type][@size]
-        @img = @imgList[0]
+        @setImg @imgList[0]
         @setR C.rockRadii[@size]
-        @setM C.rockMass
+        @setM C.rockMasses[@size]
         @setMaxDmg C.rockMaxDamage[@type][@size]
         @setRegen C.rockRegen
 
@@ -263,6 +256,65 @@ class RockEntity extends DestructibleEntity
             @imgList[0]
 
 
+class ShipEntity extends DestructibleEntity
+
+    constructor : (@type,@faction,pos,a,vel,va) ->
+        super pos,a,vel,va
+
+        @beamTriggered = false
+        @beamCoolDown = 0
+        @beamCoolDownMax = C.beamCoolDown
+        @beamEnergy = 0
+        @beamEnergyMax = C.beamEnergyMax
+        @beamEnergyRegen = C.beamEnergyRegen
+
+        @maxDamage = C.shipShields
+        @regen = C.shipRegen
+        @invincible = 0
+        @invincibleMax = C.shipInvincibleDuration
+
+        @setImg A.img.ship.rayciv
+        @r = @r_img
+        @m = C.shipMass
+        @drag = C.shipDrag
+        @thrust = false  # thrusting?
+        @drag = false    # affected by drag?
+        @acc = 0     # acceleration
+
+    update : (dt) ->
+        if @beamCoolDown
+            @beamCoolDown = Math.max 0, @beamCoolDown - dt
+        if @beamEnergy
+            @beamEnergy = Math.max 0, @beamEnergy - dt * @beamEnergyRegen
+        if @invincible
+            @invincible = Math.max 0, @invincible - dt
+        if @thrust
+            @vel.transPolar @acc,@a
+        if @drag
+            @vel.scale (1-@drag*dt)
+        super dt
+
+    activateBeam : ->
+        if @beamTriggered
+            @beamTriggered = false
+        else
+            @beamTriggered = true
+
+    canFire : ->
+        not @beamCoolDown and @beamEnergy < @beamEnergyMax
+
+    setJustFired : ->
+        @beamCoolDown = @beamCoolDownMax
+        @beamEnergy += 1
+
+    applyDamage : (dmg) ->
+        # console.log dmg
+        if @invincible > 0
+            return
+        else
+            @invincible = @invincibleMax
+            super dmg
+
 E.BgTile = ->
     bgTile = new Entity(H.origin)
     bgTile.setImg A.img.bg.tile
@@ -271,7 +323,7 @@ E.BgTile = ->
 
 E.LuckyBase = ->
     p = -900
-    luckyBase = new MovingEntity(H.pt.setXY(0,p),0,H.origin,0)
+    luckyBase = new MovingEntity(H.pt.setXY(0,p),0,H.origin,-C.baseAngVel)
     luckyBase.setImg A.img.ship.baselucky
     luckyBase.setR luckyBase.r_img
     luckyBase.setM C.baseMass
@@ -279,7 +331,7 @@ E.LuckyBase = ->
 
 E.BuildBase = ->
     p = C.tileSize /2 - 20
-    buildBase = new MovingEntity(H.pt.setXY(p,p),0,H.origin,0)
+    buildBase = new MovingEntity(H.pt.setXY(p,p),0,H.origin,C.baseAngVel)
     buildBase.setImg A.img.ship.basebuild
     buildBase.setR buildBase.r_img
     buildBase.setM C.baseMass
@@ -287,13 +339,7 @@ E.BuildBase = ->
 
 
 E.PlayerShip = ->
-    playerShip = new DestructibleEntity(H.origin,H.HALFPI,H.pt.setXY(0,0.5),0)
-    playerShip.setImg A.img.ship.rayciv
-    playerShip.setR playerShip.r_img
-    playerShip.setM C.shipMass
-    playerShip.drag = C.shipDrag
-    playerShip.setMaxDmg C.shipShields
-    playerShip.setRegen C.shipRegen
+    playerShip = new ShipEntity("ray","civ",H.origin,H.HALFPI,H.pt.setXY(0,0.5),0)
     return playerShip
 
 

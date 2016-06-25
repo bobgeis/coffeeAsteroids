@@ -13,6 +13,7 @@ B = _first.request('beam')
 C = _first.request('config')
 E = _first.request('entity')
 H = _first.request('helper')
+U = _first.request('hud')
 
 
 
@@ -28,6 +29,7 @@ class Model
     flashes : []
     shots : []
     loot : []
+    hud : []
     constructor : ->
         "Build the initial state."
         @player = E.PlayerShip()
@@ -37,6 +39,8 @@ class Model
         @bases.push new E.LuckyBase()
         @bases.push new E.BuildBase()
         @bg.push new E.BgTile()
+        @hud.push new U.shipShieldBar @player
+        @hud.push new U.shipBeamEnergyBar @player
 
     getEntityLists : ->
         # get a list of all the entity lists
@@ -51,6 +55,7 @@ class Model
             @ships
             @booms
             @flashes
+            @hud
         ]
 
     update: (dt) ->
@@ -63,8 +68,12 @@ class Model
         # ships with rocks
         for ship in @ships
             for rock in @rocks
+                if ship.beamTriggered and ship.canFire()
+                    @fireDisruptor ship
+                    ship.setJustFired()
                 if ship.collide rock
-                    ship.bounce rock
+                    dmg = Math.abs(ship.bounce rock)
+                    ship.applyDamage dmg * C.rockCollisionDamage
         # rocks with bases
         for base in @bases
             for rock in @rocks
@@ -113,7 +122,7 @@ class Model
         else if cmd == 4
             @player.setAcc -C.shipRetro
         else if cmd == 5
-            @fireDisruptor @player
+            @player.activateBeam()
         else if cmd == 11
             @player.va = 0
         else if cmd == 13
@@ -125,8 +134,7 @@ class Model
     fireDisruptor : (ship) ->
         # attempt to fire disruptor
         # if ship.canFire()
-        if true
-            @shots.push B.newDisruptor ship
+        @shots.push B.newDisruptor ship
 
     calveRock : (rock) ->
         # attempt to calve a rock
