@@ -9,6 +9,7 @@ _first.offer('model',M)
 
 # requesting
 A = _first.request('assets')
+B = _first.request('beam')
 C = _first.request('config')
 E = _first.request('entity')
 H = _first.request('helper')
@@ -22,22 +23,12 @@ class Model
     ships : []
     boats : []
     rocks : []
-    booms : []
+    ephemera : []
     shots : []
     loot : []
     constructor : ->
         "Build the initial state."
         # they will be drawn in this order
-        @entitiesSuperList = [
-            @bg
-            @bases
-            @loot
-            @boats
-            @shots
-            @rocks
-            @ships
-            @booms
-            ]
         @player = E.PlayerShip()
         @ships.push @player
         @rocks.push new E.RandRock()
@@ -45,10 +36,23 @@ class Model
         @bases.push new E.BuildBase()
         @bg.push new E.BgTile()
 
+    getEntityLists : ->
+        # get a list of all the entity lists
+        [
+            @bg
+            @bases
+            @loot
+            @boats
+            @shots
+            @rocks
+            @ships
+            @ephemera
+        ]
+
     update: (dt) ->
         "update by dt"
         # update
-        for list in @entitiesSuperList
+        for list in @getEntityLists()
             for item in list
                 item.update(dt)
         # collisions
@@ -62,18 +66,28 @@ class Model
             for rock in @rocks
                 if base.collide rock
                     rock.bounce base
+        # rocks with shots
+        for shot in @shots
+            if shot.damaging
+                for rock in @rocks
+                    if shot.hit rock
+                        if rock.applyDamage shot.getDamage()
+                            rock.kill()
         # maybe spawn rock
         if E.spawnRock(dt)
             @rocks.push new E.RandRock()
             # console.log "#{@rocks.length}"
         # cull
+        @shots = _.filter @shots, isAlive
+        @rocks = _.filter @rocks, isAlive
+        @ships = _.filter @ships, isAlive
 
     draw : (ctx) ->
         "Draw the model."
         # update camera
         @player.centerCamera()
         # draw entities in order
-        for list in @entitiesSuperList
+        for list in @getEntityLists()
             for entity in list
                 entity.draw(ctx)
         # draw hud
@@ -87,15 +101,31 @@ class Model
             @player.setAcc C.shipAcc
         else if cmd == 4
             @player.setAcc -C.shipRetro
+        else if cmd == 5
+            @fireDisruptor @player
         else if cmd == 11
             @player.va = 0
         else if cmd == 13
             @player.setAcc 0
 
+    fireDisruptor : (ship) ->
+        # attempt to fire disruptor
+        # if ship.canFire()
+        if true
+            @shots.push B.newDisruptor ship
+
+    calveRock : (rock) ->
+        # attempt to calve a rock
+        1
+
+    explode : (obj) ->
+        # create an explosion w obj's pos & vel
+        1
+
 M.Model = Model
 
-
-
+# this is a function because i don't know how to make predicates from method calls
+isAlive = (obj) -> obj.alive
 
 
 

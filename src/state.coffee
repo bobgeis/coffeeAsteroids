@@ -136,6 +136,8 @@ S.play = {
 				@model.command 3
 			else if data.code == "ArrowDown"
 				@model.command 4
+			else if data.code == "Space"
+				@model.command 5
 		else if type == "keyup"
 			if data.code == "ArrowLeft"
 				@model.command 11

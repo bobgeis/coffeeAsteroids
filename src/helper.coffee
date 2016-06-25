@@ -3,6 +3,19 @@
 Helper
 
 Some useful functions and constants
+
+class Point
+	This is a point class, {x,y}, with lots of methods.
+	Many of the methods modify the point they are called on,
+	this was intended as an exercise in avoiding the creation
+	of new objects.  In principle this would reduce the frequency
+	of frame rate hits caused by garbage collection, but it
+	is unlikely to have a major impact on a game as simple as
+	this one, so it's mostly just an exercise.
+
+class Line
+	This is a class for line segments.
+
 """
 
 # expose properties for other modules by adding them to H
@@ -81,6 +94,11 @@ class Point
 	setPos : (pos) ->
 		@x = pos.x
 		@y = pos.y
+		this
+
+	setPosOffset : (pos,x,y) ->
+		@x = pos.x + x
+		@y = pos.y + y
 		this
 
 	# add
@@ -168,8 +186,6 @@ class Point
 		@setPolar @r(),a
 
 	# set to unit vector along an angle
-	setUnit : (a) ->
-		@setPolar 1,a
 	unitVector : (a) ->
 		@setPolar 1,a
 
@@ -230,6 +246,7 @@ H.pt1 = pt1 = new Point(0,0)
 H.pt2 = pt2 = new Point(0,0)
 H.pt3 = pt3 = new Point(0,0)
 H.origin = new Point(0,0)
+# they represent a sort of knockoff object pool
 
 # move a Point randomly within r of its current position
 H.blink = (pos,r) ->
@@ -245,19 +262,45 @@ class Line
 		@start = start.copyPos()
 		@stop = stop.copyPos()
 
-		# useful fields, or better as methods?
-		@l = @start.distance @stop
-		@a = @start.getFaceAngle @stop
+		@updateLA()
+
+	# update length and angle from the start and stop
+	updateLA : ->
+		@updateL()
+		@updateA()
+
+	updateL : -> @l = @start.distance @stop
+	updateA : -> @a = @start.getFaceAngle @stop
 
 	setLine : (start,stop) ->
 		@start.setPos start
 		@stop.setPos stop
+		@updateLA()
+		this
+
+	setLineOffset : (start,stop,x,y) ->
+		@start.setPosOffset start, x, y
+		@stop.setPosOffset stop, x, y
+		@updateLA()
+		this
+
+	setLineFromLine : (line) ->
+		@start.setPos line.start
+		@stop.setPos line.stop
+		@updateLA()
+		this
+
+	setLineFromLineOffset : (line,x,y) ->
+		@start.setPosOffset line.start, x, y
+		@stop.setPosOffset line.stop, x, y
+		@updateLA()
+		this
 
 	# get length of altitude bt line and pt
 	distance : (pos) ->
 		pt1.diff @start, @stop
 		pt2.diff @start, pos
-		(pt1.cross pt2) / @l
+		Math.abs ((pt1.cross pt2)/@l)
 
 	# T/F: does an altitude bt line and pt fall in the segment?
 	inSegment : (pos) ->
@@ -277,7 +320,9 @@ class Line
 	# T/F: is the pos w/in r of the line? remember to check endpoints too
 	hit : (pos,r) ->
 		if @inSegment pos
-			return @distance pos < r
+			d = @distance pos
+			# console.log "#{d} <? #{r}"
+			return d < r
 		else if @start.collide pos,r
 			return true
 		else if @stop.collide pos,r
@@ -307,6 +352,9 @@ class Line
 H.newLineRA = (start,r,a) ->
 	new Line(start,pt.setPolar(r,a).add(start))
 
+# just get a new line where we don't care about the initial positions
+H.newLine = -> new Line(H.origin,H.origin)
+
 # this is a helper line, similar to pt,pt1,pt2,pt3 above
 H.line = line = new Line(pt1,pt2)
 
@@ -328,6 +376,9 @@ H.onScreen = (pos) ->
 
 H.onScreenEntity = (pos,r) ->
 	pos.inBox camTL.x-r, camBR.x+r, camTL.y-r, camBR.y+r
+
+H.onScreenBeam = (line) ->
+	H.onScreen line.start or H.onScreen line.stop
 
 # some canvas functions
 
@@ -371,7 +422,7 @@ H.drawEntity = (ctx,top,pos,a) ->
 	H.drawImg ctx, top, dx, dy, a
 
 H.drawLineEntity = (ctx,line,wid,color) ->
-	line.draw ctx, wid, color, cam
+	line.draw ctx, wid, color, camTL
 
 
 
@@ -409,3 +460,23 @@ H.cloneCollide = (pos1, pos2, r) ->
 			if clone.collide pos2,r
 				return clone
 	return false
+
+testHelperOn = false
+if testHelperOn
+	# test of new Points vs object "pool"
+	t1 = Date.now()
+	testCount = 0
+	while testCount < 100000000
+		testCount++
+		new Point(0,0)
+	t2 = Date.now()
+	testCount = 0
+	while testCount < 100000000
+		testCount++
+		H.pt.setXY 0,0
+	t3 = Date.now()
+	console.log "new objs: #{t2-t1}"
+	console.log "reuse objs: #{t3-t2}"
+	# chrome
+	# 1804ms for 100000000 new objs
+	# 149ms for 100000000 reused objs

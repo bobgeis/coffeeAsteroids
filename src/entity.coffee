@@ -13,6 +13,7 @@ _first.offer('entity',E)
 
 # requesting
 A = _first.request('assets')
+B = _first.request('beam')
 C = _first.request('config')
 H = _first.request('helper')
 
@@ -27,17 +28,7 @@ class Entity
     constructor : (pos) ->
         @pos = pos.copyPos()
         @alive = true
-        @clones = [
-            H.newPt()
-            H.newPt()
-            H.newPt()
-            H.newPt()
-            H.newPt()
-            H.newPt()
-            H.newPt()
-            H.newPt()
-            H.newPt()
-        ]
+        @clones =  (H.newPt() for i in [0...9])
         @setClones()
 
     setImg : (@img) ->
@@ -45,14 +36,17 @@ class Entity
 
     getImg : ->
         @img
-    update : (dt) ->
-        if not @alive
-            return false
-        return true
+
+    update : (dt) -> @alive
+
     draw : (ctx) ->
         for pt in @setClones()
             if H.onScreenEntity pt, @r_img
                 H.drawEntity ctx, @getImg(), pt
+
+    isAlive : -> @alive
+    kill : -> @alive = false
+
     centerCamera : ->
         H.updateCamera @pos
 
@@ -71,34 +65,23 @@ class Entity
         @clones[8].setXY x+s,y+s
         return @clones
 
+    findNearest : (obj) ->
+        # find the clone nearest to obj
+        # assumes setClones was called already
+        nearest = null
+        dmin = C.tileSize
+        pos = obj.pos
+        for clone in @clones
+            d = clone.distance pos
+            if d < dmin
+                dmin = d
+                nearest = clone
+        return nearest
+
 E.Entity = Entity
 
 
-# beams are game objects that are line segments, eg: disruptor beam
-class Beam
 
-	# some default fields
-	wid : null
-	color : null
-
-	constructor : (@line) ->
-		@alive = true
-
-	getWidth : ->
-		@wid
-
-	getColor : ->
-		@color
-
-	update : (dt) ->
-		if not @alive
-			return false
-		return true
-
-	draw : (ctx) ->
-        H.drawLineEntity ctx, @line, @getWidth(), @getColor()
-
-E.Beam = Beam
 
 
 class MovingEntity extends Entity
@@ -170,12 +153,17 @@ class MovingEntity extends Entity
             @bounceVel obj, pt
 
     bouncePos : (obj,pt) ->
+        # set @pos after bouncing
+        # will move this to be just outside obj
         a = pt.getFaceAngle @pos
         r = obj.r + @r
         H.pt.setPos pt
         @pos.setPos H.pt.transPolar r,a
 
     bounceVel : (obj,pt) ->
+        # set the @vel after bouncing
+        # this does not change obj.vel!
+        # returns the change in veloctiy along the perpendicular component
         # get mass coeffs
         ma = (@m - obj.m) / (@m + obj.m)
         mb = obj.m * 2 / (@m + obj.m)
@@ -195,27 +183,49 @@ class MovingEntity extends Entity
         # rotate back to cartesian frame
         vxf = vuf * Math.cos(a) + vw * Math.sin(a)
         vyf = -vuf * Math.sin(a) + vw * Math.cos(a)
-        # set veloctity
+        # set velocity
         @vel.setXY vxf, vyf
-
+        return vuf - vu
 
 
 E.MovingEntity = MovingEntity
+
+
+class DestructibleEntity extends MovingEntity
+
+    constructor : (pos,a,vel,va) ->
+        super(pos, a, vel, va)
+        @damage = 0
+        @maxDamage = 0
+        @regen = 0
+
+    update : (dt) ->
+        if @damage >= @maxDamage
+            @alive = false
+            return
+        if @damage
+            @damage = Math.max 0, @damage - @regen
+        super dt
+
+    setRegen : (reg) -> @regen = reg
+    setMaxDmg : (maxDmg) -> @maxDamage = maxDmg
+
+
+    applyDamage : (dmg) ->
+        @damage += dmg
+        return @isDestroyed()
+
+    isDestroyed : -> @damage > @maxDamage
+
+E.DestructibleEntity = DestructibleEntity
+
+
 
 
 E.BgTile = ->
     bgTile = new Entity(H.origin)
     bgTile.setImg A.img.bg.tile
     return bgTile
-
-
-E.PlayerShip = ->
-    playerShip = new MovingEntity(H.origin,H.HALFPI,H.pt.setXY(0,0.5),0)
-    playerShip.setImg A.img.ship.rayciv
-    playerShip.setR playerShip.r_img
-    playerShip.setM C.shipMass
-    playerShip.drag = C.shipDrag
-    return playerShip
 
 
 E.LuckyBase = ->
@@ -234,13 +244,27 @@ E.BuildBase = ->
     buildBase.setM C.baseMass
     return buildBase
 
+
+E.PlayerShip = ->
+    playerShip = new DestructibleEntity(H.origin,H.HALFPI,H.pt.setXY(0,0.5),0)
+    playerShip.setImg A.img.ship.rayciv
+    playerShip.setR playerShip.r_img
+    playerShip.setM C.shipMass
+    playerShip.drag = C.shipDrag
+    playerShip.setMaxDmg C.shipShields
+    playerShip.setRegen C.shipRegen
+    return playerShip
+
+
 E.RandRock = ->
     p = C.tileSize /2
-    rock = new MovingEntity(H.pt1.randomInBox(-p,p,-p,p),0,
+    rock = new DestructibleEntity(H.pt1.randomInBox(-p,p,-p,p),0,
                             H.pt2.randomInCircle(C.rockVel),0)
     rock.setImg A.img.space.r0
     rock.setR rock.r_img
     rock.setM C.rockMass
+    rock.setMaxDmg C.rockArmor
+    rock.setRegen C.rockRegen
     return rock
 
 E.spawnRock = (dt) ->

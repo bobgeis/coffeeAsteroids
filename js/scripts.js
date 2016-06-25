@@ -18,6 +18,8 @@
 
   document.write('<script src="js/config.js"></script>');
 
+  document.write('<script src="js/beam.js"></script>');
+
   document.write('<script src="js/assets.js"></script>');
 
   document.write('<script src="js/assetMap.js"></script>');
