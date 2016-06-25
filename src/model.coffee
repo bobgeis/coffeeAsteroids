@@ -18,19 +18,21 @@ H = _first.request('helper')
 
 class Model
     player : null
+    gameOver : false
     bg : []
     bases : []
     ships : []
     boats : []
     rocks : []
-    ephemera : []
+    booms : []
+    flashes : []
     shots : []
     loot : []
     constructor : ->
         "Build the initial state."
-        # they will be drawn in this order
         @player = E.PlayerShip()
         @ships.push @player
+        @flash @player
         @rocks.push new E.RandRock()
         @bases.push new E.LuckyBase()
         @bases.push new E.BuildBase()
@@ -38,6 +40,7 @@ class Model
 
     getEntityLists : ->
         # get a list of all the entity lists
+        # in the order that they should be drawn
         [
             @bg
             @bases
@@ -46,7 +49,8 @@ class Model
             @shots
             @rocks
             @ships
-            @ephemera
+            @booms
+            @flashes
         ]
 
     update: (dt) ->
@@ -73,14 +77,20 @@ class Model
                     if shot.hit rock
                         if rock.applyDamage shot.getDamage()
                             rock.kill()
+                            @explode rock
         # maybe spawn rock
         if E.spawnRock(dt)
-            @rocks.push new E.RandRock()
-            # console.log "#{@rocks.length}"
+            rock = new E.RandRock()
+            @rocks.push rock
+            @flash rock
         # cull
         @shots = _.filter @shots, isAlive
         @rocks = _.filter @rocks, isAlive
         @ships = _.filter @ships, isAlive
+        @booms = _.filter @booms, isAlive
+        @flashes = _.filter @flashes, isAlive
+        if not @player.alive
+            @gameOver = true
 
     draw : (ctx) ->
         "Draw the model."
@@ -107,6 +117,9 @@ class Model
             @player.va = 0
         else if cmd == 13
             @player.setAcc 0
+        else if cmd == 99
+            @player.kill()
+            @explode @player
 
     fireDisruptor : (ship) ->
         # attempt to fire disruptor
@@ -120,7 +133,11 @@ class Model
 
     explode : (obj) ->
         # create an explosion w obj's pos & vel
-        1
+        @booms.push E.newExplosionOnObj obj
+
+    flash : (obj) ->
+        # create a flash w obj's pos & vel
+        @flashes.push E.newFlashOnObj obj
 
 M.Model = Model
 

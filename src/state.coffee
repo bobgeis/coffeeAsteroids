@@ -62,20 +62,13 @@ S.preload = {
 	draw : (ctx) ->
 		ctx.fillStyle = "#000000"
 		ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height)
-		text = "Loading"
-		ctx.fillStyle = "#FFFFFF"
-		ctx.font = '30px Arial'
-		w = (ctx.measureText text).width/2
-		ctx.fillText text, Math.floor(ctx.canvas.width/2)-w,
-									Math.floor(ctx.canvas.height/2)-15
+		drawText(ctx,"Loading",30,ctx.canvas.width/2,ctx.canvas.height/2)
 	update : (dt) ->
 		if A.loadingFinished()
 			A.afterLoad()
 			changeState S.splash
 	input : (type,data) ->
-		console.log "input: #{type} #{data}"
-		console.log type
-		console.log data
+		return
 	exit : ->
 		console.log "exit preload"
 }
@@ -89,12 +82,16 @@ S.splash = {
 	draw : (ctx) ->
 		ctx.fillStyle = "#000000"
 		ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height)
-		H.drawImg ctx, A.img.bg.tile, ctx.canvas.width/2, ctx.canvas.height/2 + @y
-		H.drawImg ctx, A.img.bg.tile, ctx.canvas.width/2, ctx.canvas.height/2 + @y - C.tileSize
+		H.drawImg ctx, A.img.bg.tile,
+				ctx.canvas.width/2, ctx.canvas.height/2 + @y
+		H.drawImg ctx, A.img.bg.tile,
+				ctx.canvas.width/2, ctx.canvas.height/2 + @y - C.tileSize
 		# img = A.img.ship.dropciv
 		img = A.img.ship.rayciv
 		a = H.HALFPI
 		H.drawImg ctx, img, ctx.canvas.width/2, ctx.canvas.height/2, a
+		drawText ctx, "Press [Space] to start.",15,
+				 ctx.canvas.width/2, ctx.canvas.height/2+200
 	update : (dt) ->
 		@y = @y + dt/1.5
 		@y = @y % C.tileSize
@@ -111,7 +108,6 @@ S.splash = {
 # this is the main play mode
 S.play = {
 
-	player : null
 	model : null
 
 	enter : ->
@@ -126,6 +122,8 @@ S.play = {
 		# update the model
 		if @model
 			@model.update dt
+			if @model.gameOver
+				changeState S.gameOver
 	input : (type,data) ->
 		if type == "keydown"
 			if data.code == "ArrowLeft"
@@ -138,6 +136,8 @@ S.play = {
 				@model.command 4
 			else if data.code == "Space"
 				@model.command 5
+			else if data.code == "KeyK"
+				@model.command 99
 		else if type == "keyup"
 			if data.code == "ArrowLeft"
 				@model.command 11
@@ -152,16 +152,22 @@ S.play = {
 }
 
 
-# this is the end of game state
+# this is the end of game state from the play state
 S.gameOver = {
 	enter : ->
 		console.log "enter gameOver"
 	draw : (ctx) ->
-		console.log "draw #{ctx}"
-	update : (model) ->
-		console.log "update #{model}"
+		S.play.draw(ctx)
+		drawText ctx, "You have died. So it goes.", 30,
+				 ctx.canvas.width/2, ctx.canvas.height/2-200
+		drawText ctx, "Press [Space] to restart.", 15,
+				 ctx.canvas.width/2, ctx.canvas.height/2+200
+	update : (dt) ->
+		S.play.model.update(dt)
 	input : (type,data) ->
-		console.log "input: #{type} #{data}"
+		if type == "keydown"
+			if data.code == "Space"
+				changeState S.splash
 	exit : ->
 		console.log "exit gameOver"
 }
@@ -171,6 +177,11 @@ S.gameOver = {
 
 
 
+drawText = (ctx,text,size,x,y) ->
+		ctx.fillStyle = "#FFFFFF"
+		ctx.font = "#{Math.floor(size)}px Arial"
+		w = Math.floor((ctx.measureText text).width/2)
+		ctx.fillText text, Math.floor(x)-w,Math.floor(y)-Math.floor(size)
 
 
 

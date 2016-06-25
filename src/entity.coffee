@@ -191,6 +191,29 @@ class MovingEntity extends Entity
 E.MovingEntity = MovingEntity
 
 
+class EphemeralEntity extends MovingEntity
+
+    constructor : (@imgList,pos,a,vel,va) ->
+        super(pos,a,vel,va)
+        @age = 0
+        @maxAge = 1
+        @setImg @imgList[0]
+
+    setMaxAge : (@maxAge) ->
+
+    update : (dt) ->
+        if @age >= @maxAge
+            @alive = false
+            return
+        @updateImg()
+        @age += dt
+        super(dt)
+
+    updateImg : ->
+        @setImg @imgList[Math.floor(@age / @maxAge * @imgList.length)]
+
+
+
 class DestructibleEntity extends MovingEntity
 
     constructor : (pos,a,vel,va) ->
@@ -215,7 +238,7 @@ class DestructibleEntity extends MovingEntity
         @damage += dmg
         return @isDestroyed()
 
-    isDestroyed : -> @damage > @maxDamage
+    isDestroyed : -> @damage >= @maxDamage
 
 E.DestructibleEntity = DestructibleEntity
 
@@ -270,3 +293,12 @@ E.RandRock = ->
 E.spawnRock = (dt) ->
     Math.random() < C.rockSpawnChance * dt
 
+E.newExplosionOnObj = (obj) ->
+    boom = new EphemeralEntity(A.img.boom,obj.pos,0,obj.vel,0)
+    boom.setMaxAge C.boomMaxAge
+    return boom
+
+E.newFlashOnObj = (obj) ->
+    flash = new EphemeralEntity(A.img.flash,obj.pos,0,obj.vel,0)
+    flash.setMaxAge C.flashMaxAge
+    return flash

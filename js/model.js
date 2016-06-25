@@ -20,6 +20,8 @@
   Model = (function() {
     Model.prototype.player = null;
 
+    Model.prototype.gameOver = false;
+
     Model.prototype.bg = [];
 
     Model.prototype.bases = [];
@@ -30,7 +32,9 @@
 
     Model.prototype.rocks = [];
 
-    Model.prototype.ephemera = [];
+    Model.prototype.booms = [];
+
+    Model.prototype.flashes = [];
 
     Model.prototype.shots = [];
 
@@ -40,6 +44,7 @@
       "Build the initial state.";
       this.player = E.PlayerShip();
       this.ships.push(this.player);
+      this.flash(this.player);
       this.rocks.push(new E.RandRock());
       this.bases.push(new E.LuckyBase());
       this.bases.push(new E.BuildBase());
@@ -47,7 +52,7 @@
     }
 
     Model.prototype.getEntityLists = function() {
-      return [this.bg, this.bases, this.loot, this.boats, this.shots, this.rocks, this.ships, this.ephemera];
+      return [this.bg, this.bases, this.loot, this.boats, this.shots, this.rocks, this.ships, this.booms, this.flashes];
     };
 
     Model.prototype.update = function(dt) {
@@ -93,17 +98,25 @@
             if (shot.hit(rock)) {
               if (rock.applyDamage(shot.getDamage())) {
                 rock.kill();
+                this.explode(rock);
               }
             }
           }
         }
       }
       if (E.spawnRock(dt)) {
-        this.rocks.push(new E.RandRock());
+        rock = new E.RandRock();
+        this.rocks.push(rock);
+        this.flash(rock);
       }
       this.shots = _.filter(this.shots, isAlive);
       this.rocks = _.filter(this.rocks, isAlive);
-      return this.ships = _.filter(this.ships, isAlive);
+      this.ships = _.filter(this.ships, isAlive);
+      this.booms = _.filter(this.booms, isAlive);
+      this.flashes = _.filter(this.flashes, isAlive);
+      if (!this.player.alive) {
+        return this.gameOver = true;
+      }
     };
 
     Model.prototype.draw = function(ctx) {
@@ -142,6 +155,9 @@
         return this.player.va = 0;
       } else if (cmd === 13) {
         return this.player.setAcc(0);
+      } else if (cmd === 99) {
+        this.player.kill();
+        return this.explode(this.player);
       }
     };
 
@@ -156,7 +172,11 @@
     };
 
     Model.prototype.explode = function(obj) {
-      return 1;
+      return this.booms.push(E.newExplosionOnObj(obj));
+    };
+
+    Model.prototype.flash = function(obj) {
+      return this.flashes.push(E.newFlashOnObj(obj));
     };
 
     return Model;

@@ -75,18 +75,30 @@
 
   A.afterLoad = function() {
     A.createBgTiles();
-    return A.createRocks();
+    A.createRocks();
+    A.createBooms();
+    return A.createFlashes();
   };
 
   A.createBgTiles = function() {
     "create a starfield background";
-    var ctx, i, j, pos, ref, star;
+    var ctx, i, j, k, l, pos, ref, ref1, ref2, star;
     A.img.bg = {};
     ctx = H.createCanvas().getContext('2d');
     ctx.canvas.width = C.tileSize;
     ctx.canvas.height = C.tileSize;
-    for (i = j = 0, ref = C.tileCount; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
-      star = H.getRandomObjValue(A.img.star);
+    for (i = j = 0, ref = C.tileCount * 9; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
+      star = A.img.star["d" + (H.getRandomListValue(C.spectralTypes))];
+      pos = H.pt.random(C.tileSize, C.tileSize);
+      H.drawImgStill(ctx, star, pos.x, pos.y);
+    }
+    for (i = k = 0, ref1 = Math.floor(C.tileCount); 0 <= ref1 ? k < ref1 : k > ref1; i = 0 <= ref1 ? ++k : --k) {
+      star = A.img.star["m" + (H.getRandomListValue(C.spectralTypes))];
+      pos = H.pt.random(C.tileSize, C.tileSize);
+      H.drawImgStill(ctx, star, pos.x, pos.y);
+    }
+    for (i = l = 0, ref2 = Math.floor(C.tileCount / 9); 0 <= ref2 ? l < ref2 : l > ref2; i = 0 <= ref2 ? ++l : --l) {
+      star = A.img.star["g" + (H.getRandomListValue(C.spectralTypes))];
       pos = H.pt.random(C.tileSize, C.tileSize);
       H.drawImgStill(ctx, star, pos.x, pos.y);
     }
@@ -108,6 +120,54 @@
     ctx.fill();
     ctx.closePath();
     return A.img.space.r0 = ctx;
+  };
+
+  A.createBooms = function() {
+    var boom, ctx, frames, grad, i, j, r, ref, vr;
+    frames = C.boomMaxAge / C.timeStep;
+    r = C.boomInitialRadius;
+    vr = C.boomGrowthRate * C.timeStep;
+    boom = [];
+    for (i = j = 0, ref = frames; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
+      ctx = H.createCanvas().getContext('2d');
+      ctx.canvas.width = r * 2;
+      ctx.canvas.height = r * 2;
+      grad = ctx.createRadialGradient(r, r, 1, r, r, r);
+      grad.addColorStop(0, C.boomInnerColor(i / frames));
+      grad.addColorStop(1, C.boomOuterColor(i / frames));
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(r, r, r, 0, H.TAU);
+      ctx.fill();
+      ctx.closePath();
+      boom.push(ctx);
+      r += vr;
+    }
+    A.img.boom = boom;
+  };
+
+  A.createFlashes = function() {
+    var ctx, flash, frames, grad, i, j, r, ref, vr;
+    frames = C.flashMaxAge / C.timeStep;
+    r = C.flashInitialRadius;
+    vr = C.flashShrinkRate * C.timeStep;
+    flash = [];
+    for (i = j = 0, ref = frames; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
+      ctx = H.createCanvas().getContext('2d');
+      ctx.canvas.width = r * 2;
+      ctx.canvas.height = r * 2;
+      grad = ctx.createRadialGradient(r, r, 1, r, r, r);
+      grad.addColorStop(0, C.flashInnerColor(i / frames));
+      grad.addColorStop(1, C.flashOuterColor(i / frames));
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(r, r, r, 0, H.TAU);
+      ctx.fill();
+      ctx.closePath();
+      flash.push(ctx);
+      r += vr;
+    }
+    A.img.flash = flash;
   };
 
 }).call(this);
