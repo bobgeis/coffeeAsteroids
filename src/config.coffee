@@ -65,13 +65,39 @@ C.beamWidths = [                # px
     ]
 
 # rock attributes
-C.rockAngVel = 2    /1000   # rad/s
-C.rockVel = 100       /1000      # px/s
-C.rockRad = 30          # px
-C.rockSpawnChance = 3          /1000       # spawn chance /s
-C.rockMass = 100
-C.rockArmor = 1
-C.rockRegen = 0
+C.rockAngVel = 2/1000           # rad/ms
+C.rockVel = 100/1000            # px/ms
+C.rockRad = 30                  # px
+C.rockRadii = [10,15,19,29,40]    # radii in px from smallest to largest
+C.rockSpawnChance = 3/1000      # spawn chance /ms
+C.rockMass = 100                # mass
+C.rockArmor = 5                 # dmg
+C.rockRegen = 1/100             # dmg/ms
+C.rockMaxDamage =
+    {
+        C : [1.0,1.0,1.5,1.5,2.0]
+        S : [1.0,1.5,1.5,2.0,2.5]
+        M : [1.5,1.5,2.0,2.5,3.0]
+    }
+C.rockBaseColors =
+    {
+        C:[[125,125,125],[100, 80, 70]]
+        S:[[120, 120, 0],[130, 69, 19]]
+        M:[[ 90, 90, 90],[115, 65, 14]]
+    }
+C.rockBoomColors =
+    {
+        C:[[255,100,100],[255,125,100]]
+        S:[[240,150,100],[255,100,100]]
+        M:[[240,100,100],[255,125,100]]
+    }
+C.rockColor = (ratio,type,side) ->
+    base = C.rockBaseColors[type][side]
+    boom = C.rockBoomColors[type][side]
+    colors =[]
+    for i in [0...3]
+        colors.push Math.floor((boom[i] - base[i])*ratio + base[i])
+    return "rgba(#{colors[0]},#{colors[1]},#{colors[2]},1"
 
 # boom (explosion) attributes
 C.boomMaxAge = 250              # ms

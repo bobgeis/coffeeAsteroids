@@ -209,6 +209,7 @@ class EphemeralEntity extends MovingEntity
         @age += dt
         super(dt)
 
+
     updateImg : ->
         @setImg @imgList[Math.floor(@age / @maxAge * @imgList.length)]
 
@@ -243,6 +244,23 @@ class DestructibleEntity extends MovingEntity
 E.DestructibleEntity = DestructibleEntity
 
 
+class RockEntity extends DestructibleEntity
+
+    constructor : (@type,@size,pos,a,vel,va) ->
+        super pos,a,vel,va
+        @imgList = A.img.rock[@type][@size]
+        @img = @imgList[0]
+        @setR C.rockRadii[@size]
+        @setM C.rockMass
+        @setMaxDmg C.rockMaxDamage[@type][@size]
+        @setRegen C.rockRegen
+
+    getImg : ->
+        if @damage
+            index = Math.floor(@damage / @maxDamage * @imgList.length)
+            @imgList[index]
+        else
+            @imgList[0]
 
 
 E.BgTile = ->
@@ -279,19 +297,53 @@ E.PlayerShip = ->
     return playerShip
 
 
-E.RandRock = ->
+E.newRock = (type,size,pos,a,vel,va) ->
+    rock = new RockEntity(A.img.rock[type][size],pos,a,vel,va)
+    rock.setR C.rockRadii[size]
+    rock.setM C.rockMass
+    rock.setMaxDmg C.rockMaxDamage[type][size]
+    rock.setRegen C.rockRegen
+    return rock
+
+E.RandRock2 = ->
     p = C.tileSize /2
-    rock = new DestructibleEntity(H.pt1.randomInBox(-p,p,-p,p),0,
-                            H.pt2.randomInCircle(C.rockVel),0)
-    rock.setImg A.img.space.r0
-    rock.setR rock.r_img
+    # rock = new DestructibleEntity(H.pt1.randomInBox(-p,p,-p,p),0,
+    #                         H.pt2.randomInCircle(C.rockVel),0)
+    # rock.setImg A.img.space.r0
+    rock = new RockEntity(A.img.rock["S"][4],
+        H.pt1.randomInBox(-p,p,-p,p),0,
+        H.pt2.randomInCircle(C.rockVel),0)
+    rock.setR C.rockRadii[4]
     rock.setM C.rockMass
     rock.setMaxDmg C.rockArmor
     rock.setRegen C.rockRegen
     return rock
 
+E.RandRock = ->
+    p = C.tileSize /2
+    H.pt1.randomInBox(-p,p,-p,p)
+    H.pt2.randomInCircle(C.rockVel)
+    size = 4
+    type = H.getRandomListValue ["C","S","M"]
+    return new RockEntity( type, size, H.pt1, 0, H.pt2, 0)
+
 E.spawnRock = (dt) ->
     Math.random() < C.rockSpawnChance * dt
+
+E.calveRock = (oldRock) ->
+    if oldRock.size < 1
+        return false
+    size = -1 + oldRock.size
+    type = oldRock.type
+    pos = oldRock.pos
+    dvel = H.pt1.randomInCircle(C.rockVel)
+    calves = [
+        new RockEntity(type,size,pos,0,H.pt2.sum(dvel,oldRock.vel),0)
+        new RockEntity(type,size,pos,0,H.pt2.diff(dvel,oldRock.vel),0)
+    ]
+    for calf in calves
+        calf.damage = calf.maxDamage /2
+    return calves
 
 E.newExplosionOnObj = (obj) ->
     boom = new EphemeralEntity(A.img.boom,obj.pos,0,obj.vel,0)

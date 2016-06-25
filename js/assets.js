@@ -75,6 +75,7 @@
 
   A.afterLoad = function() {
     A.createBgTiles();
+    A.createRocks2();
     A.createRocks();
     A.createBooms();
     return A.createFlashes();
@@ -82,12 +83,12 @@
 
   A.createBgTiles = function() {
     "create a starfield background";
-    var ctx, i, j, k, l, pos, ref, ref1, ref2, star;
+    var ctx, i, j, k, l, m, pos, ref, ref1, ref2, ref3, star;
     A.img.bg = {};
     ctx = H.createCanvas().getContext('2d');
     ctx.canvas.width = C.tileSize;
     ctx.canvas.height = C.tileSize;
-    for (i = j = 0, ref = C.tileCount * 9; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
+    for (i = j = 0, ref = C.tileCount * 10; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
       star = A.img.star["d" + (H.getRandomListValue(C.spectralTypes))];
       pos = H.pt.random(C.tileSize, C.tileSize);
       H.drawImgStill(ctx, star, pos.x, pos.y);
@@ -97,15 +98,20 @@
       pos = H.pt.random(C.tileSize, C.tileSize);
       H.drawImgStill(ctx, star, pos.x, pos.y);
     }
-    for (i = l = 0, ref2 = Math.floor(C.tileCount / 9); 0 <= ref2 ? l < ref2 : l > ref2; i = 0 <= ref2 ? ++l : --l) {
+    for (i = l = 0, ref2 = Math.floor(C.tileCount / 10); 0 <= ref2 ? l < ref2 : l > ref2; i = 0 <= ref2 ? ++l : --l) {
       star = A.img.star["g" + (H.getRandomListValue(C.spectralTypes))];
+      pos = H.pt.random(C.tileSize, C.tileSize);
+      H.drawImgStill(ctx, star, pos.x, pos.y);
+    }
+    for (i = m = 0, ref3 = Math.floor(C.tileCount / 100); 0 <= ref3 ? m < ref3 : m > ref3; i = 0 <= ref3 ? ++m : --m) {
+      star = A.img.star["sg" + (H.getRandomListValue(C.spectralTypes))];
       pos = H.pt.random(C.tileSize, C.tileSize);
       H.drawImgStill(ctx, star, pos.x, pos.y);
     }
     return A.img.bg.tile = ctx;
   };
 
-  A.createRocks = function() {
+  A.createRocks2 = function() {
     var ctx, grad, r;
     r = C.rockRad;
     ctx = H.createCanvas().getContext('2d');
@@ -120,6 +126,44 @@
     ctx.fill();
     ctx.closePath();
     return A.img.space.r0 = ctx;
+  };
+
+  A.createRocks = function() {
+    var rock;
+    rock = {
+      C: A.createRockType("C"),
+      S: A.createRockType("S"),
+      M: A.createRockType("M")
+    };
+    return A.img.rock = rock;
+  };
+
+  A.createRockType = function(type) {
+    var ctx, grad, j, k, len, len1, r, ratio, ratios, rockSize, rockType, sizes;
+    sizes = C.rockRadii;
+    rockType = [];
+    ratios = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9];
+    for (j = 0, len = sizes.length; j < len; j++) {
+      r = sizes[j];
+      rockSize = [];
+      for (k = 0, len1 = ratios.length; k < len1; k++) {
+        ratio = ratios[k];
+        ctx = H.createCanvas().getContext('2d');
+        ctx.canvas.width = r * 2;
+        ctx.canvas.height = r * 2;
+        grad = ctx.createRadialGradient(r / 2, r / 2, 1, r, r, r);
+        grad.addColorStop(0, C.rockColor(ratio, type, 0));
+        grad.addColorStop(1, C.rockColor(ratio, type, 1));
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(r, r, r, 0, H.TAU);
+        ctx.fill();
+        ctx.closePath();
+        rockSize.push(ctx);
+      }
+      rockType.push(rockSize);
+    }
+    return rockType;
   };
 
   A.createBooms = function() {

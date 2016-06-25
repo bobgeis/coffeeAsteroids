@@ -58,6 +58,7 @@ loadImg = (folder,name,src) ->
 
 A.afterLoad = ->
 	A.createBgTiles()
+	A.createRocks2()
 	A.createRocks()
 	A.createBooms()
 	A.createFlashes()
@@ -68,7 +69,7 @@ A.createBgTiles = ->
 	ctx = H.createCanvas().getContext '2d'
 	ctx.canvas.width = C.tileSize
 	ctx.canvas.height = C.tileSize
-	for i in [0...C.tileCount*9]
+	for i in [0...C.tileCount*10]
 		# star = H.getRandomObjValue(A.img.star)
 		star = A.img.star["d#{H.getRandomListValue(C.spectralTypes)}"]
 		pos = H.pt.random(C.tileSize,C.tileSize)
@@ -78,15 +79,20 @@ A.createBgTiles = ->
 		star = A.img.star["m#{H.getRandomListValue(C.spectralTypes)}"]
 		pos = H.pt.random(C.tileSize,C.tileSize)
 		H.drawImgStill ctx, star, pos.x, pos.y
-	for i in [0...Math.floor(C.tileCount/9)]
+	for i in [0...Math.floor(C.tileCount/10)]
 		# star = H.getRandomObjValue(A.img.star)
 		star = A.img.star["g#{H.getRandomListValue(C.spectralTypes)}"]
+		pos = H.pt.random(C.tileSize,C.tileSize)
+		H.drawImgStill ctx, star, pos.x, pos.y
+	for i in [0...Math.floor(C.tileCount/100)]
+		# star = H.getRandomObjValue(A.img.star)
+		star = A.img.star["sg#{H.getRandomListValue(C.spectralTypes)}"]
 		pos = H.pt.random(C.tileSize,C.tileSize)
 		H.drawImgStill ctx, star, pos.x, pos.y
 	# console.log pos
 	A.img.bg.tile = ctx
 
-A.createRocks = ->
+A.createRocks2 = ->
 	# rocks are asteroids of various sizes and shapes
 	r = C.rockRad
 	ctx = H.createCanvas().getContext '2d'
@@ -102,6 +108,38 @@ A.createRocks = ->
 	ctx.fill()
 	ctx.closePath()
 	A.img.space.r0 = ctx
+
+A.createRocks = ->
+	rock = {
+		C : A.createRockType "C"
+		S : A.createRockType "S"
+		M : A.createRockType "M"
+	}
+	A.img.rock = rock
+
+A.createRockType = (type) ->
+	sizes = C.rockRadii
+	rockType = []
+	ratios = [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
+	for r in sizes
+		rockSize = []
+		for ratio in ratios
+			ctx = H.createCanvas().getContext '2d'
+			ctx.canvas.width = r * 2
+			ctx.canvas.height = r * 2
+			grad = ctx.createRadialGradient r/2,r/2, 1, r,r, r
+			grad.addColorStop 0, C.rockColor(ratio,type,0)
+			grad.addColorStop 1, C.rockColor(ratio,type,1)
+			ctx.fillStyle = grad
+			# draw arc
+			ctx.beginPath()
+			ctx.arc(r,r,r,0,H.TAU)
+			ctx.fill()
+			ctx.closePath()
+			rockSize.push ctx
+		rockType.push rockSize
+	return rockType
+
 
 A.createBooms = ->
 	# booms are short lived explosions

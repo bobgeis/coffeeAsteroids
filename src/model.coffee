@@ -78,6 +78,7 @@ class Model
                         if rock.applyDamage shot.getDamage()
                             rock.kill()
                             @explode rock
+                            @calveRock rock
         # maybe spawn rock
         if E.spawnRock(dt)
             rock = new E.RandRock()
@@ -129,7 +130,10 @@ class Model
 
     calveRock : (rock) ->
         # attempt to calve a rock
-        1
+        calves = E.calveRock rock
+        if calves
+            for calf in calves
+                @rocks.push calf
 
     explode : (obj) ->
         # create an explosion w obj's pos & vel

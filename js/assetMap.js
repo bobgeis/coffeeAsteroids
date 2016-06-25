@@ -84,4 +84,16 @@
 
   A.star.mO = "./asset/img/star/mO.png";
 
+  A.star.sgA = "./asset/img/star/sgA.png";
+
+  A.star.sgB = "./asset/img/star/sgB.png";
+
+  A.star.sgF = "./asset/img/star/sgF.png";
+
+  A.star.sgK = "./asset/img/star/sgK.png";
+
+  A.star.sgM = "./asset/img/star/sgM.png";
+
+  A.star.sgO = "./asset/img/star/sgO.png";
+
 }).call(this);

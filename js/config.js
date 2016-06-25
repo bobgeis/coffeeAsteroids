@@ -61,13 +61,44 @@
 
   C.rockRad = 30;
 
+  C.rockRadii = [10, 15, 19, 29, 40];
+
   C.rockSpawnChance = 3 / 1000;
 
   C.rockMass = 100;
 
-  C.rockArmor = 1;
+  C.rockArmor = 5;
 
-  C.rockRegen = 0;
+  C.rockRegen = 1 / 100;
+
+  C.rockMaxDamage = {
+    C: [1.0, 1.0, 1.5, 1.5, 2.0],
+    S: [1.0, 1.5, 1.5, 2.0, 2.5],
+    M: [1.5, 1.5, 2.0, 2.5, 3.0]
+  };
+
+  C.rockBaseColors = {
+    C: [[125, 125, 125], [100, 80, 70]],
+    S: [[120, 120, 0], [130, 69, 19]],
+    M: [[90, 90, 90], [115, 65, 14]]
+  };
+
+  C.rockBoomColors = {
+    C: [[255, 100, 100], [255, 125, 100]],
+    S: [[240, 150, 100], [255, 100, 100]],
+    M: [[240, 100, 100], [255, 125, 100]]
+  };
+
+  C.rockColor = function(ratio, type, side) {
+    var base, boom, colors, i, j;
+    base = C.rockBaseColors[type][side];
+    boom = C.rockBoomColors[type][side];
+    colors = [];
+    for (i = j = 0; j < 3; i = ++j) {
+      colors.push(Math.floor((boom[i] - base[i]) * ratio + base[i]));
+    }
+    return "rgba(" + colors[0] + "," + colors[1] + "," + colors[2] + ",1";
+  };
 
   C.boomMaxAge = 250;
 

@@ -99,6 +99,7 @@
               if (rock.applyDamage(shot.getDamage())) {
                 rock.kill();
                 this.explode(rock);
+                this.calveRock(rock);
               }
             }
           }
@@ -168,7 +169,16 @@
     };
 
     Model.prototype.calveRock = function(rock) {
-      return 1;
+      var calf, calves, i, len, results;
+      calves = E.calveRock(rock);
+      if (calves) {
+        results = [];
+        for (i = 0, len = calves.length; i < len; i++) {
+          calf = calves[i];
+          results.push(this.rocks.push(calf));
+        }
+        return results;
+      }
     };
 
     Model.prototype.explode = function(obj) {
