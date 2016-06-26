@@ -100,8 +100,6 @@ class DisruptorBeam extends Beam
             return super obj.pos, obj.r+@wid
 
 
-
-
 B.DisruptorBeam = DisruptorBeam
 
 B.newDisruptor = (obj) ->
@@ -109,3 +107,32 @@ B.newDisruptor = (obj) ->
     pew = new DisruptorBeam(obj.pos, C.beamRange, a)
     pew.setDamage C.beamDamage
     return pew
+
+
+
+
+class TargetingBeam extends Beam
+
+    constructor : (obj) ->
+        @r = C.tarBeamRange
+        super H.newLineRA obj.pos,@r,-obj.a
+        @line.start = obj.pos
+        @wid = C.tarBeamWidth
+        @color = C.tarBeamColor
+        @on = true
+
+    update : (obj) ->
+        @a = -obj.a
+        @line.stop.setPolar(@r,@a).add(@line.start.setPos obj.pos)
+
+    draw : (ctx) ->
+        H.drawLineEntity ctx, @line, @wid, @color
+
+    turnOn : ->
+        @on = true
+    turnOff : ->
+        @on = false
+
+B.newTargetingBeam = (obj) ->
+    new TargetingBeam(obj)
+

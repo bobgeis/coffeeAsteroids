@@ -123,7 +123,7 @@
       img = A.img.ship.rayciv;
       a = H.HALFPI;
       H.drawImg(ctx, img, ctx.canvas.width / 2, ctx.canvas.height / 2, a);
-      return drawText(ctx, "Press [Space] to start.", 15, ctx.canvas.width / 2, ctx.canvas.height / 2 + 200);
+      return drawText(ctx, "Press [Enter] to start.", 15, ctx.canvas.width / 2, ctx.canvas.height / 2 + 130);
     },
     update: function(dt) {
       this.y = this.y + dt / 1.5;
@@ -132,7 +132,7 @@
     input: function(type, data) {
       if (type === "keydown") {
         console.log(data.code);
-        if (data.code === "Space") {
+        if (data.code === "Enter") {
           return changeState(S.play);
         }
       }
@@ -174,7 +174,7 @@
         } else if (data.code === "ArrowDown") {
           return this.model.command(4);
         } else if (data.code === "Space") {
-          return this.model.command(5);
+          return this.model.command(6);
         } else if (data.code === "KeyK") {
           return this.model.command(99);
         }
@@ -187,6 +187,8 @@
           return this.model.command(13);
         } else if (data.code === "ArrowDown") {
           return this.model.command(13);
+        } else if (data.code === "Space") {
+          return this.model.command(5);
         }
       }
     },
@@ -202,14 +204,14 @@
     draw: function(ctx) {
       S.play.draw(ctx);
       drawText(ctx, "You have died. So it goes.", 30, ctx.canvas.width / 2, ctx.canvas.height / 2 - 200);
-      return drawText(ctx, "Press [Space] to restart.", 15, ctx.canvas.width / 2, ctx.canvas.height / 2 + 200);
+      return drawText(ctx, "Press [Enter] to restart.", 15, ctx.canvas.width / 2, ctx.canvas.height / 2 + 200);
     },
     update: function(dt) {
       return S.play.model.update(dt);
     },
     input: function(type, data) {
       if (type === "keydown") {
-        if (data.code === "Space") {
+        if (data.code === "Enter") {
           return changeState(S.splash);
         }
       }

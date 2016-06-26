@@ -35,24 +35,25 @@ C.baseMass = 10000
 C.baseAngVel = 0.1/1000           # rad/ms
 
 # player ship attributes
-C.shipAcc = 5       /1000       # px/s/s
-C.shipRetro = C.shipAcc/3
-C.shipAngVel = 2    /1000       # rad/s
-C.shipDrag = .1     /1000       #
+C.shipAcc = 5/1000              # px/ms/ms
+C.shipRetro = C.shipAcc/3       # px/ms/ms
+C.shipAngVel = 2/1000           # rad/ms
+C.shipDrag = 0.3/1000             # fraction reduced /ms
 C.shipMass = 10                 # mass in arbitrary units
 C.shipShields = 10
-C.shipRegen = 0.5    /1000
+C.shipRegen = 2/1000      # dmg/ms
 C.shipBeamCoolDown = 1 * 1000
 C.shipInvincibleDuration = 300 # ms  minimum time bt taking damage for ships
 
 # disruptor beam attributes
 C.beamDamage = 1                #
 C.beamRange = 500               # px
-C.beamDuration = 150            # ms
-C.beamScatter = 5/100           # radians
-C.beamCoolDown = 80             # ms
+C.beamDuration = 120            # ms
+C.beamScatter = 8/100           # radians
+C.beamCoolDown = 120            # ms
+C.beamBurstCount = 5            # number of times to fire in a row
 C.beamEnergyMax = 10            # shots
-C.beamEnergyRegen = 2/1000      # shots/ms
+C.beamEnergyRegen = 2.5/1000    # shots/ms
 C.beamColors = [
         "rgba(100, 255, 255, 1)"
         "rgba(  0, 225, 255, 1)"
@@ -70,6 +71,11 @@ C.beamWidths = [                # px
         1
     ]
 
+# targeting beam attributes
+C.tarBeamWidth = 2
+C.tarBeamRange = 500
+C.tarBeamColor = "rgba(250,100,100,0.7)"
+
 # rock attributes
 C.rockCollisionDamage = 5       # dmg per velocity
 C.rockAngVel = 2/1000           # rad/ms
@@ -83,9 +89,9 @@ C.rockArmor = 5                 # dmg
 C.rockRegen = 1/100             # dmg/ms
 C.rockMaxDamage =
     {
-        C : [1.0, 1.4, 2.0, 2.5, 3.0]
-        S : [1.5, 2.0, 3.0, 4.0, 5.0]
-        M : [2.0, 3.0, 4.5, 6.0, 8.0]
+        C : [1.0, 1.0, 1.0, 1.5, 2.0]
+        S : [1.0, 1.5, 2.0, 2.5, 3.0]
+        M : [2.0, 2.5, 3.0, 3.5, 4.0]
     }
 C.rockBaseColors =
     {

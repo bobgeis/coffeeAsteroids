@@ -294,7 +294,6 @@
     };
 
     DestructibleEntity.prototype.applyDamage = function(dmg) {
-      console.log(dmg);
       this.damage += dmg;
       return this.isDestroyed();
     };
@@ -345,23 +344,24 @@
       this.type = type1;
       this.faction = faction;
       ShipEntity.__super__.constructor.call(this, pos, a, vel, va);
-      this.beamTriggered = false;
+      this.setImg(A.img.ship.rayciv);
+      this.r = this.r_img;
+      this.m = C.shipMass;
+      this.beamTriggered = 0;
       this.beamCoolDown = 0;
       this.beamCoolDownMax = C.beamCoolDown;
       this.beamEnergy = 0;
       this.beamEnergyMax = C.beamEnergyMax;
       this.beamEnergyRegen = C.beamEnergyRegen;
+      this.tarBeam = B.newTargetingBeam(this);
+      this.tarBeamOn = false;
       this.maxDamage = C.shipShields;
       this.regen = C.shipRegen;
       this.invincible = 0;
       this.invincibleMax = C.shipInvincibleDuration;
-      this.setImg(A.img.ship.rayciv);
-      this.r = this.r_img;
-      this.m = C.shipMass;
       this.drag = C.shipDrag;
-      this.thrust = false;
-      this.drag = false;
       this.acc = 0;
+      this.thrust = false;
     }
 
     ShipEntity.prototype.update = function(dt) {
@@ -380,14 +380,24 @@
       if (this.drag) {
         this.vel.scale(1 - this.drag * dt);
       }
+      if (this.tarBeamOn) {
+        this.tarBeam.update(this);
+      }
       return ShipEntity.__super__.update.call(this, dt);
+    };
+
+    ShipEntity.prototype.draw = function(ctx) {
+      if (this.tarBeamOn) {
+        this.tarBeam.draw(ctx);
+      }
+      return ShipEntity.__super__.draw.call(this, ctx);
     };
 
     ShipEntity.prototype.activateBeam = function() {
       if (this.beamTriggered) {
-        return this.beamTriggered = false;
+        return this.beamTriggered = 0;
       } else {
-        return this.beamTriggered = true;
+        return this.beamTriggered = C.beamBurstCount;
       }
     };
 
@@ -397,7 +407,10 @@
 
     ShipEntity.prototype.setJustFired = function() {
       this.beamCoolDown = this.beamCoolDownMax;
-      return this.beamEnergy += 1;
+      this.beamEnergy += 1;
+      if (this.beamTriggered) {
+        return this.beamTriggered -= 1;
+      }
     };
 
     ShipEntity.prototype.applyDamage = function(dmg) {
@@ -407,6 +420,11 @@
         this.invincible = this.invincibleMax;
         return ShipEntity.__super__.applyDamage.call(this, dmg);
       }
+    };
+
+    ShipEntity.prototype.activateTarBeam = function() {
+      this.tarBeam.update(this);
+      return this.tarBeamOn = true;
     };
 
     return ShipEntity;

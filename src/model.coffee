@@ -18,20 +18,23 @@ U = _first.request('hud')
 
 
 class Model
-    player : null
-    gameOver : false
-    bg : []
-    bases : []
-    ships : []
-    boats : []
-    rocks : []
-    booms : []
-    flashes : []
-    shots : []
-    loot : []
-    hud : []
     constructor : ->
         "Build the initial state."
+
+        @player = null
+        @gameOver = false
+
+        @bg = []
+        @bases = []
+        @ships = []
+        @boats = []
+        @rocks = []
+        @booms = []
+        @flashes = []
+        @shots = []
+        @loot = []
+        @hud = []
+
         @player = E.PlayerShip()
         @ships.push @player
         @flash @player
@@ -41,6 +44,7 @@ class Model
         @bg.push new E.BgTile()
         @hud.push new U.shipShieldBar @player
         @hud.push new U.shipBeamEnergyBar @player
+
 
     getEntityLists : ->
         # get a list of all the entity lists
@@ -58,6 +62,10 @@ class Model
             @hud
         ]
 
+    clearEntityLists : ->
+        for list in @getEntityLists
+            list.length = 0
+
     update: (dt) ->
         "update by dt"
         # update
@@ -67,13 +75,14 @@ class Model
         # collisions
         # ships with rocks
         for ship in @ships
+            if ship.beamTriggered and ship.canFire()
+                @fireDisruptor ship
+                ship.setJustFired()
             for rock in @rocks
-                if ship.beamTriggered and ship.canFire()
-                    @fireDisruptor ship
-                    ship.setJustFired()
                 if ship.collide rock
                     dmg = Math.abs(ship.bounce rock)
-                    ship.applyDamage dmg * C.rockCollisionDamage
+                    if ship.applyDamage Math.min(5, dmg * C.rockCollisionDamage)
+                        @explode ship
         # rocks with bases
         for base in @bases
             for rock in @rocks
@@ -123,6 +132,10 @@ class Model
             @player.setAcc -C.shipRetro
         else if cmd == 5
             @player.activateBeam()
+            # @fireDisruptor @player
+            @player.tarBeamOn = false
+        else if cmd == 6
+            @player.activateTarBeam()
         else if cmd == 11
             @player.va = 0
         else if cmd == 13
@@ -132,8 +145,6 @@ class Model
             @explode @player
 
     fireDisruptor : (ship) ->
-        # attempt to fire disruptor
-        # if ship.canFire()
         @shots.push B.newDisruptor ship
 
     calveRock : (rock) ->
@@ -150,6 +161,7 @@ class Model
     flash : (obj) ->
         # create a flash w obj's pos & vel
         @flashes.push E.newFlashOnObj obj
+
 
 M.Model = Model
 

@@ -20,32 +20,20 @@
   U = _first.request('hud');
 
   Model = (function() {
-    Model.prototype.player = null;
-
-    Model.prototype.gameOver = false;
-
-    Model.prototype.bg = [];
-
-    Model.prototype.bases = [];
-
-    Model.prototype.ships = [];
-
-    Model.prototype.boats = [];
-
-    Model.prototype.rocks = [];
-
-    Model.prototype.booms = [];
-
-    Model.prototype.flashes = [];
-
-    Model.prototype.shots = [];
-
-    Model.prototype.loot = [];
-
-    Model.prototype.hud = [];
-
     function Model() {
       "Build the initial state.";
+      this.player = null;
+      this.gameOver = false;
+      this.bg = [];
+      this.bases = [];
+      this.ships = [];
+      this.boats = [];
+      this.rocks = [];
+      this.booms = [];
+      this.flashes = [];
+      this.shots = [];
+      this.loot = [];
+      this.hud = [];
       this.player = E.PlayerShip();
       this.ships.push(this.player);
       this.flash(this.player);
@@ -59,6 +47,17 @@
 
     Model.prototype.getEntityLists = function() {
       return [this.bg, this.bases, this.loot, this.boats, this.shots, this.rocks, this.ships, this.booms, this.flashes, this.hud];
+    };
+
+    Model.prototype.clearEntityLists = function() {
+      var i, len, list, ref, results;
+      ref = this.getEntityLists;
+      results = [];
+      for (i = 0, len = ref.length; i < len; i++) {
+        list = ref[i];
+        results.push(list.length = 0);
+      }
+      return results;
     };
 
     Model.prototype.update = function(dt) {
@@ -75,16 +74,18 @@
       ref1 = this.ships;
       for (k = 0, len2 = ref1.length; k < len2; k++) {
         ship = ref1[k];
+        if (ship.beamTriggered && ship.canFire()) {
+          this.fireDisruptor(ship);
+          ship.setJustFired();
+        }
         ref2 = this.rocks;
         for (l = 0, len3 = ref2.length; l < len3; l++) {
           rock = ref2[l];
-          if (ship.beamTriggered && ship.canFire()) {
-            this.fireDisruptor(ship);
-            ship.setJustFired();
-          }
           if (ship.collide(rock)) {
             dmg = Math.abs(ship.bounce(rock));
-            ship.applyDamage(dmg * C.rockCollisionDamage);
+            if (ship.applyDamage(Math.min(5, dmg * C.rockCollisionDamage))) {
+              this.explode(ship);
+            }
           }
         }
       }
@@ -162,7 +163,10 @@
       } else if (cmd === 4) {
         return this.player.setAcc(-C.shipRetro);
       } else if (cmd === 5) {
-        return this.player.activateBeam();
+        this.player.activateBeam();
+        return this.player.tarBeamOn = false;
+      } else if (cmd === 6) {
+        return this.player.activateTarBeam();
       } else if (cmd === 11) {
         return this.player.va = 0;
       } else if (cmd === 13) {

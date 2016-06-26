@@ -359,6 +359,13 @@ H.newLineRA = (start,r,a) ->
 # just get a new line where we don't care about the initial positions
 H.newLine = -> new Line(H.origin,H.origin)
 
+# make a line facing out from an object
+H.updateLineFromPos = (line,pos,r,a) ->
+	line.start.setPos pos
+	line.start.setPolar(r,a).add(line.start)
+	line.l = r
+	line.a = a
+
 # this is a helper line, similar to pt,pt1,pt2,pt3 above
 H.line = line = new Line(pt1,pt2)
 

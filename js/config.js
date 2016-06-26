@@ -37,13 +37,13 @@
 
   C.shipAngVel = 2 / 1000;
 
-  C.shipDrag = .1 / 1000;
+  C.shipDrag = 0.3 / 1000;
 
   C.shipMass = 10;
 
   C.shipShields = 10;
 
-  C.shipRegen = 0.5 / 1000;
+  C.shipRegen = 2 / 1000;
 
   C.shipBeamCoolDown = 1 * 1000;
 
@@ -53,19 +53,27 @@
 
   C.beamRange = 500;
 
-  C.beamDuration = 150;
+  C.beamDuration = 120;
 
-  C.beamScatter = 5 / 100;
+  C.beamScatter = 8 / 100;
 
-  C.beamCoolDown = 80;
+  C.beamCoolDown = 120;
+
+  C.beamBurstCount = 5;
 
   C.beamEnergyMax = 10;
 
-  C.beamEnergyRegen = 2 / 1000;
+  C.beamEnergyRegen = 2.5 / 1000;
 
   C.beamColors = ["rgba(100, 255, 255, 1)", "rgba(  0, 225, 255, 1)", "rgba( 25, 175, 200, 1)", "rgba( 25, 125, 175, 1)", "rgba( 25, 100, 100, 1)", "rgba(  0,  50,  50, 1)"];
 
   C.beamWidths = [4, 3, 2, 1, 1, 1];
+
+  C.tarBeamWidth = 2;
+
+  C.tarBeamRange = 500;
+
+  C.tarBeamColor = "rgba(250,100,100,0.7)";
 
   C.rockCollisionDamage = 5;
 
@@ -88,9 +96,9 @@
   C.rockRegen = 1 / 100;
 
   C.rockMaxDamage = {
-    C: [1.0, 1.4, 2.0, 2.5, 3.0],
-    S: [1.5, 2.0, 3.0, 4.0, 5.0],
-    M: [2.0, 3.0, 4.5, 6.0, 8.0]
+    C: [1.0, 1.0, 1.0, 1.5, 2.0],
+    S: [1.0, 1.5, 2.0, 2.5, 3.0],
+    M: [2.0, 2.5, 3.0, 3.5, 4.0]
   };
 
   C.rockBaseColors = {

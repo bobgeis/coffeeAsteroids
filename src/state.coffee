@@ -90,15 +90,15 @@ S.splash = {
 		img = A.img.ship.rayciv
 		a = H.HALFPI
 		H.drawImg ctx, img, ctx.canvas.width/2, ctx.canvas.height/2, a
-		drawText ctx, "Press [Space] to start.",15,
-				 ctx.canvas.width/2, ctx.canvas.height/2+200
+		drawText ctx, "Press [Enter] to start.",15,
+				 ctx.canvas.width/2, ctx.canvas.height/2+130
 	update : (dt) ->
 		@y = @y + dt/1.5
 		@y = @y % C.tileSize
 	input : (type,data) ->
 		if type == "keydown"
 			console.log data.code
-			if data.code == "Space"
+			if data.code == "Enter"
 				changeState S.play
 	exit : ->
 		console.log "exit splash"
@@ -135,7 +135,7 @@ S.play = {
 			else if data.code == "ArrowDown"
 				@model.command 4
 			else if data.code == "Space"
-				@model.command 5
+				@model.command 6
 			else if data.code == "KeyK"
 				@model.command 99
 		else if type == "keyup"
@@ -147,6 +147,8 @@ S.play = {
 				@model.command 13
 			else if data.code == "ArrowDown"
 				@model.command 13
+			else if data.code == "Space"
+				@model.command 5
 	exit : ->
 		console.log "exit play"
 }
@@ -160,13 +162,13 @@ S.gameOver = {
 		S.play.draw(ctx)
 		drawText ctx, "You have died. So it goes.", 30,
 				 ctx.canvas.width/2, ctx.canvas.height/2-200
-		drawText ctx, "Press [Space] to restart.", 15,
+		drawText ctx, "Press [Enter] to restart.", 15,
 				 ctx.canvas.width/2, ctx.canvas.height/2+200
 	update : (dt) ->
 		S.play.model.update(dt)
 	input : (type,data) ->
 		if type == "keydown"
-			if data.code == "Space"
+			if data.code == "Enter"
 				changeState S.splash
 	exit : ->
 		console.log "exit gameOver"

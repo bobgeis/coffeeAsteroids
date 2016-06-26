@@ -358,6 +358,13 @@
     return new Line(H.origin, H.origin);
   };
 
+  H.updateLineFromPos = function(line, pos, r, a) {
+    line.start.setPos(pos);
+    line.start.setPolar(r, a).add(line.start);
+    line.l = r;
+    return line.a = a;
+  };
+
   H.line = line = new Line(pt1, pt2);
 
   H.cam = cam = new Point(0, 0);

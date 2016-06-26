@@ -228,7 +228,6 @@ class DestructibleEntity extends MovingEntity
 
 
     applyDamage : (dmg) ->
-        console.log dmg
         @damage += dmg
         return @isDestroyed()
 
@@ -261,25 +260,28 @@ class ShipEntity extends DestructibleEntity
     constructor : (@type,@faction,pos,a,vel,va) ->
         super pos,a,vel,va
 
-        @beamTriggered = false
+        @setImg A.img.ship.rayciv
+        @r = @r_img
+        @m = C.shipMass
+
+        @beamTriggered = 0
         @beamCoolDown = 0
         @beamCoolDownMax = C.beamCoolDown
         @beamEnergy = 0
         @beamEnergyMax = C.beamEnergyMax
         @beamEnergyRegen = C.beamEnergyRegen
 
+        @tarBeam = B.newTargetingBeam(this)
+        @tarBeamOn = false
+
         @maxDamage = C.shipShields
         @regen = C.shipRegen
         @invincible = 0
         @invincibleMax = C.shipInvincibleDuration
 
-        @setImg A.img.ship.rayciv
-        @r = @r_img
-        @m = C.shipMass
         @drag = C.shipDrag
-        @thrust = false  # thrusting?
-        @drag = false    # affected by drag?
-        @acc = 0     # acceleration
+        @acc = 0                # acceleration
+        @thrust = false         # thrusting?
 
     update : (dt) ->
         if @beamCoolDown
@@ -292,13 +294,20 @@ class ShipEntity extends DestructibleEntity
             @vel.transPolar @acc,@a
         if @drag
             @vel.scale (1-@drag*dt)
+        if @tarBeamOn
+            @tarBeam.update(this)
         super dt
+
+    draw : (ctx) ->
+        if @tarBeamOn
+            @tarBeam.draw ctx
+        super ctx
 
     activateBeam : ->
         if @beamTriggered
-            @beamTriggered = false
+            @beamTriggered = 0
         else
-            @beamTriggered = true
+            @beamTriggered = C.beamBurstCount
 
     canFire : ->
         not @beamCoolDown and @beamEnergy < @beamEnergyMax
@@ -306,14 +315,19 @@ class ShipEntity extends DestructibleEntity
     setJustFired : ->
         @beamCoolDown = @beamCoolDownMax
         @beamEnergy += 1
+        if @beamTriggered
+            @beamTriggered -= 1
 
     applyDamage : (dmg) ->
-        # console.log dmg
         if @invincible > 0
             return
         else
             @invincible = @invincibleMax
             super dmg
+
+    activateTarBeam : ->
+        @tarBeam.update(this)
+        @tarBeamOn = true
 
 E.BgTile = ->
     bgTile = new Entity(H.origin)
