@@ -93,6 +93,11 @@ E.BgTile = ->
 
 
 
+
+
+
+
+
 class MovingEntity extends Entity
 
     constructor : (pos,@a,vel,@va) ->
@@ -207,6 +212,40 @@ E.BuildBase = ->
     buildBase.setM C.baseMass
     return buildBase
 
+
+
+
+
+class NavPointEntity extends MovingEntity
+
+    constructor : (@name) ->
+        H.pt1.setList C.navPtLocations[@name]
+        super H.pt1, 0, H.origin, 0
+        @friendly = C.navPtDefaults[@name][0]
+        @active = C.navPtDefaults[@name][1]
+        @visible = @friendly and @active
+        @setImg A.img.navPts[@name][@getIndex()]
+
+    getIndex : ->
+        if @friendly and @active
+            0
+        else if @friendly
+            1
+        else if not @active
+            2
+        else
+            3
+
+    draw : (ctx) ->
+        if @visible
+            super ctx
+
+    setActive : (@active) ->
+        @setImg A.img.navPts[@name][@getIndex()]
+
+
+E.newNavPt = (name) ->
+    new NavPointEntity(name)
 
 
 

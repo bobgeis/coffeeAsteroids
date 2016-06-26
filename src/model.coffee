@@ -34,6 +34,8 @@ class Model
         @shots = []
         @loot = []
         @hud = []
+        @navPts = []
+        @mousePts = []
 
         @player = E.PlayerShip()
         @ships.push @player
@@ -44,6 +46,10 @@ class Model
         @bg.push new E.BgTile()
         @hud.push new U.shipShieldBar @player
         @hud.push new U.shipBeamEnergyBar @player
+        for name in C.navPtNames
+            @navPts.push E.newNavPt(name)
+        for name in C.mousePtNames
+            @mousePts.push E.newNavPt(name)
 
 
     getEntityLists : ->
@@ -52,6 +58,8 @@ class Model
         [
             @bg
             @bases
+            @navPts
+            @mousePts
             @loot
             @boats
             @shots

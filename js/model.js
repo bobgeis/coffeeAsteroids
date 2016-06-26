@@ -22,6 +22,7 @@
   Model = (function() {
     function Model() {
       "Build the initial state.";
+      var i, j, len, len1, name, ref, ref1;
       this.player = null;
       this.gameOver = false;
       this.bg = [];
@@ -34,6 +35,8 @@
       this.shots = [];
       this.loot = [];
       this.hud = [];
+      this.navPts = [];
+      this.mousePts = [];
       this.player = E.PlayerShip();
       this.ships.push(this.player);
       this.flash(this.player);
@@ -43,10 +46,20 @@
       this.bg.push(new E.BgTile());
       this.hud.push(new U.shipShieldBar(this.player));
       this.hud.push(new U.shipBeamEnergyBar(this.player));
+      ref = C.navPtNames;
+      for (i = 0, len = ref.length; i < len; i++) {
+        name = ref[i];
+        this.navPts.push(E.newNavPt(name));
+      }
+      ref1 = C.mousePtNames;
+      for (j = 0, len1 = ref1.length; j < len1; j++) {
+        name = ref1[j];
+        this.mousePts.push(E.newNavPt(name));
+      }
     }
 
     Model.prototype.getEntityLists = function() {
-      return [this.bg, this.bases, this.loot, this.boats, this.shots, this.rocks, this.ships, this.booms, this.flashes, this.hud];
+      return [this.bg, this.bases, this.navPts, this.mousePts, this.loot, this.boats, this.shots, this.rocks, this.ships, this.booms, this.flashes, this.hud];
     };
 
     Model.prototype.clearEntityLists = function() {

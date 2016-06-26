@@ -77,7 +77,7 @@ C.tarBeamRange = 500
 C.tarBeamColor = "rgba(250,100,100,0.5)"
 
 # tractor beam attributes
-C.tracBeamRange = 150
+C.tracBeamRange = 100
 C.tracBeamCoolDown = 500
 C.tracBeamDuration = 300
 C.tracBeamWidths = [3,4,3,2,2,1]
@@ -230,3 +230,48 @@ C.lifepodMaxAge = 60*1000   # ms
 C.lifepodVel = 100/1000      # px/ms
 C.lifepodSpin = 4/1000      # rad/ms
 
+
+
+C.navPtNames =                      # friendly nav points
+    [
+        "Alpha Octolindis"
+        "Locus 1457"
+    ]
+
+C.mousePtNames =                    # unfriendly nav points
+    [
+        "Locus 3250"
+        "The Gray Orchard"
+        "Unknown"
+    ]
+
+C.navPtLocations =
+    {                           # x  , y
+        "Alpha Octolindis"  : [   0 ,    0]
+        "Locus 1457"        : [ 800 ,  300]
+        "New Dilgan"        : [   0 ,    0]
+        "Locus 3250"        : [ 500 ,  500]
+        "The Gray Orchard"  : [-500 ,  500]
+        "Unknown"           : [1500 , 1500]
+    }
+
+C.navPtDefaults =
+    {                           # friendly  , active
+        "Alpha Octolindis"  : [true  , true]
+        "Locus 1457"        : [true  , false]
+        "New Dilgan"        : [true  , true]
+        "Locus 3250"        : [false , true]
+        "The Gray Orchard"  : [false , false]
+        "Unknown"           : [false , false]
+    }
+
+C.navPtRadius = 120
+C.navPtThickness = 2
+C.navPtFontSize = 14
+C.navPtColors =
+    [
+        "rgba(100, 255, 255, 0.8)"  # friendly active
+        "rgba(100, 100, 255, 0.8)"  # friendly inactive
+        "rgba(255, 200,   0, 0.8)"  # unfrinedly inactive
+        "rgba(255, 100, 100, 0.8)"  # unfriendly active
+    ]

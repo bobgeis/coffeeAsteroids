@@ -105,6 +105,12 @@ class Point
 		@y = pos.y + y
 		this
 
+	# list setPos but assumes a list arg: [x,y]
+	setList : (list) ->
+		@x = list[0]
+		@y = list[1]
+		this
+
 	# add
 	add : (pos) ->
 		@x += pos.x

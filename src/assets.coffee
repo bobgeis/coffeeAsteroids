@@ -64,6 +64,7 @@ A.afterLoad = ->
 	A.createTracPulse()
 	A.createCrystalList()
 	A.createLifepodList()
+	A.createNavPoints()
 
 A.createBgTiles = ->
 	"create a starfield background"
@@ -211,3 +212,38 @@ A.createLifepodList = ->
 	lifepod.push A.img.space.lb1
 	lifepod.push A.img.space.lb0
 	A.img.lifepod = lifepod
+
+A.createNavPoints = ->
+	navPts = {}
+	for name in C.navPtNames
+		navPts[name] = makeNavPtImgs name
+	for name in C.mousePtNames
+		navPts[name] = makeNavPtImgs name
+	A.img.navPts = navPts
+
+makeNavPtImgs = (name) ->
+	imgs = []
+	t = C.navPtThickness
+	h = C.navPtFontSize
+	r = C.navPtRadius
+	for color in C.navPtColors
+		ctx = H.createCanvas().getContext '2d'
+		ctx.canvas.width = r * 2 + t*2
+		ctx.canvas.height = r * 2 + t*2
+		if name == "Alpha Octolindis"
+			star = A.img.star.sgO
+			H.drawImgStill ctx, star, r+t, r+t
+		# draw text
+		ctx.fillStyle = color
+		ctx.font = "#{h}px Arial"
+		w = Math.floor((ctx.measureText name).width/2)
+		ctx.fillText name, r-w, r+h+h
+		# draw circle
+		ctx.lineWidth = t
+		ctx.strokeStyle = color
+		ctx.beginPath()
+		ctx.arc(r+t,r+t,r,0,H.TAU)
+		ctx.stroke()
+		ctx.closePath()
+		imgs.push ctx
+	return imgs

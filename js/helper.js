@@ -89,6 +89,12 @@
       return this;
     };
 
+    Point.prototype.setList = function(list) {
+      this.x = list[0];
+      this.y = list[1];
+      return this;
+    };
+
     Point.prototype.add = function(pos) {
       this.x += pos.x;
       this.y += pos.y;
