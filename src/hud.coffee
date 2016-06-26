@@ -15,6 +15,7 @@ _first.offer('hud',U)
 
 # request any modules here
 C = _first.request('config')
+H = _first.request('helper')
 
 
 class BarGraph
@@ -61,7 +62,7 @@ U.shipShieldBar = (ship) ->
 
 U.shipBeamEnergyBar = (ship) ->
     fullColor =     [100,255,100,1.0]
-    emptyColor =    [255,200,  0,1.0]
+    emptyColor =    [255,175,  0,1.0]
     bar = new BarGraph("Energy",ship,"beamEnergy","beamEnergyMax",
             emptyColor,fullColor,10,40)
     return bar

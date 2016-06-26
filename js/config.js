@@ -37,13 +37,13 @@
 
   C.shipAngVel = 2 / 1000;
 
-  C.shipDrag = 0.3 / 1000;
+  C.shipDrag = 0.4 / 1000;
 
   C.shipMass = 10;
 
-  C.shipShields = 10;
+  C.shipShields = 15;
 
-  C.shipRegen = 2 / 1000;
+  C.shipRegen = 3 / 1000;
 
   C.shipBeamCoolDown = 1 * 1000;
 
@@ -53,15 +53,15 @@
 
   C.beamRange = 500;
 
-  C.beamDuration = 120;
+  C.beamDuration = 110;
 
   C.beamScatter = 8 / 100;
 
-  C.beamCoolDown = 120;
+  C.beamCoolDown = 110;
 
   C.beamBurstCount = 5;
 
-  C.beamEnergyMax = 10;
+  C.beamEnergyMax = 15;
 
   C.beamEnergyRegen = 2.5 / 1000;
 
@@ -73,7 +73,21 @@
 
   C.tarBeamRange = 500;
 
-  C.tarBeamColor = "rgba(250,100,100,0.7)";
+  C.tarBeamColor = "rgba(250,100,100,0.5)";
+
+  C.tracBeamRange = 150;
+
+  C.tracBeamCoolDown = 500;
+
+  C.tracBeamDuration = 300;
+
+  C.tracBeamWidths = [3, 4, 3, 2, 2, 1];
+
+  C.tracBeamColors = ["rgba(255, 255, 255, 1.0)", "rgba(225, 225, 100, 1.0)", "rgba(175, 175,  50, 0.8)", "rgba(125, 125,  25, 0.6)", "rgba( 75,  75,  10, 0.4)", "rgba( 25,  25,   0, 0.3)"];
+
+  C.tracPulseInitialRadius = 10;
+
+  C.tracPulseGrowthRate = 5;
 
   C.rockCollisionDamage = 5;
 
@@ -173,5 +187,21 @@
     colors = list[Math.floor(ratio * list.length)];
     return "rgba(" + colors[0] + "," + colors[1] + "," + colors[2] + "," + (1 - ratio);
   };
+
+  C.crystalChance = {
+    C: 0.1,
+    S: 0.3,
+    M: 0.5
+  };
+
+  C.crystalMaxAge = 60 * 1000;
+
+  C.crystalSpin = 4 / 1000;
+
+  C.lifepodMaxAge = 60 * 1000;
+
+  C.lifepodVel = 100 / 1000;
+
+  C.lifepodSpin = 4 / 1000;
 
 }).call(this);

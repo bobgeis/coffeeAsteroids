@@ -46,6 +46,14 @@
 
   A.space.cr3 = "./asset/img/space/cr3.png";
 
+  A.space.lb0 = "./asset/img/space/lb0.png";
+
+  A.space.lb1 = "./asset/img/space/lb1.png";
+
+  A.space.lb2 = "./asset/img/space/lb2.png";
+
+  A.space.lb3 = "./asset/img/space/lb3.png";
+
   A.star = {};
 
   A.star.dA = "./asset/img/star/dA.png";

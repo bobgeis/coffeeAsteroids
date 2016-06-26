@@ -82,6 +82,14 @@ class Entity
 E.Entity = Entity
 
 
+E.BgTile = ->
+    bgTile = new Entity(H.origin)
+    bgTile.setImg A.img.bg.tile
+    return bgTile
+
+
+
+
 
 
 
@@ -183,6 +191,27 @@ class MovingEntity extends Entity
 E.MovingEntity = MovingEntity
 
 
+E.LuckyBase = ->
+    p = -900
+    luckyBase = new MovingEntity(H.pt.setXY(0,p),0,H.origin,-C.baseAngVel)
+    luckyBase.setImg A.img.ship.baselucky
+    luckyBase.setR luckyBase.r_img
+    luckyBase.setM C.baseMass
+    return luckyBase
+
+E.BuildBase = ->
+    p = C.tileSize /2 - 20
+    buildBase = new MovingEntity(H.pt.setXY(p,p),0,H.origin,C.baseAngVel)
+    buildBase.setImg A.img.ship.basebuild
+    buildBase.setR buildBase.r_img
+    buildBase.setM C.baseMass
+    return buildBase
+
+
+
+
+
+
 class EphemeralEntity extends MovingEntity
 
     constructor : (@imgList,pos,a,vel,va) ->
@@ -190,8 +219,10 @@ class EphemeralEntity extends MovingEntity
         @age = 0
         @maxAge = 1
         @setImg @imgList[0]
+        @type = null
 
     setMaxAge : (@maxAge) ->
+    setType : (@type) ->
 
     update : (dt) ->
         if @age >= @maxAge
@@ -201,9 +232,62 @@ class EphemeralEntity extends MovingEntity
         @age += dt
         super(dt)
 
+    draw : (ctx) ->
+        super ctx
 
     updateImg : ->
         @setImg @imgList[Math.floor(@age / @maxAge * @imgList.length)]
+
+
+E.newExplosionOnObj = (obj) ->
+    boom = new EphemeralEntity(A.img.boom,obj.pos,0,obj.vel,0)
+    boom.setMaxAge C.boomMaxAge
+    return boom
+
+E.newFlashOnObj = (obj) ->
+    flash = new EphemeralEntity(A.img.flash,obj.pos,0,obj.vel,0)
+    flash.setMaxAge C.flashMaxAge
+    return flash
+
+E.newTracPulseOnPos = (pos) ->
+    pulse = new EphemeralEntity(A.img.tracPulse,pos,0,H.origin,0)
+    pulse.setMaxAge C.tracBeamDuration
+    return pulse
+
+E.spawnCrystalCheck = (rock) ->
+    Math.random() < C.crystalChance[rock.type]
+
+E.newCrystalOnObj = (obj) ->
+    dvel = H.pt1.randomInCircle(C.rockVel)
+    vel = H.pt2.sum(dvel,obj.vel)
+    angvel = H.randPlusMinus C.crystalSpin
+    crys = new EphemeralEntity(A.img.crystal,obj.pos,0,vel,angvel)
+    crys.setMaxAge C.crystalMaxAge
+    crys.setType "crystal"
+    return crys
+
+E.newLifepodsOnObj = (obj) ->
+    # make 4 lifepods on the object
+    dvel1 = H.pt1.randomOnCircle(C.lifepodVel)
+    dvel2 = H.pt2.randomOnCircle(C.lifepodVel)
+    list = []
+    list.push new EphemeralEntity(A.img.lifepod,obj.pos,0,
+        H.pt3.sum(dvel1,obj.vel),
+        H.randPlusMinus C.lifepodSpin)
+    list.push new EphemeralEntity(A.img.lifepod,obj.pos,Math.PI,
+        H.pt4.diff(dvel1,obj.vel),
+        H.randPlusMinus C.lifepodSpin)
+    list.push new EphemeralEntity(A.img.lifepod,obj.pos,0,
+        H.pt5.sum(dvel2,obj.vel),
+        H.randPlusMinus C.lifepodSpin)
+    list.push new EphemeralEntity(A.img.lifepod,obj.pos,Math.PI,
+        H.pt6.diff(dvel2,obj.vel),
+        H.randPlusMinus C.lifepodSpin)
+    for pod in list
+        pod.setMaxAge C.lifepodMaxAge
+        pod.setType "lifepod"
+    return list
+
 
 
 
@@ -236,6 +320,9 @@ class DestructibleEntity extends MovingEntity
 E.DestructibleEntity = DestructibleEntity
 
 
+
+
+
 class RockEntity extends DestructibleEntity
 
     constructor : (@type,@size,pos,a,vel,va) ->
@@ -255,108 +342,6 @@ class RockEntity extends DestructibleEntity
             @imgList[0]
 
 
-class ShipEntity extends DestructibleEntity
-
-    constructor : (@type,@faction,pos,a,vel,va) ->
-        super pos,a,vel,va
-
-        @setImg A.img.ship.rayciv
-        @r = @r_img
-        @m = C.shipMass
-
-        @beamTriggered = 0
-        @beamCoolDown = 0
-        @beamCoolDownMax = C.beamCoolDown
-        @beamEnergy = 0
-        @beamEnergyMax = C.beamEnergyMax
-        @beamEnergyRegen = C.beamEnergyRegen
-
-        @tarBeam = B.newTargetingBeam(this)
-        @tarBeamOn = false
-
-        @maxDamage = C.shipShields
-        @regen = C.shipRegen
-        @invincible = 0
-        @invincibleMax = C.shipInvincibleDuration
-
-        @drag = C.shipDrag
-        @acc = 0                # acceleration
-        @thrust = false         # thrusting?
-
-    update : (dt) ->
-        if @beamCoolDown
-            @beamCoolDown = Math.max 0, @beamCoolDown - dt
-        if @beamEnergy
-            @beamEnergy = Math.max 0, @beamEnergy - dt * @beamEnergyRegen
-        if @invincible
-            @invincible = Math.max 0, @invincible - dt
-        if @thrust
-            @vel.transPolar @acc,@a
-        if @drag
-            @vel.scale (1-@drag*dt)
-        if @tarBeamOn
-            @tarBeam.update(this)
-        super dt
-
-    draw : (ctx) ->
-        if @tarBeamOn
-            @tarBeam.draw ctx
-        super ctx
-
-    activateBeam : ->
-        if @beamTriggered
-            @beamTriggered = 0
-        else
-            @beamTriggered = C.beamBurstCount
-
-    canFire : ->
-        not @beamCoolDown and @beamEnergy < @beamEnergyMax
-
-    setJustFired : ->
-        @beamCoolDown = @beamCoolDownMax
-        @beamEnergy += 1
-        if @beamTriggered
-            @beamTriggered -= 1
-
-    applyDamage : (dmg) ->
-        if @invincible > 0
-            return
-        else
-            @invincible = @invincibleMax
-            super dmg
-
-    activateTarBeam : ->
-        @tarBeam.update(this)
-        @tarBeamOn = true
-
-E.BgTile = ->
-    bgTile = new Entity(H.origin)
-    bgTile.setImg A.img.bg.tile
-    return bgTile
-
-
-E.LuckyBase = ->
-    p = -900
-    luckyBase = new MovingEntity(H.pt.setXY(0,p),0,H.origin,-C.baseAngVel)
-    luckyBase.setImg A.img.ship.baselucky
-    luckyBase.setR luckyBase.r_img
-    luckyBase.setM C.baseMass
-    return luckyBase
-
-E.BuildBase = ->
-    p = C.tileSize /2 - 20
-    buildBase = new MovingEntity(H.pt.setXY(p,p),0,H.origin,C.baseAngVel)
-    buildBase.setImg A.img.ship.basebuild
-    buildBase.setR buildBase.r_img
-    buildBase.setM C.baseMass
-    return buildBase
-
-
-E.PlayerShip = ->
-    playerShip = new ShipEntity("ray","civ",H.origin,H.HALFPI,H.pt.setXY(0,0.5),0)
-    return playerShip
-
-
 E.newRock = (type,size,pos,a,vel,va) ->
     rock = new RockEntity(A.img.rock[type][size],pos,a,vel,va)
     rock.setR C.rockRadii[size]
@@ -365,25 +350,12 @@ E.newRock = (type,size,pos,a,vel,va) ->
     rock.setRegen C.rockRegen
     return rock
 
-E.RandRock2 = ->
-    p = C.tileSize /2
-    # rock = new DestructibleEntity(H.pt1.randomInBox(-p,p,-p,p),0,
-    #                         H.pt2.randomInCircle(C.rockVel),0)
-    # rock.setImg A.img.space.r0
-    rock = new RockEntity(A.img.rock["S"][4],
-        H.pt1.randomInBox(-p,p,-p,p),0,
-        H.pt2.randomInCircle(C.rockVel),0)
-    rock.setR C.rockRadii[4]
-    rock.setM C.rockMass
-    rock.setMaxDmg C.rockArmor
-    rock.setRegen C.rockRegen
-    return rock
 
 E.RandRock = ->
     p = C.tileSize /2
     H.pt1.randomInBox(-p,p,-p,p)
     H.pt2.randomInCircle(C.rockVel)
-    size = 4
+    size = H.getRandomListValue [0...5]
     type = H.getRandomListValue ["C","S","M"]
     return new RockEntity( type, size, H.pt1, 0, H.pt2, 0)
 
@@ -405,12 +377,126 @@ E.calveRock = (oldRock) ->
         calf.damage = calf.maxDamage /2
     return calves
 
-E.newExplosionOnObj = (obj) ->
-    boom = new EphemeralEntity(A.img.boom,obj.pos,0,obj.vel,0)
-    boom.setMaxAge C.boomMaxAge
-    return boom
 
-E.newFlashOnObj = (obj) ->
-    flash = new EphemeralEntity(A.img.flash,obj.pos,0,obj.vel,0)
-    flash.setMaxAge C.flashMaxAge
-    return flash
+
+
+
+
+class ShipEntity extends DestructibleEntity
+
+    constructor : (@type,@faction,pos,a,vel,va) ->
+        super pos,a,vel,va
+
+        @setImg A.img.ship["#{@type}#{@faction}"]
+        @r = @r_img
+        @m = C.shipMass
+
+        @maxDamage = C.shipShields
+        @regen = C.shipRegen
+        @invincible = 0
+        @invincibleMax = C.shipInvincibleDuration
+
+        @drag = C.shipDrag
+        @acc = 0                # acceleration
+        @thrust = false         # thrusting?
+
+
+    update : (dt) ->
+        if @invincible
+            @invincible = Math.max 0, @invincible - dt
+        if @thrust
+            @vel.transPolar @acc,@a
+        if @drag
+            @vel.scale (1-@drag*dt)
+        super dt
+
+
+
+    applyDamage : (dmg) ->
+        if @invincible > 0
+            return
+        else
+            @invincible = @invincibleMax
+            super dmg
+
+
+
+
+class PlayerShipEntity extends ShipEntity
+
+    constructor : (type,faction,pos,a,vel,va) ->
+        super type,faction,pos,a,vel,va
+
+        @beamTriggered = 0
+        @beamCoolDown = 0
+        @beamCoolDownMax = C.beamCoolDown
+        @beamEnergy = 0
+        @beamEnergyMax = C.beamEnergyMax
+        @beamEnergyRegen = C.beamEnergyRegen
+
+        @tarBeam = B.newTargetingBeam(this)
+        @tarBeamOn = false
+
+        @tracBeamOn = true
+        @tracBeamCoolDown = 0
+
+    update : (dt) ->
+        if @beamCoolDown
+            @beamCoolDown = Math.max 0, @beamCoolDown - dt
+        if @tracBeamCoolDown
+            @tracBeamCoolDown = Math.max 0, @tracBeamCoolDown - dt
+        if @beamEnergy
+            @beamEnergy = Math.max 0, @beamEnergy - dt * @beamEnergyRegen
+        if @tarBeamOn
+            @tarBeam.update(this)
+        super dt
+
+    draw : (ctx) ->
+        if @tarBeamOn
+            @tarBeam.draw ctx
+        super ctx
+
+    kill : ->
+        @beamEnergy = @beamEnergyMax
+        @damage = @maxDamage
+        @beamCoolDown = C.beamCoolDown
+        @tracBeamCoolDown = C.tracBeamCoolDown
+        super()
+
+    canTractor :  ->
+        not @tracBeamCoolDown and @beamEnergy < @beamEnergyMax
+
+    tractorRange : (obj) ->
+        for pt in obj.clones
+            if @pos.collide pt, C.tracBeamRange
+                return pt
+        return false
+
+    setJustTractored : (obj) ->
+        @tracBeamCoolDown = C.tracBeamCoolDown
+        @beamEnergy += 1
+
+    activateTarBeam : ->
+        @tarBeam.update(this)
+        @tarBeamOn = true
+
+    activateBeam : ->
+        if @beamTriggered
+            @beamTriggered = 0
+        else
+            @beamTriggered = C.beamBurstCount
+
+    canFire : ->
+        not @beamCoolDown and @beamEnergy < @beamEnergyMax
+
+    setJustFired : ->
+        @beamCoolDown = @beamCoolDownMax
+        @beamEnergy += 1
+        if @beamTriggered
+            @beamTriggered -= 1
+
+
+E.PlayerShip = ->
+    playerShip = new PlayerShipEntity("ray","civ",
+            H.origin,H.HALFPI,H.pt.setXY(0,0.5),0)
+    return playerShip

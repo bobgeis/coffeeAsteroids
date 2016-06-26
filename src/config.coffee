@@ -38,21 +38,21 @@ C.baseAngVel = 0.1/1000           # rad/ms
 C.shipAcc = 5/1000              # px/ms/ms
 C.shipRetro = C.shipAcc/3       # px/ms/ms
 C.shipAngVel = 2/1000           # rad/ms
-C.shipDrag = 0.3/1000             # fraction reduced /ms
-C.shipMass = 10                 # mass in arbitrary units
-C.shipShields = 10
-C.shipRegen = 2/1000      # dmg/ms
+C.shipDrag = 0.4/1000           # fraction reduced /ms
+C.shipMass = 10                 # arbitrary mass units
+C.shipShields = 15              # arbitrary damage units
+C.shipRegen = 3/1000            # dmg/ms
 C.shipBeamCoolDown = 1 * 1000
 C.shipInvincibleDuration = 300 # ms  minimum time bt taking damage for ships
 
 # disruptor beam attributes
 C.beamDamage = 1                #
 C.beamRange = 500               # px
-C.beamDuration = 120            # ms
+C.beamDuration = 110            # ms
 C.beamScatter = 8/100           # radians
-C.beamCoolDown = 120            # ms
+C.beamCoolDown = 110            # ms
 C.beamBurstCount = 5            # number of times to fire in a row
-C.beamEnergyMax = 10            # shots
+C.beamEnergyMax = 15            # shots
 C.beamEnergyRegen = 2.5/1000    # shots/ms
 C.beamColors = [
         "rgba(100, 255, 255, 1)"
@@ -74,7 +74,24 @@ C.beamWidths = [                # px
 # targeting beam attributes
 C.tarBeamWidth = 2
 C.tarBeamRange = 500
-C.tarBeamColor = "rgba(250,100,100,0.7)"
+C.tarBeamColor = "rgba(250,100,100,0.5)"
+
+# tractor beam attributes
+C.tracBeamRange = 150
+C.tracBeamCoolDown = 500
+C.tracBeamDuration = 300
+C.tracBeamWidths = [3,4,3,2,2,1]
+C.tracBeamColors =
+    [
+        "rgba(255, 255, 255, 1.0)"
+        "rgba(225, 225, 100, 1.0)"
+        "rgba(175, 175,  50, 0.8)"
+        "rgba(125, 125,  25, 0.6)"
+        "rgba( 75,  75,  10, 0.4)"
+        "rgba( 25,  25,   0, 0.3)"
+    ]
+C.tracPulseInitialRadius = 10   # px
+C.tracPulseGrowthRate = 5      # px/frame
 
 # rock attributes
 C.rockCollisionDamage = 5       # dmg per velocity
@@ -197,3 +214,19 @@ C.flashOuterColor = (ratio) ->
     list = flashColors.outer
     colors = list[Math.floor(ratio * list.length)]
     return "rgba(#{colors[0]},#{colors[1]},#{colors[2]},#{1-ratio}"
+
+
+
+C.crystalChance =           # probability that a booming rock leaves a crystal
+    {
+        C: 0.1
+        S: 0.3
+        M: 0.5
+    }
+C.crystalMaxAge = 60*1000   # ms
+C.crystalSpin = 4/1000      # rad/ms
+
+C.lifepodMaxAge = 60*1000   # ms
+C.lifepodVel = 100/1000      # px/ms
+C.lifepodSpin = 4/1000      # rad/ms
+

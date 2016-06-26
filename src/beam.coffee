@@ -67,6 +67,8 @@ class Beam
 B.Beam = Beam
 
 
+
+
 class DisruptorBeam extends Beam
 
     constructor : (pos,r,a) ->
@@ -135,4 +137,28 @@ class TargetingBeam extends Beam
 
 B.newTargetingBeam = (obj) ->
     new TargetingBeam(obj)
+
+
+
+class TractorBeam extends Beam
+
+    constructor : (pos1,pos2) ->
+        super H.newLineSS(pos1,pos2)
+        @phases = C.tracBeamColors.length
+        @age = 0
+        @wid = C.beamWidths[0]
+        @color = C.beamColors[0]
+
+    update : (dt) ->
+        phase = Math.floor @age / C.tracBeamDuration * @phases
+        @wid = C.tracBeamWidths[phase]
+        @color = C.tracBeamColors[phase]
+        if @age > C.tracBeamDuration
+            return @alive = false
+        @age += dt
+        super dt
+
+B.newTractorBeam = (pos1,pos2) ->
+    new TractorBeam(pos1,pos2)
+
 

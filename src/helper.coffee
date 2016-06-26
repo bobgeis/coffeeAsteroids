@@ -233,6 +233,10 @@ class Point
 	randomInCircle : (rM) ->
 		@setPolar(Math.random()*rM,H.randAng(TAU))
 
+	# move to a random point *on* the circle
+	randomOnCircle : (r) ->
+		@setPolar r, H.randAng(TAU)
+
 # export Point
 H.Point = Point
 
@@ -246,16 +250,23 @@ H.newPt = -> new Point(0,0)
 
 # these helper points should be used wherever generic Points are needed
 H.pt = pt = new Point(0,0)
+H.pt0 = pt0 = new Point(0,0)
 H.pt1 = pt1 = new Point(0,0)
 H.pt2 = pt2 = new Point(0,0)
 H.pt3 = pt3 = new Point(0,0)
+H.pt4 = pt4 = new Point(0,0)
+H.pt5 = pt5 = new Point(0,0)
+H.pt6 = pt6 = new Point(0,0)
+H.pt7 = pt7 = new Point(0,0)
+H.pt8 = pt8 = new Point(0,0)
+H.pt9 = pt9 = new Point(0,0)
 H.origin = new Point(0,0)
 # they represent a sort of knockoff object pool
 
 # move a Point randomly within r of its current position
 H.blink = (pos,r) ->
-	pt1.randomInCircle r
-	pos.add helperPt
+	pt1.randomOnCircle r
+	pos.add pt1
 
 
 
@@ -351,7 +362,10 @@ class Line
 		ctx.closePath()
 
 
-# alternate Line constructors
+#  Line constructors
+# from start and stop directly
+H.newLineSS = (start,stop) ->
+	new Line(start,stop)
 # construct a line from a start point, and a length and angle
 H.newLineRA = (start,r,a) ->
 	new Line(start,pt.setPolar(r,a).add(start))

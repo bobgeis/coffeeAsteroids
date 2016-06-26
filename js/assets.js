@@ -75,10 +75,12 @@
 
   A.afterLoad = function() {
     A.createBgTiles();
-    A.createRocks2();
     A.createRocks();
     A.createBooms();
-    return A.createFlashes();
+    A.createFlashes();
+    A.createTracPulse();
+    A.createCrystalList();
+    return A.createLifepodList();
   };
 
   A.createBgTiles = function() {
@@ -109,23 +111,6 @@
       H.drawImgStill(ctx, star, pos.x, pos.y);
     }
     return A.img.bg.tile = ctx;
-  };
-
-  A.createRocks2 = function() {
-    var ctx, grad, r;
-    r = C.rockRad;
-    ctx = H.createCanvas().getContext('2d');
-    ctx.canvas.width = r * 2;
-    ctx.canvas.height = r * 2;
-    grad = ctx.createRadialGradient(r / 2, r / 2, r, r, r, 0);
-    grad.addColorStop(0, "rgba(140, 90, 29, 1)");
-    grad.addColorStop(1, "rgba(180, 120, 35, 1)");
-    ctx.fillStyle = grad;
-    ctx.beginPath();
-    ctx.arc(r, r, r, 0, H.TAU);
-    ctx.fill();
-    ctx.closePath();
-    return A.img.space.r0 = ctx;
   };
 
   A.createRocks = function() {
@@ -191,10 +176,10 @@
   };
 
   A.createFlashes = function() {
-    var ctx, flash, frames, grad, i, j, r, ref, vr;
+    var ctx, dr, flash, frames, grad, i, j, r, ref;
     frames = C.flashMaxAge / C.timeStep;
     r = C.flashInitialRadius;
-    vr = C.flashShrinkRate * C.timeStep;
+    dr = C.flashShrinkRate * C.timeStep;
     flash = [];
     for (i = j = 0, ref = frames; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
       ctx = H.createCanvas().getContext('2d');
@@ -209,9 +194,50 @@
       ctx.fill();
       ctx.closePath();
       flash.push(ctx);
-      r += vr;
+      r += dr;
     }
     A.img.flash = flash;
+  };
+
+  A.createTracPulse = function() {
+    var ctx, dr, frames, i, j, pulse, r, ref;
+    frames = C.tracBeamColors.length;
+    r = C.tracPulseInitialRadius;
+    dr = C.tracPulseGrowthRate;
+    pulse = [];
+    for (i = j = 0, ref = frames; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
+      ctx = H.createCanvas().getContext('2d');
+      ctx.canvas.width = r * 2;
+      ctx.canvas.height = r * 2;
+      ctx.fillStyle = C.tracBeamColors[i];
+      ctx.beginPath();
+      ctx.arc(r, r, r, 0, H.TAU);
+      ctx.fill();
+      ctx.closePath();
+      pulse.push(ctx);
+      r += dr;
+    }
+    A.img.tracPulse = pulse;
+  };
+
+  A.createCrystalList = function() {
+    var crystal;
+    crystal = [];
+    crystal.push(A.img.space.cr3);
+    crystal.push(A.img.space.cr2);
+    crystal.push(A.img.space.cr1);
+    crystal.push(A.img.space.cr0);
+    return A.img.crystal = crystal;
+  };
+
+  A.createLifepodList = function() {
+    var lifepod;
+    lifepod = [];
+    lifepod.push(A.img.space.lb3);
+    lifepod.push(A.img.space.lb2);
+    lifepod.push(A.img.space.lb1);
+    lifepod.push(A.img.space.lb0);
+    return A.img.lifepod = lifepod;
   };
 
 }).call(this);

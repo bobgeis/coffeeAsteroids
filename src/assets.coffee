@@ -58,10 +58,12 @@ loadImg = (folder,name,src) ->
 
 A.afterLoad = ->
 	A.createBgTiles()
-	A.createRocks2()
 	A.createRocks()
 	A.createBooms()
 	A.createFlashes()
+	A.createTracPulse()
+	A.createCrystalList()
+	A.createLifepodList()
 
 A.createBgTiles = ->
 	"create a starfield background"
@@ -92,22 +94,6 @@ A.createBgTiles = ->
 	# console.log pos
 	A.img.bg.tile = ctx
 
-A.createRocks2 = ->
-	# rocks are asteroids of various sizes and shapes
-	r = C.rockRad
-	ctx = H.createCanvas().getContext '2d'
-	ctx.canvas.width = r * 2
-	ctx.canvas.height = r * 2
-	grad = ctx.createRadialGradient r/2,r/2, r, r,r, 0
-	grad.addColorStop 0, "rgba(140, 90, 29, 1)"
-	grad.addColorStop 1, "rgba(180, 120, 35, 1)"
-	ctx.fillStyle = grad
-	# draw arc
-	ctx.beginPath()
-	ctx.arc(r,r,r,0,H.TAU)
-	ctx.fill()
-	ctx.closePath()
-	A.img.space.r0 = ctx
 
 A.createRocks = ->
 	rock = {
@@ -168,7 +154,7 @@ A.createFlashes = ->
 	# flashes are short lived FTL jump flashes
 	frames = C.flashMaxAge / C.timeStep		# num frames flash is likely to last
 	r = C.flashInitialRadius
-	vr = C.flashShrinkRate * C.timeStep 		# shrinkage in px/frame
+	dr = C.flashShrinkRate * C.timeStep 		# shrinkage in px/frame
 	flash = []
 	for i in [0...frames]
 		ctx = H.createCanvas().getContext '2d'
@@ -183,7 +169,45 @@ A.createFlashes = ->
 		ctx.fill()
 		ctx.closePath()
 		flash.push ctx
-		r += vr
+		r += dr
 	A.img.flash = flash
 	return
 
+A.createTracPulse = ->
+	frames = C.tracBeamColors.length
+	r = C.tracPulseInitialRadius
+	dr = C.tracPulseGrowthRate
+	pulse = []
+	for i in [0...frames]
+		ctx = H.createCanvas().getContext '2d'
+		ctx.canvas.width = r * 2
+		ctx.canvas.height = r * 2
+		# grad = ctx.createRadialGradient r,r, 1, r,r, r
+		# grad.addColorStop 0, C.flashInnerColor(i/frames)
+		# grad.addColorStop 1, C.flashOuterColor(i/frames)
+		ctx.fillStyle = C.tracBeamColors[i]
+		ctx.beginPath()
+		ctx.arc(r,r,r,0,H.TAU)
+		ctx.fill()
+		ctx.closePath()
+		pulse.push ctx
+		r += dr
+	A.img.tracPulse = pulse
+	return
+
+
+A.createCrystalList = ->
+	crystal = []
+	crystal.push A.img.space.cr3
+	crystal.push A.img.space.cr2
+	crystal.push A.img.space.cr1
+	crystal.push A.img.space.cr0
+	A.img.crystal = crystal
+
+A.createLifepodList = ->
+	lifepod = []
+	lifepod.push A.img.space.lb3
+	lifepod.push A.img.space.lb2
+	lifepod.push A.img.space.lb1
+	lifepod.push A.img.space.lb0
+	A.img.lifepod = lifepod

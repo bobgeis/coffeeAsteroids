@@ -62,7 +62,7 @@
 
     Model.prototype.update = function(dt) {
       "update by dt";
-      var base, dmg, i, item, j, k, l, len, len1, len2, len3, len4, len5, len6, len7, list, m, n, o, p, ref, ref1, ref2, ref3, ref4, ref5, ref6, rock, ship, shot;
+      var base, dmg, i, item, j, k, l, len, len1, len2, len3, len4, len5, len6, len7, len8, list, loot, m, n, o, p, pt, q, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, rock, ship, shot;
       ref = this.getEntityLists();
       for (i = 0, len = ref.length; i < len; i++) {
         list = ref[i];
@@ -78,40 +78,57 @@
           this.fireDisruptor(ship);
           ship.setJustFired();
         }
-        ref2 = this.rocks;
-        for (l = 0, len3 = ref2.length; l < len3; l++) {
-          rock = ref2[l];
+        if (ship.tracBeamOn) {
+          ref2 = this.loot;
+          for (l = 0, len3 = ref2.length; l < len3; l++) {
+            loot = ref2[l];
+            if (ship.canTractor()) {
+              pt = ship.tractorRange(loot);
+              if (pt) {
+                this.tracBeam(ship.pos, pt);
+                loot.kill();
+                ship.setJustTractored(loot);
+              }
+            }
+          }
+        }
+        ref3 = this.rocks;
+        for (m = 0, len4 = ref3.length; m < len4; m++) {
+          rock = ref3[m];
           if (ship.collide(rock)) {
             dmg = Math.abs(ship.bounce(rock));
             if (ship.applyDamage(Math.min(5, dmg * C.rockCollisionDamage))) {
               this.explode(ship);
+              ship.kill();
+              this.createLifepods(ship);
             }
           }
         }
       }
-      ref3 = this.bases;
-      for (m = 0, len4 = ref3.length; m < len4; m++) {
-        base = ref3[m];
-        ref4 = this.rocks;
-        for (n = 0, len5 = ref4.length; n < len5; n++) {
-          rock = ref4[n];
+      ref4 = this.bases;
+      for (n = 0, len5 = ref4.length; n < len5; n++) {
+        base = ref4[n];
+        ref5 = this.rocks;
+        for (o = 0, len6 = ref5.length; o < len6; o++) {
+          rock = ref5[o];
           if (base.collide(rock)) {
             rock.bounce(base);
           }
         }
       }
-      ref5 = this.shots;
-      for (o = 0, len6 = ref5.length; o < len6; o++) {
-        shot = ref5[o];
+      ref6 = this.shots;
+      for (p = 0, len7 = ref6.length; p < len7; p++) {
+        shot = ref6[p];
         if (shot.damaging) {
-          ref6 = this.rocks;
-          for (p = 0, len7 = ref6.length; p < len7; p++) {
-            rock = ref6[p];
+          ref7 = this.rocks;
+          for (q = 0, len8 = ref7.length; q < len8; q++) {
+            rock = ref7[q];
             if (shot.hit(rock)) {
               if (rock.applyDamage(shot.getDamage())) {
                 rock.kill();
                 this.explode(rock);
                 this.calveRock(rock);
+                this.createCrystal(rock);
               }
             }
           }
@@ -126,6 +143,7 @@
       this.rocks = _.filter(this.rocks, isAlive);
       this.ships = _.filter(this.ships, isAlive);
       this.booms = _.filter(this.booms, isAlive);
+      this.loot = _.filter(this.loot, isAlive);
       this.flashes = _.filter(this.flashes, isAlive);
       if (!this.player.alive) {
         return this.gameOver = true;
@@ -173,7 +191,8 @@
         return this.player.setAcc(0);
       } else if (cmd === 99) {
         this.player.kill();
-        return this.explode(this.player);
+        this.explode(this.player);
+        return this.createLifepods(this.player);
       }
     };
 
@@ -194,12 +213,33 @@
       }
     };
 
+    Model.prototype.createCrystal = function(rock) {
+      if (E.spawnCrystalCheck(rock)) {
+        return this.loot.push(E.newCrystalOnObj(rock));
+      }
+    };
+
+    Model.prototype.createLifepods = function(ship) {
+      var i, len, pod, ref, results;
+      ref = E.newLifepodsOnObj(ship);
+      results = [];
+      for (i = 0, len = ref.length; i < len; i++) {
+        pod = ref[i];
+        results.push(this.loot.push(pod));
+      }
+      return results;
+    };
+
     Model.prototype.explode = function(obj) {
       return this.booms.push(E.newExplosionOnObj(obj));
     };
 
     Model.prototype.flash = function(obj) {
       return this.flashes.push(E.newFlashOnObj(obj));
+    };
+
+    Model.prototype.tracBeam = function(pos1, pos2) {
+      return this.flashes.push(B.newTractorBeam(pos1, pos2));
     };
 
     return Model;

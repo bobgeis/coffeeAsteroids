@@ -73,16 +73,27 @@ class Model
             for item in list
                 item.update(dt)
         # collisions
+        # ships with loot
         # ships with rocks
         for ship in @ships
             if ship.beamTriggered and ship.canFire()
                 @fireDisruptor ship
                 ship.setJustFired()
+            if ship.tracBeamOn
+                for loot in @loot
+                    if ship.canTractor()
+                        pt = ship.tractorRange loot
+                        if pt
+                            @tracBeam ship.pos, pt
+                            loot.kill()
+                            ship.setJustTractored loot
             for rock in @rocks
                 if ship.collide rock
                     dmg = Math.abs(ship.bounce rock)
                     if ship.applyDamage Math.min(5, dmg * C.rockCollisionDamage)
                         @explode ship
+                        ship.kill()
+                        @createLifepods ship
         # rocks with bases
         for base in @bases
             for rock in @rocks
@@ -97,6 +108,7 @@ class Model
                             rock.kill()
                             @explode rock
                             @calveRock rock
+                            @createCrystal rock
         # maybe spawn rock
         if E.spawnRock(dt)
             rock = new E.RandRock()
@@ -107,6 +119,7 @@ class Model
         @rocks = _.filter @rocks, isAlive
         @ships = _.filter @ships, isAlive
         @booms = _.filter @booms, isAlive
+        @loot = _.filter @loot, isAlive
         @flashes = _.filter @flashes, isAlive
         if not @player.alive
             @gameOver = true
@@ -143,6 +156,7 @@ class Model
         else if cmd == 99
             @player.kill()
             @explode @player
+            @createLifepods @player
 
     fireDisruptor : (ship) ->
         @shots.push B.newDisruptor ship
@@ -154,6 +168,14 @@ class Model
             for calf in calves
                 @rocks.push calf
 
+    createCrystal : (rock) ->
+        if E.spawnCrystalCheck rock
+            @loot.push E.newCrystalOnObj rock
+
+    createLifepods : (ship) ->
+        for pod in E.newLifepodsOnObj ship
+            @loot.push pod
+
     explode : (obj) ->
         # create an explosion w obj's pos & vel
         @booms.push E.newExplosionOnObj obj
@@ -161,6 +183,9 @@ class Model
     flash : (obj) ->
         # create a flash w obj's pos & vel
         @flashes.push E.newFlashOnObj obj
+
+    tracBeam : (pos1,pos2) ->
+        @flashes.push B.newTractorBeam pos1, pos2
 
 
 M.Model = Model
