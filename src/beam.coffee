@@ -116,16 +116,13 @@ B.newDisruptor = (obj) ->
 class TargetingBeam extends Beam
 
     constructor : (obj) ->
-        @r = C.tarBeamRange
         super H.newLineRA obj.pos,@r,-obj.a
-        @line.start = obj.pos
         @wid = C.tarBeamWidth
         @color = C.tarBeamColor
         @on = true
 
     update : (obj) ->
-        @a = -obj.a
-        @line.stop.setPolar(@r,@a).add(@line.start.setPos obj.pos)
+        @line.setLineRA(obj.pos,C.tarBeamRange,-obj.a)
 
     draw : (ctx) ->
         H.drawLineEntity ctx, @line, @wid, @color

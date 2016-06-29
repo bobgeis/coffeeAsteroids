@@ -198,7 +198,9 @@ E.MovingEntity = MovingEntity
 
 E.LuckyBase = ->
     p = -900
-    luckyBase = new MovingEntity(H.pt.setXY(0,p),0,H.origin,-C.baseAngVel)
+    luckyBase = new MovingEntity(H.pt.setXY(C.luckyBaseLocation[0],
+                C.luckyBaseLocation[1]),
+            0,H.origin,-C.baseAngVel)
     luckyBase.setImg A.img.ship.baselucky
     luckyBase.setR luckyBase.r_img
     luckyBase.setM C.baseMass
@@ -206,7 +208,9 @@ E.LuckyBase = ->
 
 E.BuildBase = ->
     p = C.tileSize /2 - 20
-    buildBase = new MovingEntity(H.pt.setXY(p,p),0,H.origin,C.baseAngVel)
+    buildBase = new MovingEntity(H.pt.setXY(C.buildBaseLocation[0],
+                C.buildBaseLocation[1]),
+            0,H.origin,C.baseAngVel)
     buildBase.setImg A.img.ship.basebuild
     buildBase.setR buildBase.r_img
     buildBase.setM C.baseMass
@@ -223,8 +227,16 @@ class NavPointEntity extends MovingEntity
         super H.pt1, 0, H.origin, 0
         @friendly = C.navPtDefaults[@name][0]
         @active = C.navPtDefaults[@name][1]
-        @visible = @friendly and @active
+        @visible = false
         @setImg A.img.navPts[@name][@getIndex()]
+        @timer = 0
+        @spawnCheck = false
+        if @friendly
+            @spawnType = "ship"
+        else
+            @spawnType = "rock"
+        @spawn = null
+        @spawnRates = C.navPtSpawnRates[name]
 
     getIndex : ->
         if @friendly and @active
@@ -236,6 +248,12 @@ class NavPointEntity extends MovingEntity
         else
             3
 
+    update : (dt) ->
+        if @active
+            @timer += dt
+        super dt
+
+
     draw : (ctx) ->
         if @visible
             super ctx
@@ -243,6 +261,8 @@ class NavPointEntity extends MovingEntity
     setActive : (@active) ->
         @setImg A.img.navPts[@name][@getIndex()]
 
+    getSpawn : ->
+        false
 
 E.newNavPt = (name) ->
     new NavPointEntity(name)
@@ -342,10 +362,12 @@ class DestructibleEntity extends MovingEntity
         if @damage >= @maxDamage
             @alive = false
             return
-        if @damage
-            @damage = Math.max 0, @damage - @regen
+        @heal dt
         super dt
 
+    heal : (dt) ->
+        if @damage
+            @damage = Math.max 0, @damage - @regen
     setRegen : (reg) -> @regen = reg
     setMaxDmg : (maxDmg) -> @maxDamage = maxDmg
 
@@ -398,8 +420,8 @@ E.RandRock = ->
     type = H.getRandomListValue ["C","S","M"]
     return new RockEntity( type, size, H.pt1, 0, H.pt2, 0)
 
-E.spawnRock = (dt) ->
-    Math.random() < C.rockSpawnChance * dt
+E.spawnRock = ->
+    Math.random() < C.rockSpawnChance
 
 E.calveRock = (oldRock) ->
     if oldRock.size < 1
@@ -439,6 +461,9 @@ class ShipEntity extends DestructibleEntity
         @acc = 0                # acceleration
         @thrust = false         # thrusting?
 
+        @canDock = false
+        @docking = 0
+        @docked = false
 
     update : (dt) ->
         if @invincible
@@ -447,9 +472,12 @@ class ShipEntity extends DestructibleEntity
             @vel.transPolar @acc,@a
         if @drag
             @vel.scale (1-@drag*dt)
+        if @docking
+            @docking += dt
+            @vel.scale (1-C.shipDockingDrag*dt)
+            if @docking > C.shipDockingTime
+                @docked = true
         super dt
-
-
 
     applyDamage : (dmg) ->
         if @invincible > 0
@@ -458,6 +486,31 @@ class ShipEntity extends DestructibleEntity
             @invincible = @invincibleMax
             super dmg
 
+    beginDocking : ->
+        if @canDock
+            @docking += 1
+        else
+            @docking = 0
+
+    stopDocking : ->
+        @docking = 0
+
+
+
+
+
+
+class TransportShipEntity extends ShipEntity
+
+    constructor : (@start,@destination) ->
+        @hasDocked = false
+
+        @canWarp = false
+        @warping = 0
+        @warped = false
+
+
+
 
 
 
@@ -465,6 +518,8 @@ class PlayerShipEntity extends ShipEntity
 
     constructor : (type,faction,pos,a,vel,va) ->
         super type,faction,pos,a,vel,va
+
+        @isPlayer = true
 
         @beamTriggered = 0
         @beamCoolDown = 0
@@ -479,25 +534,35 @@ class PlayerShipEntity extends ShipEntity
         @tracBeamOn = true
         @tracBeamCoolDown = 0
 
+        @fuel = C.shipFuelMax / 2
+        @fuelMax = C.shipFuelMax
+
     update : (dt) ->
+        if @fuel < C.shipFuelMax
+            if @beamEnergy
+                @beamEnergy = Math.max 0, @beamEnergy - dt * @beamEnergyRegen
+                @fuel += dt
         if @beamCoolDown
             @beamCoolDown = Math.max 0, @beamCoolDown - dt
         if @tracBeamCoolDown
             @tracBeamCoolDown = Math.max 0, @tracBeamCoolDown - dt
-        if @beamEnergy
-            @beamEnergy = Math.max 0, @beamEnergy - dt * @beamEnergyRegen
-        if @tarBeamOn
-            @tarBeam.update(this)
         super dt
+
+    heal : (dt) ->
+        if @damage and @fuel < C.shipFuelMax
+            @damage = Math.max 0, @damage - @regen * dt
+            @fuel += dt
 
     draw : (ctx) ->
         if @tarBeamOn
+            @tarBeam.update(this)
             @tarBeam.draw ctx
         super ctx
 
     kill : ->
         @beamEnergy = @beamEnergyMax
         @damage = @maxDamage
+        @fuel = @fuelMax
         @beamCoolDown = C.beamCoolDown
         @tracBeamCoolDown = C.tracBeamCoolDown
         super()
@@ -534,8 +599,34 @@ class PlayerShipEntity extends ShipEntity
         if @beamTriggered
             @beamTriggered -= 1
 
+    refuel : (amount = 0) ->
+        if amount
+            @fuel = Math.max 0, @fuel - amount
+        else
+            @fuel = 0
+
+    recharge : (amount = 0) ->
+        if amount
+            @beamEnergy = Math.max 0, @beamEnergy - amount
+        else
+            @beamEnergy = 0
+
+    repair : (amount = 0) ->
+        if amount
+            @damage = Math.max 0, @damage - amount
+        else
+            @damage = 0
+
+    restoreFull : ->
+        @refuel()
+        @recharge()
+        @repair()
+
+    log : ->
+        console.log @pos
 
 E.PlayerShip = ->
     playerShip = new PlayerShipEntity("ray","civ",
-            H.origin,H.HALFPI,H.pt.setXY(0,0.5),0)
+            H.pt1.setXY( -C.tileSize/4+50 ,  C.tileSize/4+50), H.HALFPI,
+            H.pt2.setXY(0,C.shipInitialVeloctiy), 0)
     return playerShip

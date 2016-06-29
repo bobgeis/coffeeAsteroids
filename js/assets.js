@@ -81,6 +81,7 @@
     A.createTracPulse();
     A.createCrystalList();
     A.createLifepodList();
+    A.createMousepodList();
     return A.createNavPoints();
   };
 
@@ -234,11 +235,21 @@
   A.createLifepodList = function() {
     var lifepod;
     lifepod = [];
-    lifepod.push(A.img.space.lb3);
-    lifepod.push(A.img.space.lb2);
-    lifepod.push(A.img.space.lb1);
-    lifepod.push(A.img.space.lb0);
+    lifepod.push(A.img.space.lp3);
+    lifepod.push(A.img.space.lp2);
+    lifepod.push(A.img.space.lp1);
+    lifepod.push(A.img.space.lp0);
     return A.img.lifepod = lifepod;
+  };
+
+  A.createMousepodList = function() {
+    var mousepod;
+    mousepod = [];
+    mousepod.push(A.img.space.mp3);
+    mousepod.push(A.img.space.mp2);
+    mousepod.push(A.img.space.mp1);
+    mousepod.push(A.img.space.mp0);
+    return A.img.mousepod = mousepod;
   };
 
   A.createNavPoints = function() {

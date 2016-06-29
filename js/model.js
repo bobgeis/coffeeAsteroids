@@ -25,6 +25,8 @@
       var i, j, len, len1, name, ref, ref1;
       this.player = null;
       this.gameOver = false;
+      this.spawnTimer = 0;
+      this.changeMode = 0;
       this.bg = [];
       this.bases = [];
       this.ships = [];
@@ -46,6 +48,8 @@
       this.bg.push(new E.BgTile());
       this.hud.push(new U.shipShieldBar(this.player));
       this.hud.push(new U.shipBeamEnergyBar(this.player));
+      this.hud.push(new U.shipFuelBar(this.player));
+      this.hud.push(new U.dockMessage(this.player));
       ref = C.navPtNames;
       for (i = 0, len = ref.length; i < len; i++) {
         name = ref[i];
@@ -54,7 +58,7 @@
       ref1 = C.mousePtNames;
       for (j = 0, len1 = ref1.length; j < len1; j++) {
         name = ref1[j];
-        this.mousePts.push(E.newNavPt(name));
+        this.navPts.push(E.newNavPt(name));
       }
     }
 
@@ -75,7 +79,7 @@
 
     Model.prototype.update = function(dt) {
       "update by dt";
-      var base, dmg, i, item, j, k, l, len, len1, len2, len3, len4, len5, len6, len7, len8, list, loot, m, n, o, p, pt, q, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, rock, ship, shot;
+      var base, dmg, i, item, j, k, l, len, len1, len2, len3, len4, len5, len6, len7, len8, len9, list, loot, m, n, o, p, pt, q, r, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, rock, ship, shot;
       ref = this.getEntityLists();
       for (i = 0, len = ref.length; i < len; i++) {
         list = ref[i];
@@ -117,25 +121,43 @@
             }
           }
         }
+        if (ship.warped) {
+          this.shipWarped(ship);
+        }
+        ship.canDock = false;
+        ref4 = this.bases;
+        for (n = 0, len5 = ref4.length; n < len5; n++) {
+          base = ref4[n];
+          if (ship.collide(base)) {
+            ship.canDock = true;
+            if (ship.docked) {
+              if (ship.isPlayer) {
+                this.playerDocked(base);
+              } else {
+                this.shipDocked(ship, base);
+              }
+            }
+          }
+        }
       }
-      ref4 = this.bases;
-      for (n = 0, len5 = ref4.length; n < len5; n++) {
-        base = ref4[n];
-        ref5 = this.rocks;
-        for (o = 0, len6 = ref5.length; o < len6; o++) {
-          rock = ref5[o];
+      ref5 = this.bases;
+      for (o = 0, len6 = ref5.length; o < len6; o++) {
+        base = ref5[o];
+        ref6 = this.rocks;
+        for (p = 0, len7 = ref6.length; p < len7; p++) {
+          rock = ref6[p];
           if (base.collide(rock)) {
             rock.bounce(base);
           }
         }
       }
-      ref6 = this.shots;
-      for (p = 0, len7 = ref6.length; p < len7; p++) {
-        shot = ref6[p];
+      ref7 = this.shots;
+      for (q = 0, len8 = ref7.length; q < len8; q++) {
+        shot = ref7[q];
         if (shot.damaging) {
-          ref7 = this.rocks;
-          for (q = 0, len8 = ref7.length; q < len8; q++) {
-            rock = ref7[q];
+          ref8 = this.rocks;
+          for (r = 0, len9 = ref8.length; r < len9; r++) {
+            rock = ref8[r];
             if (shot.hit(rock)) {
               if (rock.applyDamage(shot.getDamage())) {
                 rock.kill();
@@ -147,10 +169,11 @@
           }
         }
       }
-      if (E.spawnRock(dt)) {
-        rock = new E.RandRock();
-        this.rocks.push(rock);
-        this.flash(rock);
+      if (this.spawnTimer > 100) {
+        this.spawnTimer = 0;
+        this.maybeTimerSpawn();
+      } else {
+        this.spawnTimer += dt;
       }
       this.shots = _.filter(this.shots, isAlive);
       this.rocks = _.filter(this.rocks, isAlive);
@@ -159,7 +182,8 @@
       this.loot = _.filter(this.loot, isAlive);
       this.flashes = _.filter(this.flashes, isAlive);
       if (!this.player.alive) {
-        return this.gameOver = true;
+        this.gameOver = true;
+        return this.changeMode = 1;
       }
     };
 
@@ -176,6 +200,9 @@
           results1 = [];
           for (j = 0, len1 = list.length; j < len1; j++) {
             entity = list[j];
+            if (!entity.draw) {
+              console.log(entity);
+            }
             results1.push(entity.draw(ctx));
           }
           return results1;
@@ -198,10 +225,18 @@
         return this.player.tarBeamOn = false;
       } else if (cmd === 6) {
         return this.player.activateTarBeam();
+      } else if (cmd === 7) {
+        return this.player.beginDocking();
       } else if (cmd === 11) {
         return this.player.va = 0;
       } else if (cmd === 13) {
         return this.player.setAcc(0);
+      } else if (cmd === 17) {
+        return this.player.stopDocking();
+      } else if (cmd === 97) {
+        return this.player.restoreFull();
+      } else if (cmd === 98) {
+        return this.log();
       } else if (cmd === 99) {
         this.player.kill();
         this.explode(this.player);
@@ -253,6 +288,30 @@
 
     Model.prototype.tracBeam = function(pos1, pos2) {
       return this.flashes.push(B.newTractorBeam(pos1, pos2));
+    };
+
+    Model.prototype.maybeTimerSpawn = function() {
+      var rock;
+      if (E.spawnRock()) {
+        rock = new E.RandRock();
+        this.rocks.push(rock);
+        return this.flash(rock);
+      }
+    };
+
+    Model.prototype.playerDocked = function(base) {
+      this.player.docked = false;
+      this.player.docking = 0;
+      this.player.refuel();
+      this.changeMode = 2;
+    };
+
+    Model.prototype.shipDocked = function(ship, base) {};
+
+    Model.prototype.shipWarped = function(ship) {};
+
+    Model.prototype.log = function() {
+      return this.player.log();
     };
 
     return Model;

@@ -54,27 +54,84 @@ class BarGraph
 
 
 U.shipShieldBar = (ship) ->
-    safeColor =     [100,120,255,1.0]
-    dangerColor =   [255,120,100,1.0]
+    # safeColor =     [100,120,255,1.0]
+    # dangerColor =   [255,120,100,1.0]
+    safeColor =     [100,160,255,1.0]
+    dangerColor =   [255,100,150,1.0]
     bar = new BarGraph("Shields",ship,"damage","maxDamage",
             dangerColor,safeColor,10,10)
     return bar
 
 U.shipBeamEnergyBar = (ship) ->
+    fullColor =     [ 50,250,250,1.0]
+    emptyColor =    [255,128,  0,1.0]
+    bar = new BarGraph("Charge",ship,"beamEnergy","beamEnergyMax",
+            emptyColor,fullColor,10,40)
+    return bar
+
+U.shipFuelBar = (ship) ->
+    # fullColor =     [100,255,255,1.0]
+    # emptyColor =    [128,128,  0,1.0]
     fullColor =     [100,255,100,1.0]
     emptyColor =    [255,175,  0,1.0]
-    bar = new BarGraph("Energy",ship,"beamEnergy","beamEnergyMax",
-            emptyColor,fullColor,10,40)
+    bar = new BarGraph("Reactant",ship,"fuel","fuelMax",
+            emptyColor,fullColor,10,70)
     return bar
 
 
 
-drawText = (ctx,text,size,x,y) ->
-        ctx.fillStyle = "#FFFFFF"
-        ctx.font = "#{Math.floor(size)}px Arial"
+class PlayMessage
+
+    constructor : (@message,@x,@y, @visible=true, @size=15, @color="#FFFFFF")->
+
+    update : (dt) -> return
+    draw : (ctx) ->
+        if @visible
+            drawText ctx, @message, @x, @y, @size, @color
+
+
+class DockMessage extends PlayMessage
+
+    constructor : (@player) ->
+        super("Hold [Enter] to dock.",C.winWid/2, C.winHei/2+130)
+
+    draw : (ctx) ->
+        if @player.canDock
+            drawText ctx, @message, @x, @y, @size, @color
+
+U.dockMessage = (player) ->
+    new DockMessage(player)
+
+
+drawText = (ctx,text,x,y,size=15,color="#FFFFFF",font="Arial") ->
+        ctx.fillStyle = color
+        ctx.font = "#{Math.floor(size)}px #{font}"
         w = Math.floor((ctx.measureText text).width/2)
         ctx.fillText text, Math.floor(x)-w,Math.floor(y)-Math.floor(size)
 
 
 
+class MessageWindow
 
+    constructor : (@dx, @dy, @bgColor, @fgColor) ->
+        @bodyText = ""
+        @headerText = ""
+        @footerText = ""
+
+    update : (dt) -> return
+
+    draw : (ctx) ->
+        ctx.fillStyle = @bgColor
+        cx = ctx.canvas.width/2
+        cy = ctx.canvas.height/2
+        ctx.fillRect(cx - @dx/2, cy - @dy/2, @dx, @dy)
+
+    setBodyText : (@bodyText) ->
+    setHeaderText : (@headerText) ->
+    setFooterText : (@footerText) ->
+
+
+U.dockMessageWindow = ->
+    msg = new MessageWindow(400,400,'#000000','#FFFFFF')
+    msg.setBodyText "text"
+    msg

@@ -54,6 +54,22 @@
 
   A.space.lb3 = "./asset/img/space/lb3.png";
 
+  A.space.lp0 = "./asset/img/space/lp0.png";
+
+  A.space.lp1 = "./asset/img/space/lp1.png";
+
+  A.space.lp2 = "./asset/img/space/lp2.png";
+
+  A.space.lp3 = "./asset/img/space/lp3.png";
+
+  A.space.mp0 = "./asset/img/space/mp0.png";
+
+  A.space.mp1 = "./asset/img/space/mp1.png";
+
+  A.space.mp2 = "./asset/img/space/mp2.png";
+
+  A.space.mp3 = "./asset/img/space/mp3.png";
+
   A.star = {};
 
   A.star.dA = "./asset/img/star/dA.png";

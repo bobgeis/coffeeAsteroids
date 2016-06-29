@@ -19,7 +19,7 @@
 
   C.halfWinHei = C.winHei / 2;
 
-  C.tileSize = 2000;
+  C.tileSize = 2500;
 
   C.tileDensity = 15;
 
@@ -39,15 +39,27 @@
 
   C.shipDrag = 0.4 / 1000;
 
+  C.shipDockingDrag = 5 / 1000;
+
+  C.shipDockingTime = 1000;
+
   C.shipMass = 10;
 
-  C.shipShields = 15;
+  C.shipShields = 5;
 
-  C.shipRegen = 3 / 1000;
+  C.shipRegen = 1 / 2500;
 
   C.shipBeamCoolDown = 1 * 1000;
 
   C.shipInvincibleDuration = 300;
+
+  C.shipInitialVeloctiy = 0.5;
+
+  C.shipFuelMax = 180 * 1000;
+
+  C.shipDockRadius = 50;
+
+  C.shipWarpRadius = 120;
 
   C.beamDamage = 1;
 
@@ -101,7 +113,7 @@
 
   C.rockMasses = [5, 10, 20, 40, 100];
 
-  C.rockSpawnChance = 3 / 1000;
+  C.rockSpawnChance = 0.3;
 
   C.rockMass = 25;
 
@@ -204,26 +216,36 @@
 
   C.lifepodSpin = 4 / 1000;
 
-  C.navPtNames = ["Alpha Octolindis", "Locus 1457"];
+  C.luckyBaseLocation = [-C.tileSize / 4 + 50, -C.tileSize / 4 + 50];
 
-  C.mousePtNames = ["Locus 3250", "The Gray Orchard", "Unknown"];
+  C.buildBaseLocation = [C.tileSize / 4 - 30, C.tileSize / 4 - 70];
+
+  C.navPtNames = ["Alpha Octolindis", "New Dilgan"];
+
+  C.mousePtNames = ["Locus 3250", "Rust Belt", "Grim Orchard"];
 
   C.navPtLocations = {
-    "Alpha Octolindis": [0, 0],
-    "Locus 1457": [800, 300],
-    "New Dilgan": [0, 0],
-    "Locus 3250": [500, 500],
-    "The Gray Orchard": [-500, 500],
-    "Unknown": [1500, 1500]
+    "Alpha Octolindis": [-C.tileSize / 4 + 100, C.tileSize / 4 - 50],
+    "New Dilgan": [C.tileSize / 4 - 70, -C.tileSize / 4 + 30],
+    "Locus 3250": [-50, -50],
+    "Rust Belt": [C.tileSize / 2 - 52, 150],
+    "Grim Orchard": [120, C.tileSize / 2 - 137]
   };
 
   C.navPtDefaults = {
     "Alpha Octolindis": [true, true],
-    "Locus 1457": [true, false],
-    "New Dilgan": [true, true],
+    "New Dilgan": [true, false],
     "Locus 3250": [false, true],
-    "The Gray Orchard": [false, false],
-    "Unknown": [false, false]
+    "Grim Orchard": [false, false],
+    "Rust Belt": [false, false]
+  };
+
+  C.navPtSpawnRates = {
+    "Alpha Octolindis": [true, true],
+    "New Dilgan": [true, false],
+    "Locus 3250": [false, true],
+    "Rust Belt": [false, false],
+    "Grim Orchard": [false, false]
   };
 
   C.navPtRadius = 120;

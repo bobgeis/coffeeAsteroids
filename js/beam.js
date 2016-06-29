@@ -172,17 +172,14 @@
     extend(TargetingBeam, superClass);
 
     function TargetingBeam(obj) {
-      this.r = C.tarBeamRange;
       TargetingBeam.__super__.constructor.call(this, H.newLineRA(obj.pos, this.r, -obj.a));
-      this.line.start = obj.pos;
       this.wid = C.tarBeamWidth;
       this.color = C.tarBeamColor;
       this.on = true;
     }
 
     TargetingBeam.prototype.update = function(obj) {
-      this.a = -obj.a;
-      return this.line.stop.setPolar(this.r, this.a).add(this.line.start.setPos(obj.pos));
+      return this.line.setLineRA(obj.pos, C.tarBeamRange, -obj.a);
     };
 
     TargetingBeam.prototype.draw = function(ctx) {

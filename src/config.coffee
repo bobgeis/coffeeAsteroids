@@ -18,7 +18,7 @@ C.halfWinWid = C.winWid/2
 C.halfWinHei = C.winHei/2
 
 # bg star field
-C.tileSize = 2000
+C.tileSize = 2500
 C.tileDensity = 15	# stars per 100px100px sq
 C.tileCount = Math.floor(C.tileDensity*C.tileSize*C.tileSize/10000)
 C.spectralTypes = [
@@ -39,11 +39,17 @@ C.shipAcc = 5/1000              # px/ms/ms
 C.shipRetro = C.shipAcc/3       # px/ms/ms
 C.shipAngVel = 2/1000           # rad/ms
 C.shipDrag = 0.4/1000           # fraction reduced /ms
+C.shipDockingDrag = 5/1000      # ""
+C.shipDockingTime = 1000        # ms time it takes to dock
 C.shipMass = 10                 # arbitrary mass units
-C.shipShields = 15              # arbitrary damage units
-C.shipRegen = 3/1000            # dmg/ms
+C.shipShields =  5              # arbitrary damage units
+C.shipRegen = 1/2500            # dmg/ms
 C.shipBeamCoolDown = 1 * 1000
-C.shipInvincibleDuration = 300 # ms  minimum time bt taking damage for ships
+C.shipInvincibleDuration = 300  # ms  minimum time bt taking damage for ships
+C.shipInitialVeloctiy = 0.5     # px/ms
+C.shipFuelMax = 180 * 1000      # ms
+C.shipDockRadius = 50           # px
+C.shipWarpRadius = 120          # px
 
 # disruptor beam attributes
 C.beamDamage = 1                #
@@ -100,8 +106,8 @@ C.rockVel = 200/1000            # px/ms
 C.rockRad = 30                  # px
 C.rockRadii = [12,15,20,26,36]    # radii in px from smallest to largest
 C.rockMasses = [5,10,20,40,100]
-C.rockSpawnChance = 3/1000      # spawn chance /ms
-C.rockMass = 25                # mass
+C.rockSpawnChance = 0.3         # spawn chance /s
+C.rockMass = 25                 # mass
 C.rockArmor = 5                 # dmg
 C.rockRegen = 1/100             # dmg/ms
 C.rockMaxDamage =
@@ -232,38 +238,55 @@ C.lifepodSpin = 4/1000      # rad/ms
 
 
 
+C.luckyBaseLocation = [-C.tileSize/4+50 , -C.tileSize/4+50]
+C.buildBaseLocation = [C.tileSize/4-30 ,  C.tileSize/4-70]
+# C.mouseBaseLocation = [C.tileSize/4-30 ,  C.tileSize/4-70]
+
 C.navPtNames =                      # friendly nav points
     [
         "Alpha Octolindis"
-        "Locus 1457"
+        "New Dilgan"
+        # "Locus 1457"
     ]
 
 C.mousePtNames =                    # unfriendly nav points
     [
         "Locus 3250"
-        "The Gray Orchard"
-        "Unknown"
+        "Rust Belt"
+        "Grim Orchard"
     ]
 
 C.navPtLocations =
     {                           # x  , y
-        "Alpha Octolindis"  : [   0 ,    0]
-        "Locus 1457"        : [ 800 ,  300]
-        "New Dilgan"        : [   0 ,    0]
-        "Locus 3250"        : [ 500 ,  500]
-        "The Gray Orchard"  : [-500 ,  500]
-        "Unknown"           : [1500 , 1500]
+        "Alpha Octolindis"  : [ -C.tileSize/4+100 ,  C.tileSize/4-50]
+        # "Locus 1457"        : [ 800 ,  300]
+        "New Dilgan"        : [  C.tileSize/4-70 , -C.tileSize/4+30]
+        "Locus 3250"        : [  -50 ,  -50]
+        # "Locus 3250"        : [ 500 ,  500]
+        "Rust Belt"         : [ C.tileSize/2-52 , 150]
+        "Grim Orchard"      : [ 120 ,  C.tileSize/2-137]
     }
 
 C.navPtDefaults =
     {                           # friendly  , active
         "Alpha Octolindis"  : [true  , true]
-        "Locus 1457"        : [true  , false]
-        "New Dilgan"        : [true  , true]
+        "New Dilgan"        : [true  , false]
+        # "Locus 1457"        : [true  , false]
         "Locus 3250"        : [false , true]
-        "The Gray Orchard"  : [false , false]
-        "Unknown"           : [false , false]
+        "Grim Orchard"      : [false , false]
+        "Rust Belt"         : [false , false]
     }
+
+C.navPtSpawnRates =
+    {                           # friendly  , active
+        "Alpha Octolindis"  : [true  , true]
+        "New Dilgan"        : [true  , false]
+        # "Locus 1457"        : [true  , false]
+        "Locus 3250"        : [false , true]
+        "Rust Belt"          : [false , false]
+        "Grim Orchard"      : [false , false]
+    }
+
 
 C.navPtRadius = 120
 C.navPtThickness = 2

@@ -18,11 +18,15 @@ U = _first.request('hud')
 
 
 class Model
+
+
     constructor : ->
         "Build the initial state."
 
         @player = null
         @gameOver = false
+        @spawnTimer = 0
+        @changeMode = 0
 
         @bg = []
         @bases = []
@@ -46,10 +50,12 @@ class Model
         @bg.push new E.BgTile()
         @hud.push new U.shipShieldBar @player
         @hud.push new U.shipBeamEnergyBar @player
+        @hud.push new U.shipFuelBar @player
+        @hud.push new U.dockMessage @player
         for name in C.navPtNames
             @navPts.push E.newNavPt(name)
         for name in C.mousePtNames
-            @mousePts.push E.newNavPt(name)
+            @navPts.push E.newNavPt(name)
 
 
     getEntityLists : ->
@@ -83,6 +89,7 @@ class Model
         # collisions
         # ships with loot
         # ships with rocks
+        # ships with bases
         for ship in @ships
             if ship.beamTriggered and ship.canFire()
                 @fireDisruptor ship
@@ -102,6 +109,17 @@ class Model
                         @explode ship
                         ship.kill()
                         @createLifepods ship
+            if ship.warped
+                @shipWarped ship
+            ship.canDock = false
+            for base in @bases
+                if ship.collide base
+                    ship.canDock = true
+                    if ship.docked
+                        if ship.isPlayer
+                            @playerDocked base
+                        else
+                            @shipDocked ship, base
         # rocks with bases
         for base in @bases
             for rock in @rocks
@@ -117,11 +135,19 @@ class Model
                             @explode rock
                             @calveRock rock
                             @createCrystal rock
-        # maybe spawn rock
-        if E.spawnRock(dt)
-            rock = new E.RandRock()
-            @rocks.push rock
-            @flash rock
+        # maybe spawn at nav points
+        # for navPt in @navPts
+        #     spawn = navPt.getSpawn()
+        #     if spawn and navPt.spawnType == "rock"
+        #         @rocks.push spawn
+        #         @flash spawn
+
+
+        if @spawnTimer > 100
+            @spawnTimer = 0
+            @maybeTimerSpawn()
+        else
+            @spawnTimer += dt
         # cull
         @shots = _.filter @shots, isAlive
         @rocks = _.filter @rocks, isAlive
@@ -131,6 +157,7 @@ class Model
         @flashes = _.filter @flashes, isAlive
         if not @player.alive
             @gameOver = true
+            @changeMode = 1
 
     draw : (ctx) ->
         "Draw the model."
@@ -139,6 +166,8 @@ class Model
         # draw entities in order
         for list in @getEntityLists()
             for entity in list
+                if not entity.draw
+                    console.log entity
                 entity.draw(ctx)
         # draw hud
 
@@ -153,14 +182,22 @@ class Model
             @player.setAcc -C.shipRetro
         else if cmd == 5
             @player.activateBeam()
-            # @fireDisruptor @player
             @player.tarBeamOn = false
         else if cmd == 6
             @player.activateTarBeam()
+        else if cmd == 7
+            @player.beginDocking()
         else if cmd == 11
             @player.va = 0
         else if cmd == 13
             @player.setAcc 0
+        else if cmd == 17
+            @player.stopDocking()
+        # commands intended for debugging
+        else if cmd == 97
+            @player.restoreFull()
+        else if cmd == 98
+            @log()
         else if cmd == 99
             @player.kill()
             @explode @player
@@ -194,6 +231,30 @@ class Model
 
     tracBeam : (pos1,pos2) ->
         @flashes.push B.newTractorBeam pos1, pos2
+
+
+    maybeTimerSpawn : ->
+        if E.spawnRock()
+            rock = new E.RandRock()
+            @rocks.push rock
+            @flash rock
+
+    playerDocked : (base) ->
+        @player.docked = false
+        @player.docking = 0
+        @player.refuel()
+        @changeMode = 2
+        return
+
+    shipDocked : (ship, base) ->
+        return
+
+    shipWarped : (ship) ->
+        return
+
+    # for debugging
+    log : ->
+        @player.log()
 
 
 M.Model = Model
