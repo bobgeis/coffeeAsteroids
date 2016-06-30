@@ -497,6 +497,14 @@ H.cloneCollide = (pos1, pos2, r) ->
                 return clone
     return false
 
+
+H.drawText = (ctx,text,x,y,size=15,color="#FFFFFF",font="Arial") ->
+        ctx.fillStyle = color
+        ctx.font = "#{Math.floor(size)}px #{font}"
+        w = Math.floor((ctx.measureText text).width/2)
+        ctx.fillText text, Math.floor(x)-w,Math.floor(y)-Math.floor(size)
+
+
 testHelperOn = false
 if testHelperOn
     # test of new Points vs object "pool"

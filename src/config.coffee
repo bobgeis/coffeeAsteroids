@@ -112,9 +112,9 @@ C.rockArmor = 5                 # dmg
 C.rockRegen = 1/100             # dmg/ms
 C.rockMaxDamage =
     {
-        C : [1.0, 1.0, 1.0, 1.5, 2.0]
-        S : [1.0, 1.5, 2.0, 2.5, 3.0]
-        M : [2.0, 2.5, 3.0, 3.5, 4.0]
+        C : [1.0, 1.0, 1.5, 2.0, 2.5]
+        S : [1.5, 2.0, 2.5, 3.0, 3.5]
+        M : [2.5, 3.0, 3.5, 4.0, 4.5]
     }
 C.rockBaseColors =
     {
@@ -238,7 +238,7 @@ C.lifepodSpin = 4/1000      # rad/ms
 
 
 
-C.luckyBaseLocation = [-C.tileSize/4+50 , -C.tileSize/4+50]
+C.luckyBaseLocation = [-C.tileSize/4+50 , -C.tileSize/4+140]
 C.buildBaseLocation = [C.tileSize/4-30 ,  C.tileSize/4-70]
 # C.mouseBaseLocation = [C.tileSize/4-30 ,  C.tileSize/4-70]
 
@@ -258,7 +258,7 @@ C.mousePtNames =                    # unfriendly nav points
 
 C.navPtLocations =
     {                           # x  , y
-        "Alpha Octolindis"  : [ -C.tileSize/4+100 ,  C.tileSize/4-50]
+        "Alpha Octolindis"  : [ -C.tileSize/4+100 ,  C.tileSize/4-140]
         # "Locus 1457"        : [ 800 ,  300]
         "New Dilgan"        : [  C.tileSize/4-70 , -C.tileSize/4+30]
         "Locus 3250"        : [  -50 ,  -50]

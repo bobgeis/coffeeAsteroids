@@ -57,6 +57,13 @@ class Model
         for name in C.mousePtNames
             @navPts.push E.newNavPt(name)
 
+        @cargo =
+            {
+                crystal :   [0,0,0]
+                lifepod :   [0,0,0]
+                mousepod :  [0,0,0]
+            }
+        @hud.push new U.newCargoMonitor @cargo
 
     getEntityLists : ->
         # get a list of all the entity lists
@@ -102,6 +109,7 @@ class Model
                             @tracBeam ship.pos, pt
                             loot.kill()
                             ship.setJustTractored loot
+                            @pickupLoot loot
             for rock in @rocks
                 if ship.collide rock
                     dmg = Math.abs(ship.bounce rock)
@@ -239,12 +247,24 @@ class Model
             @rocks.push rock
             @flash rock
 
+
+    pickupLoot : (loot) ->
+        type = loot.type
+        @cargo[type][0] += 1
+
     playerDocked : (base) ->
         @player.docked = false
         @player.docking = 0
         @player.refuel()
         @changeMode = 2
-        return
+        if base.name == "lucky"
+            @cargo.lifepod[1] += @cargo.lifepod[0]
+            @cargo.lifepod[0] = 0
+        else
+            @cargo.crystal[1] += @cargo.crystal[0]
+            @cargo.crystal[0] = 0
+        @cargo.mousepod[1] += @cargo.mousepod[0]
+        @cargo.mousepod[0] = 0
 
     shipDocked : (ship, base) ->
         return
@@ -255,6 +275,7 @@ class Model
     # for debugging
     log : ->
         @player.log()
+        console.log @cargo
 
 
 M.Model = Model

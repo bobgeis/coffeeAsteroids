@@ -204,6 +204,7 @@ E.LuckyBase = ->
     luckyBase.setImg A.img.ship.baselucky
     luckyBase.setR luckyBase.r_img
     luckyBase.setM C.baseMass
+    luckyBase.name = "lucky"
     return luckyBase
 
 E.BuildBase = ->
@@ -214,6 +215,7 @@ E.BuildBase = ->
     buildBase.setImg A.img.ship.basebuild
     buildBase.setR buildBase.r_img
     buildBase.setM C.baseMass
+    buildBase.name = "build"
     return buildBase
 
 
@@ -368,12 +370,13 @@ class DestructibleEntity extends MovingEntity
     heal : (dt) ->
         if @damage
             @damage = Math.max 0, @damage - @regen
+
     setRegen : (reg) -> @regen = reg
     setMaxDmg : (maxDmg) -> @maxDamage = maxDmg
 
 
     applyDamage : (dmg) ->
-        @damage += dmg
+        @damage += Math.max 1, dmg
         return @isDestroyed()
 
     isDestroyed : -> @damage >= @maxDamage
@@ -541,7 +544,7 @@ class PlayerShipEntity extends ShipEntity
         if @fuel < C.shipFuelMax
             if @beamEnergy
                 @beamEnergy = Math.max 0, @beamEnergy - dt * @beamEnergyRegen
-                @fuel += dt
+                @fuel += dt / 2
         if @beamCoolDown
             @beamCoolDown = Math.max 0, @beamCoolDown - dt
         if @tracBeamCoolDown
@@ -551,7 +554,7 @@ class PlayerShipEntity extends ShipEntity
     heal : (dt) ->
         if @damage and @fuel < C.shipFuelMax
             @damage = Math.max 0, @damage - @regen * dt
-            @fuel += dt
+            @fuel += dt * 2
 
     draw : (ctx) ->
         if @tarBeamOn

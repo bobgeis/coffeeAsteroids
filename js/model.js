@@ -60,6 +60,12 @@
         name = ref1[j];
         this.navPts.push(E.newNavPt(name));
       }
+      this.cargo = {
+        crystal: [0, 0, 0],
+        lifepod: [0, 0, 0],
+        mousepod: [0, 0, 0]
+      };
+      this.hud.push(new U.newCargoMonitor(this.cargo));
     }
 
     Model.prototype.getEntityLists = function() {
@@ -105,6 +111,7 @@
                 this.tracBeam(ship.pos, pt);
                 loot.kill();
                 ship.setJustTractored(loot);
+                this.pickupLoot(loot);
               }
             }
           }
@@ -299,11 +306,26 @@
       }
     };
 
+    Model.prototype.pickupLoot = function(loot) {
+      var type;
+      type = loot.type;
+      return this.cargo[type][0] += 1;
+    };
+
     Model.prototype.playerDocked = function(base) {
       this.player.docked = false;
       this.player.docking = 0;
       this.player.refuel();
       this.changeMode = 2;
+      if (base.name === "lucky") {
+        this.cargo.lifepod[1] += this.cargo.lifepod[0];
+        this.cargo.lifepod[0] = 0;
+      } else {
+        this.cargo.crystal[1] += this.cargo.crystal[0];
+        this.cargo.crystal[0] = 0;
+      }
+      this.cargo.mousepod[1] += this.cargo.mousepod[0];
+      return this.cargo.mousepod[0] = 0;
     };
 
     Model.prototype.shipDocked = function(ship, base) {};
@@ -311,7 +333,8 @@
     Model.prototype.shipWarped = function(ship) {};
 
     Model.prototype.log = function() {
-      return this.player.log();
+      this.player.log();
+      return console.log(this.cargo);
     };
 
     return Model;

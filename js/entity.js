@@ -245,6 +245,7 @@
     luckyBase.setImg(A.img.ship.baselucky);
     luckyBase.setR(luckyBase.r_img);
     luckyBase.setM(C.baseMass);
+    luckyBase.name = "lucky";
     return luckyBase;
   };
 
@@ -255,6 +256,7 @@
     buildBase.setImg(A.img.ship.basebuild);
     buildBase.setR(buildBase.r_img);
     buildBase.setM(C.baseMass);
+    buildBase.name = "build";
     return buildBase;
   };
 
@@ -451,7 +453,7 @@
     };
 
     DestructibleEntity.prototype.applyDamage = function(dmg) {
-      this.damage += dmg;
+      this.damage += Math.max(1, dmg);
       return this.isDestroyed();
     };
 
@@ -642,7 +644,7 @@
       if (this.fuel < C.shipFuelMax) {
         if (this.beamEnergy) {
           this.beamEnergy = Math.max(0, this.beamEnergy - dt * this.beamEnergyRegen);
-          this.fuel += dt;
+          this.fuel += dt / 2;
         }
       }
       if (this.beamCoolDown) {
@@ -657,7 +659,7 @@
     PlayerShipEntity.prototype.heal = function(dt) {
       if (this.damage && this.fuel < C.shipFuelMax) {
         this.damage = Math.max(0, this.damage - this.regen * dt);
-        return this.fuel += dt;
+        return this.fuel += dt * 2;
       }
     };
 

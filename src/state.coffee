@@ -63,7 +63,7 @@ S.preload = {
     draw : (ctx) ->
         ctx.fillStyle = "#000000"
         ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height)
-        drawText(ctx,"Loading",30,ctx.canvas.width/2,ctx.canvas.height/2)
+        H.drawText(ctx,"Loading",ctx.canvas.width/2,ctx.canvas.height/2,30)
     update : (dt) ->
         if A.loadingFinished()
             A.afterLoad()
@@ -91,8 +91,8 @@ S.splash = {
         img = A.img.ship.rayciv
         a = H.HALFPI
         H.drawImg ctx, img, ctx.canvas.width/2, ctx.canvas.height/2, a
-        drawText ctx, "Press [Enter] to start.",15,
-                 ctx.canvas.width/2, ctx.canvas.height/2+130
+        H.drawText ctx, "Press [Enter] to start.",
+                 ctx.canvas.width/2, ctx.canvas.height/2+130, 15
     update : (dt) ->
         @y = @y + dt/1.5
         @y = @y % C.tileSize
@@ -177,10 +177,10 @@ S.gameOver = {
         console.log "enter gameOver"
     draw : (ctx) ->
         S.play.draw(ctx)
-        drawText ctx, "You have died. So it goes.", 30,
-                 ctx.canvas.width/2, ctx.canvas.height/2-200
-        drawText ctx, "Press [Escape] to restart.", 15,
-                 ctx.canvas.width/2, ctx.canvas.height/2+130
+        H.drawText ctx, "You have died. So it goes.",
+                 ctx.canvas.width/2, ctx.canvas.height/2-200, 30
+        H.drawText ctx, "Press [Escape] to go to the intro.",
+                 ctx.canvas.width/2, ctx.canvas.height/2+130, 15
     update : (dt) ->
         S.play.model.update(dt)
     input : (type,data) ->
@@ -201,10 +201,10 @@ S.dockMode = {
     draw : (ctx) ->
         S.play.draw(ctx)
         @msg.draw(ctx)
-        drawText ctx, "You are docked.", 30,
-                 ctx.canvas.width/2, ctx.canvas.height/2-200
-        drawText ctx, "Press [Escape] to return.", 15,
-                 ctx.canvas.width/2, ctx.canvas.height/2+130
+        H.drawText ctx, "You are docked.",
+                 ctx.canvas.width/2, ctx.canvas.height/2-200, 30
+        H.drawText ctx, "Press [Escape] to return.",
+                 ctx.canvas.width/2, ctx.canvas.height/2+330, 15
     update : (dt) ->
         return
 
@@ -223,12 +223,11 @@ S.dockMode = {
 
 
 
-
-drawText = (ctx,text,size,x,y) ->
-        ctx.fillStyle = "#FFFFFF"
-        ctx.font = "#{Math.floor(size)}px Arial"
-        w = Math.floor((ctx.measureText text).width/2)
-        ctx.fillText text, Math.floor(x)-w,Math.floor(y)-Math.floor(size)
+# drawText = (ctx,text,size,x,y) ->
+#         ctx.fillStyle = "#FFFFFF"
+#         ctx.font = "#{Math.floor(size)}px Arial"
+#         w = Math.floor((ctx.measureText text).width/2)
+#         ctx.fillText text, Math.floor(x)-w,Math.floor(y)-Math.floor(size)
 
 
 

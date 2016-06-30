@@ -520,6 +520,23 @@
     return false;
   };
 
+  H.drawText = function(ctx, text, x, y, size, color, font) {
+    var w;
+    if (size == null) {
+      size = 15;
+    }
+    if (color == null) {
+      color = "#FFFFFF";
+    }
+    if (font == null) {
+      font = "Arial";
+    }
+    ctx.fillStyle = color;
+    ctx.font = (Math.floor(size)) + "px " + font;
+    w = Math.floor((ctx.measureText(text)).width / 2);
+    return ctx.fillText(text, Math.floor(x) - w, Math.floor(y) - Math.floor(size));
+  };
+
   testHelperOn = false;
 
   if (testHelperOn) {
