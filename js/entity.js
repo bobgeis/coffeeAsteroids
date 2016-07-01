@@ -380,9 +380,9 @@
     return flash;
   };
 
-  E.newTracPulseOnPos = function(pos) {
+  E.newTracPulseOnObj = function(obj) {
     var pulse;
-    pulse = new EphemeralEntity(A.img.tracPulse, pos, 0, H.origin, 0);
+    pulse = new EphemeralEntity(A.img.tracPulse, obj.pos, 0, H.origin, 0);
     pulse.setMaxAge(C.tracBeamDuration);
     return pulse;
   };
@@ -453,7 +453,7 @@
     };
 
     DestructibleEntity.prototype.applyDamage = function(dmg) {
-      this.damage += Math.max(1, dmg);
+      this.damage += Math.max(0.5, Math.min(2, dmg));
       return this.isDestroyed();
     };
 

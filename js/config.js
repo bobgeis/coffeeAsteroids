@@ -51,7 +51,7 @@
 
   C.shipBeamCoolDown = 1 * 1000;
 
-  C.shipInvincibleDuration = 300;
+  C.shipInvincibleDuration = 400;
 
   C.shipInitialVeloctiy = 0.5;
 
@@ -111,7 +111,7 @@
 
   C.rockRadii = [12, 15, 20, 26, 36];
 
-  C.rockMasses = [5, 10, 20, 40, 100];
+  C.rockMasses = [50, 75, 100, 150, 200];
 
   C.rockSpawnChance = 0.3;
 

@@ -6,6 +6,8 @@
 
   document.write('<script src="js/state.js"></script>');
 
+  document.write('<script src="js/quest.js"></script>');
+
   document.write('<script src="js/model.js"></script>');
 
   document.write('<script src="js/main.js"></script>');

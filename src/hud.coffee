@@ -114,6 +114,7 @@ class MessageWindow
         @bodyText = ""
         @headerText = ""
         @footerText = ""
+        @quest = []
 
     update : (dt) -> return
 
@@ -125,16 +126,25 @@ class MessageWindow
         ctx.strokeStyle = @fgColor
         ctx.lineWidth = 1
         ctx.strokeRect(cx - @dx/2, cy - @dy/2, @dx, @dy)
+        # now for text
+        ctx.fillStyle = @fgColor
+        ctx.font = "16px Arial"
+        x = cx - @dx/2
+        y = cy - @dy/2
+        dx = 20
+        dy = 30
+        for line in @quest
+            ctx.fillText line, x+dx, y+dy
+            dy += 20
 
     setBodyText : (@bodyText) ->
     setHeaderText : (@headerText) ->
     setFooterText : (@footerText) ->
+    setQuest : (@quest) ->
 
 
-U.dockMessageWindow = ->
-    msg = new MessageWindow(600,400,'#000030','#FFFFFF')
-    msg.setBodyText "text"
-    msg
+U.dockMessageWindow = new MessageWindow(600,400,'#000030','#FFFFFF')
+
 
 
 

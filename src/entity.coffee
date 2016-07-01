@@ -310,8 +310,8 @@ E.newFlashOnObj = (obj) ->
     flash.setMaxAge C.flashMaxAge
     return flash
 
-E.newTracPulseOnPos = (pos) ->
-    pulse = new EphemeralEntity(A.img.tracPulse,pos,0,H.origin,0)
+E.newTracPulseOnObj = (obj) ->
+    pulse = new EphemeralEntity(A.img.tracPulse,obj.pos,0,H.origin,0)
     pulse.setMaxAge C.tracBeamDuration
     return pulse
 
@@ -376,7 +376,7 @@ class DestructibleEntity extends MovingEntity
 
 
     applyDamage : (dmg) ->
-        @damage += Math.max 1, dmg
+        @damage += Math.max(0.5, Math.min(2,dmg))
         return @isDestroyed()
 
     isDestroyed : -> @damage >= @maxDamage

@@ -14,6 +14,7 @@ A = _first.request('assets')
 C = _first.request('config')
 H = _first.request('helper')
 M = _first.request('model')
+Q = _first.request('quest')
 U = _first.request('hud')
 
 eng = null
@@ -92,7 +93,15 @@ S.splash = {
         a = H.HALFPI
         H.drawImg ctx, img, ctx.canvas.width/2, ctx.canvas.height/2, a
         H.drawText ctx, "Press [Enter] to start.",
-                 ctx.canvas.width/2, ctx.canvas.height/2+130, 15
+                 ctx.canvas.width/2, ctx.canvas.height/2+150, 15
+        H.drawText ctx, "Game controls:",
+                 ctx.canvas.width/2, ctx.canvas.height/2+200, 12
+        H.drawText ctx, "Arrow Keys to move.",
+                 ctx.canvas.width/2, ctx.canvas.height/2+212, 10
+        H.drawText ctx, "Press [Space] to fire.",
+                 ctx.canvas.width/2, ctx.canvas.height/2+224, 10
+        H.drawText ctx, "Hold [Enter] to dock.",
+                 ctx.canvas.width/2, ctx.canvas.height/2+236, 10
     update : (dt) ->
         @y = @y + dt/1.5
         @y = @y % C.tileSize
@@ -125,13 +134,7 @@ S.play = {
         # update the model
         if @model
             @model.update dt
-            if @model.changeMode
-                newMode = @model.changeMode
-                @model.changeMode = 0
-                if newMode == 1
-                    changeState S.gameOver
-                else if newMode == 2
-                    changeState S.dockMode
+            @maybeChangeMode()
     input : (type,data) ->
         if type == "keydown"
             if data.code == "ArrowLeft"
@@ -168,6 +171,15 @@ S.play = {
                 @model.command 17
     exit : ->
         console.log "exit play"
+    maybeChangeMode : ->
+        if @model.changeMode
+            newMode = @model.changeMode
+            @model.changeMode = 0
+            if newMode == 1
+                changeState S.gameOver
+            else if newMode == 2
+                changeState S.dockMode
+                S.dockMode.setQuest @model.quest
 }
 
 
@@ -180,7 +192,7 @@ S.gameOver = {
         H.drawText ctx, "You have died. So it goes.",
                  ctx.canvas.width/2, ctx.canvas.height/2-200, 30
         H.drawText ctx, "Press [Escape] to go to the intro.",
-                 ctx.canvas.width/2, ctx.canvas.height/2+130, 15
+                 ctx.canvas.width/2, ctx.canvas.height/2+250, 15
     update : (dt) ->
         S.play.model.update(dt)
     input : (type,data) ->
@@ -197,14 +209,16 @@ S.gameOver = {
 S.dockMode = {
     enter : ->
         console.log "enter dockMode"
-        @msg = U.dockMessageWindow()
+        @msg = U.dockMessageWindow
+    setQuest : (quest) ->
+        @msg.setQuest(quest)
     draw : (ctx) ->
         S.play.draw(ctx)
         @msg.draw(ctx)
         H.drawText ctx, "You are docked.",
                  ctx.canvas.width/2, ctx.canvas.height/2-200, 30
-        H.drawText ctx, "Press [Escape] to return.",
-                 ctx.canvas.width/2, ctx.canvas.height/2+330, 15
+        H.drawText ctx, "Press [Escape] to launch.",
+                 ctx.canvas.width/2, ctx.canvas.height/2+250, 15
     update : (dt) ->
         return
 
@@ -220,14 +234,6 @@ S.dockMode = {
 
 
 
-
-
-
-# drawText = (ctx,text,size,x,y) ->
-#         ctx.fillStyle = "#FFFFFF"
-#         ctx.font = "#{Math.floor(size)}px Arial"
-#         w = Math.floor((ctx.measureText text).width/2)
-#         ctx.fillText text, Math.floor(x)-w,Math.floor(y)-Math.floor(size)
 
 
 

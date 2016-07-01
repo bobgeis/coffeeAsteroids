@@ -141,19 +141,34 @@
       this.bodyText = "";
       this.headerText = "";
       this.footerText = "";
+      this.quest = [];
     }
 
     MessageWindow.prototype.update = function(dt) {};
 
     MessageWindow.prototype.draw = function(ctx) {
-      var cx, cy;
+      var cx, cy, dx, dy, j, len, line, ref, results, x, y;
       ctx.fillStyle = this.bgColor;
       cx = ctx.canvas.width / 2;
       cy = ctx.canvas.height / 2;
       ctx.fillRect(cx - this.dx / 2, cy - this.dy / 2, this.dx, this.dy);
       ctx.strokeStyle = this.fgColor;
       ctx.lineWidth = 1;
-      return ctx.strokeRect(cx - this.dx / 2, cy - this.dy / 2, this.dx, this.dy);
+      ctx.strokeRect(cx - this.dx / 2, cy - this.dy / 2, this.dx, this.dy);
+      ctx.fillStyle = this.fgColor;
+      ctx.font = "16px Arial";
+      x = cx - this.dx / 2;
+      y = cy - this.dy / 2;
+      dx = 20;
+      dy = 30;
+      ref = this.quest;
+      results = [];
+      for (j = 0, len = ref.length; j < len; j++) {
+        line = ref[j];
+        ctx.fillText(line, x + dx, y + dy);
+        results.push(dy += 20);
+      }
+      return results;
     };
 
     MessageWindow.prototype.setBodyText = function(bodyText) {
@@ -168,16 +183,15 @@
       this.footerText = footerText;
     };
 
+    MessageWindow.prototype.setQuest = function(quest) {
+      this.quest = quest;
+    };
+
     return MessageWindow;
 
   })();
 
-  U.dockMessageWindow = function() {
-    var msg;
-    msg = new MessageWindow(600, 400, '#000030', '#FFFFFF');
-    msg.setBodyText("text");
-    return msg;
-  };
+  U.dockMessageWindow = new MessageWindow(600, 400, '#000030', '#FFFFFF');
 
   CargoMonitor = (function() {
     function CargoMonitor(cargo1, x1, y1) {

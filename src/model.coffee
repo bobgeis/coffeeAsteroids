@@ -13,6 +13,7 @@ B = _first.request('beam')
 C = _first.request('config')
 E = _first.request('entity')
 H = _first.request('helper')
+Q = _first.request('quest')
 U = _first.request('hud')
 
 
@@ -27,6 +28,7 @@ class Model
         @gameOver = false
         @spawnTimer = 0
         @changeMode = 0
+        @quest = []
 
         @bg = []
         @bases = []
@@ -113,7 +115,7 @@ class Model
             for rock in @rocks
                 if ship.collide rock
                     dmg = Math.abs(ship.bounce rock)
-                    if ship.applyDamage Math.min(5, dmg * C.rockCollisionDamage)
+                    if ship.applyDamage(dmg * C.rockCollisionDamage)
                         @explode ship
                         ship.kill()
                         @createLifepods ship
@@ -263,10 +265,13 @@ class Model
         else
             @cargo.crystal[1] += @cargo.crystal[0]
             @cargo.crystal[0] = 0
+        @quest = Q.getNextQuest(base.name)
         @cargo.mousepod[1] += @cargo.mousepod[0]
         @cargo.mousepod[0] = 0
+        @flashes.push E.newTracPulseOnObj @player
 
     shipDocked : (ship, base) ->
+        @flashes.push E.newTracPulseOnObj ship
         return
 
     shipWarped : (ship) ->
