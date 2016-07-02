@@ -222,14 +222,14 @@
 
   C.navPtNames = ["Alpha Octolindis", "New Dilgan"];
 
-  C.mousePtNames = ["Locus 3250", "Rust Belt", "Grim Orchard"];
+  C.mousePtNames = ["Locus 3250", "Grim Orchard", "Rust Belt"];
 
   C.navPtLocations = {
     "Alpha Octolindis": [-C.tileSize / 4 + 100, C.tileSize / 4 - 140],
     "New Dilgan": [C.tileSize / 4 - 70, -C.tileSize / 4 + 30],
     "Locus 3250": [-50, -50],
-    "Rust Belt": [C.tileSize / 2 - 52, 150],
-    "Grim Orchard": [120, C.tileSize / 2 - 137]
+    "Grim Orchard": [120, C.tileSize / 2 - 137],
+    "Rust Belt": [C.tileSize / 2 - 52, 150]
   };
 
   C.navPtDefaults = {
@@ -241,11 +241,17 @@
   };
 
   C.navPtSpawnRates = {
-    "Alpha Octolindis": [true, true],
-    "New Dilgan": [true, false],
-    "Locus 3250": [false, true],
-    "Rust Belt": [false, false],
-    "Grim Orchard": [false, false]
+    "Alpha Octolindis": 0.001,
+    "New Dilgan": 0.001,
+    "Locus 3250": 0.02,
+    "Grim Orchard": 0.015,
+    "Rust Belt": 0.01
+  };
+
+  C.navPtRockTypes = {
+    "Locus 3250": "C",
+    "Grim Orchard": "S",
+    "Rust Belt": "M"
   };
 
   C.navPtRadius = 120;

@@ -246,32 +246,28 @@ C.navPtNames =                      # friendly nav points
     [
         "Alpha Octolindis"
         "New Dilgan"
-        # "Locus 1457"
     ]
 
 C.mousePtNames =                    # unfriendly nav points
     [
         "Locus 3250"
-        "Rust Belt"
         "Grim Orchard"
+        "Rust Belt"
     ]
 
 C.navPtLocations =
     {                           # x  , y
         "Alpha Octolindis"  : [ -C.tileSize/4+100 ,  C.tileSize/4-140]
-        # "Locus 1457"        : [ 800 ,  300]
         "New Dilgan"        : [  C.tileSize/4-70 , -C.tileSize/4+30]
         "Locus 3250"        : [  -50 ,  -50]
-        # "Locus 3250"        : [ 500 ,  500]
-        "Rust Belt"         : [ C.tileSize/2-52 , 150]
         "Grim Orchard"      : [ 120 ,  C.tileSize/2-137]
+        "Rust Belt"         : [ C.tileSize/2-52 , 150]
     }
 
 C.navPtDefaults =
     {                           # friendly  , active
         "Alpha Octolindis"  : [true  , true]
         "New Dilgan"        : [true  , false]
-        # "Locus 1457"        : [true  , false]
         "Locus 3250"        : [false , true]
         "Grim Orchard"      : [false , false]
         "Rust Belt"         : [false , false]
@@ -279,12 +275,18 @@ C.navPtDefaults =
 
 C.navPtSpawnRates =
     {                           # friendly  , active
-        "Alpha Octolindis"  : [true  , true]
-        "New Dilgan"        : [true  , false]
-        # "Locus 1457"        : [true  , false]
-        "Locus 3250"        : [false , true]
-        "Rust Belt"          : [false , false]
-        "Grim Orchard"      : [false , false]
+        "Alpha Octolindis"  : 0.001
+        "New Dilgan"        : 0.001
+        "Locus 3250"        : 0.02
+        "Grim Orchard"      : 0.015
+        "Rust Belt"         : 0.01
+    }
+
+C.navPtRockTypes =
+    {
+        "Locus 3250"        : "C"
+        "Grim Orchard"      : "S"
+        "Rust Belt"         : "M"
     }
 
 

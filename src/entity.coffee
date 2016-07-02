@@ -414,13 +414,20 @@ E.newRock = (type,size,pos,a,vel,va) ->
     rock.setRegen C.rockRegen
     return rock
 
-
 E.RandRock = ->
     p = C.tileSize /2
     H.pt1.randomInBox(-p,p,-p,p)
     H.pt2.randomInCircle(C.rockVel)
     size = H.getRandomListValue [0...5]
     type = H.getRandomListValue ["C","S","M"]
+    return new RockEntity( type, size, H.pt1, 0, H.pt2, 0)
+
+E.RockFromNavName = (name) ->
+    H.pt1.randomInCircle(C.navPtRadius)
+    H.pt1.transXY(C.navPtLocations[name][0],C.navPtLocations[name][1])
+    H.pt2.randomInCircle(C.rockVel)
+    size = H.getRandomListValue [0...5]
+    type = C.navPtRockTypes[name]
     return new RockEntity( type, size, H.pt1, 0, H.pt2, 0)
 
 E.spawnRock = ->

@@ -516,6 +516,16 @@
     return new RockEntity(type, size, H.pt1, 0, H.pt2, 0);
   };
 
+  E.RockFromNavName = function(name) {
+    var size, type;
+    H.pt1.randomInCircle(C.navPtRadius);
+    H.pt1.transXY(C.navPtLocations[name][0], C.navPtLocations[name][1]);
+    H.pt2.randomInCircle(C.rockVel);
+    size = H.getRandomListValue([0, 1, 2, 3, 4]);
+    type = C.navPtRockTypes[name];
+    return new RockEntity(type, size, H.pt1, 0, H.pt2, 0);
+  };
+
   E.spawnRock = function() {
     return Math.random() < C.rockSpawnChance;
   };

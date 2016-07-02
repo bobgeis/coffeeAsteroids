@@ -153,11 +153,12 @@ class Model
         #         @flash spawn
 
 
-        if @spawnTimer > 100
-            @spawnTimer = 0
-            @maybeTimerSpawn()
-        else
-            @spawnTimer += dt
+        @maybeTimerSpawn()
+        # if @spawnTimer > 100
+        #     @spawnTimer = 0
+        #     @maybeTimerSpawn()
+        # else
+        #     @spawnTimer += dt
         # cull
         @shots = _.filter @shots, isAlive
         @rocks = _.filter @rocks, isAlive
@@ -244,10 +245,12 @@ class Model
 
 
     maybeTimerSpawn : ->
-        if E.spawnRock()
-            rock = new E.RandRock()
-            @rocks.push rock
-            @flash rock
+        for name in C.mousePtNames
+            if Math.random() < C.navPtSpawnRates[name]
+                rock = E.RockFromNavName name
+                @rocks.push rock
+                @flash rock
+
 
 
     pickupLoot : (loot) ->

@@ -179,12 +179,7 @@
           }
         }
       }
-      if (this.spawnTimer > 100) {
-        this.spawnTimer = 0;
-        this.maybeTimerSpawn();
-      } else {
-        this.spawnTimer += dt;
-      }
+      this.maybeTimerSpawn();
       this.shots = _.filter(this.shots, isAlive);
       this.rocks = _.filter(this.rocks, isAlive);
       this.ships = _.filter(this.ships, isAlive);
@@ -301,12 +296,20 @@
     };
 
     Model.prototype.maybeTimerSpawn = function() {
-      var rock;
-      if (E.spawnRock()) {
-        rock = new E.RandRock();
-        this.rocks.push(rock);
-        return this.flash(rock);
+      var i, len, name, ref, results, rock;
+      ref = C.mousePtNames;
+      results = [];
+      for (i = 0, len = ref.length; i < len; i++) {
+        name = ref[i];
+        if (Math.random() < C.navPtSpawnRates[name]) {
+          rock = E.RockFromNavName(name);
+          this.rocks.push(rock);
+          results.push(this.flash(rock));
+        } else {
+          results.push(void 0);
+        }
       }
+      return results;
     };
 
     Model.prototype.pickupLoot = function(loot) {
