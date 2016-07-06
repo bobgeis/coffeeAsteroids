@@ -525,6 +525,8 @@ class TransportShipEntity extends ShipEntity
 
     constructor : (type,faction,pos,a,vel,va) ->
         super type,faction,pos,a,vel,va
+        @drag = C.transportDrag
+
         @hasDocked = false
 
         @canWarp = false
@@ -534,7 +536,17 @@ class TransportShipEntity extends ShipEntity
 
 
 E.newRandomCivTransport = ->
+    name = "Alpha Octolindis"
+    H.pt1.randomInCircle(C.navPtRadius)
+    H.pt1.transXY(C.navPtLocations[name][0],C.navPtLocations[name][1])
+    a = H.randAng()
+    v = (C.transportInitialVelocity +
+            H.randPlusMinus(C.transportInitialVelocity/2))
+    H.pt2.setPolar(v,a)
+
     transport = new TransportShipEntity("drop","civ",H.pt1,a,H.pt2,0)
+
+    transport.setAcc C.transportAcc
     return transport
 
 

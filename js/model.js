@@ -296,20 +296,21 @@
     };
 
     Model.prototype.maybeTimerSpawn = function() {
-      var i, len, name, ref, results, rock;
+      var i, len, name, ref, rock, ship;
       ref = C.mousePtNames;
-      results = [];
       for (i = 0, len = ref.length; i < len; i++) {
         name = ref[i];
         if (Math.random() < C.navPtSpawnRates[name]) {
           rock = E.RockFromNavName(name);
           this.rocks.push(rock);
-          results.push(this.flash(rock));
-        } else {
-          results.push(void 0);
+          this.flash(rock);
         }
       }
-      return results;
+      if (Math.random() < 0.001) {
+        ship = E.newRandomCivTransport();
+        this.flash(ship);
+        return this.ships.push(ship);
+      }
     };
 
     Model.prototype.pickupLoot = function(loot) {

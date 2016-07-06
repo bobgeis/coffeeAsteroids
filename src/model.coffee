@@ -250,6 +250,10 @@ class Model
                 rock = E.RockFromNavName name
                 @rocks.push rock
                 @flash rock
+        if Math.random() < 0.001
+            ship = E.newRandomCivTransport()
+            @flash ship
+            @ships.push ship
 
 
 

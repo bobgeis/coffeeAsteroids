@@ -635,6 +635,7 @@
 
     function TransportShipEntity(type, faction, pos, a, vel, va) {
       TransportShipEntity.__super__.constructor.call(this, type, faction, pos, a, vel, va);
+      this.drag = C.transportDrag;
       this.hasDocked = false;
       this.canWarp = false;
       this.warping = 0;
@@ -646,8 +647,15 @@
   })(ShipEntity);
 
   E.newRandomCivTransport = function() {
-    var transport;
+    var a, name, transport, v;
+    name = "Alpha Octolindis";
+    H.pt1.randomInCircle(C.navPtRadius);
+    H.pt1.transXY(C.navPtLocations[name][0], C.navPtLocations[name][1]);
+    a = H.randAng();
+    v = C.transportInitialVelocity + H.randPlusMinus(C.transportInitialVelocity / 2);
+    H.pt2.setPolar(v, a);
     transport = new TransportShipEntity("drop", "civ", H.pt1, a, H.pt2, 0);
+    transport.setAcc(C.transportAcc);
     return transport;
   };
 

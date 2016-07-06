@@ -61,11 +61,11 @@
 
   C.shipWarpRadius = 120;
 
-  C.transportAcc = 3 / 1000;
+  C.transportAcc = 2.5 / 1000;
 
   C.transportAngVel = 2 / 1000;
 
-  C.transportDrag = 0.5 / 1000;
+  C.transportDrag = 0.65 / 1000;
 
   C.transportInitialVelocity = 0.25;
 
@@ -176,7 +176,7 @@
     return "rgba(" + colors[0] + "," + colors[1] + "," + colors[2] + ",1";
   };
 
-  C.boomMaxAge = 250;
+  C.boomMaxAge = 300;
 
   C.boomGrowthRate = 180 / 1000;
 

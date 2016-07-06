@@ -52,9 +52,9 @@ C.shipDockRadius = 50           # px
 C.shipWarpRadius = 120          # px
 
 # transport ship attributes
-C.transportAcc = 3/1000
+C.transportAcc = 2.5/1000
 C.transportAngVel = 2/1000
-C.transportDrag = 0.5/1000
+C.transportDrag = 0.65/1000
 C.transportInitialVelocity = 0.25
 C.transportMass = 20
 C.transportShields =
@@ -160,7 +160,7 @@ C.rockColor = (ratio,type,side) ->
     return "rgba(#{colors[0]},#{colors[1]},#{colors[2]},1"
 
 # boom (explosion) attributes
-C.boomMaxAge = 250              # ms
+C.boomMaxAge = 300              # ms
 C.boomGrowthRate = 180/1000     # px/ms
 C.boomInitialRadius = 25        # px
 
