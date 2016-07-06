@@ -156,7 +156,7 @@
       ctx.lineWidth = 1;
       ctx.strokeRect(cx - this.dx / 2, cy - this.dy / 2, this.dx, this.dy);
       ctx.fillStyle = this.fgColor;
-      ctx.font = "16px Arial";
+      ctx.font = "12px Arial";
       x = cx - this.dx / 2;
       y = cy - this.dy / 2;
       dx = 20;

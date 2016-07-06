@@ -17,8 +17,14 @@ _first.offer('quest',Q)
 
 
 
+Q.getNextQuest = (base,crystal,lifepod,mousepod) ->
+    if base == "lucky"
+        return Q.lucky[0]
+    else
+        return Q.build[0]
 
-Q.lucky =
+
+Q.lucky2 =
     [
         [
             "Welcome to Doctor Lucky's Research Hospital and Veterinary Clinic!"
@@ -49,7 +55,7 @@ Q.lucky =
         ]
     ]
 
-Q.build =
+Q.build2 =
     [
         [
             "Welcome to Pick & Hammer Guilds' Crystal Depot and Refinery."
@@ -75,8 +81,19 @@ Q.build =
     ]
 
 
-Q.getNextQuest = (base,crystal,lifepod,mousepod) ->
-    if base == "lucky"
-        return Q.lucky[0]
-    else
-        return Q.build[0]
+l0 =
+    [
+        "Welcome to Doctor Lucky's Research Hospital and Vertinary Clinic!  Accepting new patients!"
+    ]
+b0 = [
+    "Welcome to Guild Fuel Depot and Refinery at Subspace Locaus 1457."
+]
+Q.lucky =
+    [
+        l0
+    ]
+
+Q.build =
+    [
+        b0
+    ]

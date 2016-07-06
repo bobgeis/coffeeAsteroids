@@ -269,7 +269,7 @@
       NavPointEntity.__super__.constructor.call(this, H.pt1, 0, H.origin, 0);
       this.friendly = C.navPtDefaults[this.name][0];
       this.active = C.navPtDefaults[this.name][1];
-      this.visible = false;
+      this.visible = true;
       this.setImg(A.img.navPts[this.name][this.getIndex()]);
       this.timer = 0;
       this.spawnCheck = false;
@@ -517,11 +517,13 @@
   };
 
   E.RockFromNavName = function(name) {
-    var size, type;
+    var a, size, type, v;
     H.pt1.randomInCircle(C.navPtRadius);
     H.pt1.transXY(C.navPtLocations[name][0], C.navPtLocations[name][1]);
-    H.pt2.randomInCircle(C.rockVel);
-    size = H.getRandomListValue([0, 1, 2, 3, 4]);
+    a = H.randAng();
+    v = C.rockVel + H.randPlusMinus(C.rockVel / 2);
+    H.pt2.setPolar(v, a);
+    size = H.getRandomListValue([1, 2, 3, 4]);
     type = C.navPtRockTypes[name];
     return new RockEntity(type, size, H.pt1, 0, H.pt2, 0);
   };
@@ -531,7 +533,7 @@
   };
 
   E.calveRock = function(oldRock) {
-    var calf, calves, dvel, j, len, pos, size, type;
+    var calf, calves, chance, dvel, dvel2, j, len, pos, size, type;
     if (oldRock.size < 1) {
       return false;
     }
@@ -539,7 +541,21 @@
     type = oldRock.type;
     pos = oldRock.pos;
     dvel = H.pt1.randomInCircle(C.rockVel);
-    calves = [new RockEntity(type, size, pos, 0, H.pt2.sum(dvel, oldRock.vel), 0), new RockEntity(type, size, pos, 0, H.pt2.diff(dvel, oldRock.vel), 0)];
+    dvel2 = H.pt2.randomOnCircle(C.rockVel);
+    chance = C.rockCalveChance[type];
+    calves = [];
+    if (0 < chance) {
+      calves.push(new RockEntity(type, size, pos, 0, H.pt3.sum(dvel, oldRock.vel), 0));
+    }
+    if (Math.random() < chance) {
+      calves.push(new RockEntity(type, size, pos, 0, H.pt3.diff(dvel, oldRock.vel), 0));
+    }
+    if (Math.random() < chance) {
+      calves.push(new RockEntity(type, size, pos, 0, H.pt3.sum(dvel2, oldRock.vel), 0));
+    }
+    if (Math.random() < chance) {
+      calves.push(new RockEntity(type, size, pos, 0, H.pt3.diff(dvel2, oldRock.vel), 0));
+    }
     for (j = 0, len = calves.length; j < len; j++) {
       calf = calves[j];
       calf.damage = calf.maxDamage / 2;
@@ -617,9 +633,8 @@
   TransportShipEntity = (function(superClass) {
     extend(TransportShipEntity, superClass);
 
-    function TransportShipEntity(start, destination) {
-      this.start = start;
-      this.destination = destination;
+    function TransportShipEntity(type, faction, pos, a, vel, va) {
+      TransportShipEntity.__super__.constructor.call(this, type, faction, pos, a, vel, va);
       this.hasDocked = false;
       this.canWarp = false;
       this.warping = 0;
@@ -629,6 +644,12 @@
     return TransportShipEntity;
 
   })(ShipEntity);
+
+  E.newRandomCivTransport = function() {
+    var transport;
+    transport = new TransportShipEntity("drop", "civ", H.pt1, a, H.pt2, 0);
+    return transport;
+  };
 
   PlayerShipEntity = (function(superClass) {
     extend(PlayerShipEntity, superClass);
@@ -785,7 +806,7 @@
 
   E.PlayerShip = function() {
     var playerShip;
-    playerShip = new PlayerShipEntity("ray", "civ", H.pt1.setXY(-C.tileSize / 4 + 50, C.tileSize / 4 + 50), H.HALFPI, H.pt2.setXY(0, C.shipInitialVeloctiy), 0);
+    playerShip = new PlayerShipEntity("ray", "civ", H.pt1.setXY(-C.tileSize / 4 + 50, C.tileSize / 4 + 50), H.HALFPI, H.pt2.setXY(0, C.shipInitialVeloctity), 0);
     return playerShip;
   };
 

@@ -229,7 +229,8 @@ class NavPointEntity extends MovingEntity
         super H.pt1, 0, H.origin, 0
         @friendly = C.navPtDefaults[@name][0]
         @active = C.navPtDefaults[@name][1]
-        @visible = false
+        # @visible = false
+        @visible = true
         @setImg A.img.navPts[@name][@getIndex()]
         @timer = 0
         @spawnCheck = false
@@ -425,8 +426,11 @@ E.RandRock = ->
 E.RockFromNavName = (name) ->
     H.pt1.randomInCircle(C.navPtRadius)
     H.pt1.transXY(C.navPtLocations[name][0],C.navPtLocations[name][1])
-    H.pt2.randomInCircle(C.rockVel)
-    size = H.getRandomListValue [0...5]
+    a = H.randAng()
+    v = C.rockVel + H.randPlusMinus(C.rockVel/2)
+    # H.pt2.randomInCircle(C.rockVel)
+    H.pt2.setPolar(v,a)
+    size = H.getRandomListValue [1...5]
     type = C.navPtRockTypes[name]
     return new RockEntity( type, size, H.pt1, 0, H.pt2, 0)
 
@@ -440,10 +444,17 @@ E.calveRock = (oldRock) ->
     type = oldRock.type
     pos = oldRock.pos
     dvel = H.pt1.randomInCircle(C.rockVel)
-    calves = [
-        new RockEntity(type,size,pos,0,H.pt2.sum(dvel,oldRock.vel),0)
-        new RockEntity(type,size,pos,0,H.pt2.diff(dvel,oldRock.vel),0)
-    ]
+    dvel2 = H.pt2.randomOnCircle(C.rockVel)
+    chance = C.rockCalveChance[type]
+    calves = []
+    if 0 < chance
+        calves.push new RockEntity(type,size,pos,0,H.pt3.sum(dvel,oldRock.vel),0)
+    if Math.random() < chance
+        calves.push new RockEntity(type,size,pos,0,H.pt3.diff(dvel,oldRock.vel),0)
+    if Math.random() < chance
+        calves.push new RockEntity(type,size,pos,0,H.pt3.sum(dvel2,oldRock.vel),0)
+    if Math.random() < chance
+        calves.push new RockEntity(type,size,pos,0,H.pt3.diff(dvel2,oldRock.vel),0)
     for calf in calves
         calf.damage = calf.maxDamage /2
     return calves
@@ -512,7 +523,8 @@ class ShipEntity extends DestructibleEntity
 
 class TransportShipEntity extends ShipEntity
 
-    constructor : (@start,@destination) ->
+    constructor : (type,faction,pos,a,vel,va) ->
+        super type,faction,pos,a,vel,va
         @hasDocked = false
 
         @canWarp = false
@@ -520,6 +532,10 @@ class TransportShipEntity extends ShipEntity
         @warped = false
 
 
+
+E.newRandomCivTransport = ->
+    transport = new TransportShipEntity("drop","civ",H.pt1,a,H.pt2,0)
+    return transport
 
 
 
@@ -638,5 +654,5 @@ class PlayerShipEntity extends ShipEntity
 E.PlayerShip = ->
     playerShip = new PlayerShipEntity("ray","civ",
             H.pt1.setXY( -C.tileSize/4+50 ,  C.tileSize/4+50), H.HALFPI,
-            H.pt2.setXY(0,C.shipInitialVeloctiy), 0)
+            H.pt2.setXY(0,C.shipInitialVeloctity), 0)
     return playerShip

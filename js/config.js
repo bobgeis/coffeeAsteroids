@@ -53,13 +53,35 @@
 
   C.shipInvincibleDuration = 400;
 
-  C.shipInitialVeloctiy = 0.5;
+  C.shipInitialVeloctity = 0.5;
 
   C.shipFuelMax = 180 * 1000;
 
   C.shipDockRadius = 50;
 
   C.shipWarpRadius = 120;
+
+  C.transportAcc = 3 / 1000;
+
+  C.transportAngVel = 2 / 1000;
+
+  C.transportDrag = 0.5 / 1000;
+
+  C.transportInitialVelocity = 0.25;
+
+  C.transportMass = 20;
+
+  C.transportShields = {
+    "civ": 2,
+    "build": 3,
+    "med": 4,
+    "mine": 5,
+    "sci": 6
+  };
+
+  C.transportRegen = 1 / 2500;
+
+  C.transportInvincibleDuration = 400;
 
   C.beamDamage = 1;
 
@@ -113,8 +135,6 @@
 
   C.rockMasses = [50, 75, 100, 150, 200];
 
-  C.rockSpawnChance = 0.3;
-
   C.rockMass = 25;
 
   C.rockArmor = 5;
@@ -123,8 +143,14 @@
 
   C.rockMaxDamage = {
     C: [1.0, 1.0, 1.5, 2.0, 2.5],
-    S: [1.5, 2.0, 2.5, 3.0, 3.5],
-    M: [2.5, 3.0, 3.5, 4.0, 4.5]
+    S: [1.5, 2.0, 2.5, 3.0, 2.5],
+    M: [2.5, 3.0, 4.0, 4.5, 5.0]
+  };
+
+  C.rockCalveChance = {
+    C: 0.4,
+    S: 0.6,
+    M: 0.3
   };
 
   C.rockBaseColors = {
@@ -243,9 +269,9 @@
   C.navPtSpawnRates = {
     "Alpha Octolindis": 0.001,
     "New Dilgan": 0.001,
-    "Locus 3250": 0.02,
-    "Grim Orchard": 0.015,
-    "Rust Belt": 0.01
+    "Locus 3250": 0.002,
+    "Grim Orchard": 0.001,
+    "Rust Belt": 0.001
   };
 
   C.navPtRockTypes = {
@@ -254,7 +280,7 @@
     "Rust Belt": "M"
   };
 
-  C.navPtRadius = 120;
+  C.navPtRadius = 180;
 
   C.navPtThickness = 2;
 

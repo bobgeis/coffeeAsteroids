@@ -46,10 +46,27 @@ C.shipShields =  5              # arbitrary damage units
 C.shipRegen = 1/2500            # dmg/ms
 C.shipBeamCoolDown = 1 * 1000
 C.shipInvincibleDuration = 400  # ms  minimum time bt taking damage for ships
-C.shipInitialVeloctiy = 0.5     # px/ms
+C.shipInitialVeloctity = 0.5     # px/ms
 C.shipFuelMax = 180 * 1000      # ms
 C.shipDockRadius = 50           # px
 C.shipWarpRadius = 120          # px
+
+# transport ship attributes
+C.transportAcc = 3/1000
+C.transportAngVel = 2/1000
+C.transportDrag = 0.5/1000
+C.transportInitialVelocity = 0.25
+C.transportMass = 20
+C.transportShields =
+    {
+        "civ" : 2
+        "build" : 3
+        "med" : 4
+        "mine" : 5
+        "sci" : 6
+    }
+C.transportRegen = 1/2500
+C.transportInvincibleDuration = 400
 
 # disruptor beam attributes
 C.beamDamage = 1                #
@@ -106,15 +123,21 @@ C.rockVel = 200/1000            # px/ms
 C.rockRad = 30                  # px
 C.rockRadii = [12,15,20,26,36]    # radii in px from smallest to largest
 C.rockMasses = [50,75,100,150,200]
-C.rockSpawnChance = 0.3         # spawn chance /s
+# C.rockSpawnChance = 0.3         # spawn chance /s
 C.rockMass = 25                 # mass
 C.rockArmor = 5                 # dmg
 C.rockRegen = 1/100             # dmg/ms
 C.rockMaxDamage =
     {
         C : [1.0, 1.0, 1.5, 2.0, 2.5]
-        S : [1.5, 2.0, 2.5, 3.0, 3.5]
-        M : [2.5, 3.0, 3.5, 4.0, 4.5]
+        S : [1.5, 2.0, 2.5, 3.0, 2.5]
+        M : [2.5, 3.0, 4.0, 4.5, 5.0]
+    }
+C.rockCalveChance =
+    {
+        C : 0.4
+        S : 0.6
+        M : 0.3
     }
 C.rockBaseColors =
     {
@@ -277,9 +300,9 @@ C.navPtSpawnRates =
     {                           # friendly  , active
         "Alpha Octolindis"  : 0.001
         "New Dilgan"        : 0.001
-        "Locus 3250"        : 0.02
-        "Grim Orchard"      : 0.015
-        "Rust Belt"         : 0.01
+        "Locus 3250"        : 0.002
+        "Grim Orchard"      : 0.001
+        "Rust Belt"         : 0.001
     }
 
 C.navPtRockTypes =
@@ -290,7 +313,7 @@ C.navPtRockTypes =
     }
 
 
-C.navPtRadius = 120
+C.navPtRadius = 180
 C.navPtThickness = 2
 C.navPtFontSize = 14
 C.navPtColors =
@@ -300,3 +323,6 @@ C.navPtColors =
         "rgba(255, 200,   0, 0.8)"  # unfrinedly inactive
         "rgba(255, 100, 100, 0.8)"  # unfriendly active
     ]
+
+
+

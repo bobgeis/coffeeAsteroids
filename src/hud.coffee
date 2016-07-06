@@ -128,7 +128,7 @@ class MessageWindow
         ctx.strokeRect(cx - @dx/2, cy - @dy/2, @dx, @dy)
         # now for text
         ctx.fillStyle = @fgColor
-        ctx.font = "16px Arial"
+        ctx.font = "12px Arial"
         x = cx - @dx/2
         y = cy - @dy/2
         dx = 20
