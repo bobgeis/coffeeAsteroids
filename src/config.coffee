@@ -41,6 +41,7 @@ C.shipAngVel = 2/1000           # rad/ms
 C.shipDrag = 0.4/1000           # fraction reduced /ms
 C.shipDockingDrag = 5/1000      # ""
 C.shipDockingTime = 1000        # ms time it takes to dock
+C.shipWarpingTime = 1000        # ms time to warp
 C.shipMass = 10                 # arbitrary mass units
 C.shipShields =  5              # arbitrary damage units
 C.shipRegen = 1/2500            # dmg/ms
@@ -52,7 +53,7 @@ C.shipDockRadius = 50           # px
 C.shipWarpRadius = 120          # px
 
 # transport ship attributes
-C.transportAcc = 2.5/1000
+C.transportAcc = 1/1000
 C.transportAngVel = 2/1000
 C.transportDrag = 0.65/1000
 C.transportInitialVelocity = 0.25
@@ -120,7 +121,7 @@ C.tracPulseGrowthRate = 5      # px/frame
 # rock attributes
 C.rockCollisionDamage = 5       # dmg per velocity
 C.rockAngVel = 2/1000           # rad/ms
-C.rockVel = 200/1000            # px/ms
+C.rockVel = 120/1000            # px/ms
 C.rockRad = 30                  # px
 C.rockRadii = [12,15,20,26,36]    # radii in px from smallest to largest
 C.rockMasses = [50,75,100,150,200]
@@ -136,9 +137,9 @@ C.rockMaxDamage =
     }
 C.rockCalveChance =
     {
-        C : [0.9,0.8,0.1,0.1]
-        S : [0.9,0.8,0.7,0.2]
-        M : [0.9,0.5,0.1,0.0]
+        C : [0.9,0.7,0.1,0.0]
+        S : [0.9,0.7,0.2,0.1]
+        M : [0.9,0.7,0.0,0.0]
     }
 C.rockBaseColors =
     {
@@ -268,9 +269,9 @@ C.buildBaseLocation = [C.tileSize/4-30 ,  C.tileSize/4-70]
 C.mouseBaseLocation = [C.tileSize/4-30 ,  C.tileSize/4-70]
 C.baseLocations =
     {
-        "Lucky" : C.luckyBaseLocation
-        "Build" : C.buildBaseLocation
-        "Mouse" : C.mouseBaseLocation
+        "lucky" : C.luckyBaseLocation
+        "build" : C.buildBaseLocation
+        "mouse" : C.mouseBaseLocation
     }
 
 
@@ -322,7 +323,7 @@ C.navPtRockTypes =
     }
 
 
-C.navPtRadius = 180
+C.navPtRadius = 120
 C.navPtThickness = 2
 C.navPtFontSize = 14
 C.navPtColors =

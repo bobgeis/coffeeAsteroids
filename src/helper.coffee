@@ -163,6 +163,12 @@ class Point
         @y = pos2.y - pos1.y
         this
 
+    # set to the origin
+    setOrigin : ->
+        @x = 0
+        @y = 0
+        this
+
     # set x,y by arguments
     setXY : (x,y) ->
         @x = x

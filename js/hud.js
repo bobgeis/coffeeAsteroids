@@ -198,13 +198,15 @@
       this.cargo = cargo1;
       this.x = x1;
       this.y = y1;
-      this.types = ["crystal", "lifepod", "mousepod"];
+      this.types = ["ship", "crystal", "lifepod", "mousepod"];
       this.show = {
+        ship: [true, false, false],
         crystal: [false, false, false],
         lifepod: [false, false, false],
         mousepod: [false, false, false]
       };
       this.imgs = {
+        ship: A.img.ship.dropciv,
         crystal: A.img.crystal[0],
         lifepod: A.img.lifepod[0],
         mousepod: A.img.mousepod[0]

@@ -155,16 +155,18 @@ U.dockMessageWindow = new MessageWindow(600,400,'#000030','#FFFFFF')
 class CargoMonitor
 
     constructor : (@cargo,@x,@y) ->
-        @types = ["crystal","lifepod","mousepod"]
+        @types = ["ship","crystal","lifepod","mousepod"]
         # @show is used to hide things the player hasn't done
         @show =
             {
+                ship : [true,false,false]
                 crystal : [false,false,false]
                 lifepod : [false,false,false]
                 mousepod : [false,false,false]
             }
         @imgs =
             {
+                ship : A.img.ship.dropciv
                 crystal : A.img.crystal[0]
                 lifepod : A.img.lifepod[0]
                 mousepod : A.img.mousepod[0]

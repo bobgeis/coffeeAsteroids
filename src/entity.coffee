@@ -233,6 +233,7 @@ class NavPointEntity extends MovingEntity
             @spawnType = "rock"
         @spawn = null
         @spawnRates = C.navPtSpawnRates[name]
+        @setR C.navPtRadius
 
     getIndex : ->
         if @friendly and @active
@@ -480,8 +481,14 @@ class ShipEntity extends DestructibleEntity
         @thrust = false         # thrusting?
 
         @canDock = false
+        @tryDock = false
         @docking = 0
         @docked = false
+
+        @canWarp = false
+        @tryWarp = false
+        @warping = 0
+        @warped = false
 
     update : (dt) ->
         if @invincible
@@ -495,6 +502,11 @@ class ShipEntity extends DestructibleEntity
             @vel.scale (1-C.shipDockingDrag*dt)
             if @docking > C.shipDockingTime
                 @docked = true
+        if @warping
+            @warping += dt
+            @vel.scale (1-C.shipDockingDrag*dt)
+            if @warping > C.shipWarpingTime
+                @warped = true
         super dt
 
     applyDamage : (dmg) ->
@@ -520,60 +532,123 @@ class ShipEntity extends DestructibleEntity
         else
             return 1
 
+    beginWarping : ->
+        if @canWarp
+            @warping += 1
+        else
+            @warping = 0
 
 
 
 
 class TransportShipEntity extends ShipEntity
 
-    constructor : (type,faction,pos,a,vel,va,des) ->
+    constructor : (type,faction,pos,a,vel,va,des,inbound) ->
         super type,faction,pos,a,vel,va
         @drag = C.transportDrag
 
+        @setAcc C.transportAcc
         @maxDamage = C.transportShields[faction]
         @regen = C.transportRegen
         @invincibleMax = C.transportInvincibleDuration
 
         @dockTimer = C.transportDockTime
 
-        @canWarp = false
-        @warping = 0
-        @warped = false
-
         @des = des.copyPos()
+        if inbound
+            @tryDock = true
+        else
+            @tryWarp = true
+
 
     update : (dt) ->
         @va = @turnTowards(@des) * C.transportAngVel
-        @beginDocking()
+        if @tryWarp
+            @beginWarping()
+        if @tryDock
+            @beginDocking()
         super dt
 
 
 
-E.newRandomCivTransport = ->
-    names = ["Alpha Octolindis","New Dilgan"]
-    name1 = H.getRandomListValue names
-    H.pt1.randomInCircle(C.navPtRadius)
-    H.pt1.transXY(C.navPtLocations[name1][0],
-                  C.navPtLocations[name1][1])
 
+# E.newInboundCivTransport = ->
+#     name = H.getRandomListValue ["Alpha Octolindis","New Dilgan"]
+#     H.pt1.randomInCircle(C.navPtRadius)
+#     H.pt1.transXY(C.navPtLocations[name][0],
+#                   C.navPtLocations[name][1])
+
+#     a = H.randAng()
+#     v = (C.transportInitialVelocity +
+#             H.randPlusMinus(C.transportInitialVelocity/2))
+#     H.pt2.setPolar(v,a)
+
+#     # civs always go to the lucky base
+#     H.pt3.setXY(C.luckyBaseLocation[0],
+#                 C.luckyBaseLocation[1])
+
+#     transport = new TransportShipEntity("drop","civ",H.pt1,a,H.pt2,0,H.pt3,true)
+#     return transport
+
+# E.newOutboundCivTransport = ->
+#     name = H.getRandomListValue ["Alpha Octolindis","New Dilgan"]
+#     H.pt1.setXY(C.navPtLocations[name][0],
+#                   C.navPtLocations[name][1])
+
+#     a = H.randAng()
+
+#     # civs always go to the lucky base
+#     H.pt3.randomInCircle(50)
+#     H.pt3.transXY(C.luckyBaseLocation[0],
+#                 C.luckyBaseLocation[1])
+
+#     transport = new TransportShipEntity("drop","civ",H.pt3,a,H.origin,0,H.pt1,false)
+#     return transport
+
+
+setPosByName = (pos,name,base=true,start=false) ->
+    if start
+        if base
+            r = 50
+        else
+            r = C.navPtRadius
+        pos.randomInCircle(r)
+    else
+        pos.setOrigin()
+    if base
+        pos.transXY(C.baseLocations[name][0],
+                    C.baseLocations[name][1])
+    else
+        pos.transXY(C.navPtLocations[name][0],
+                    C.navPtLocations[name][1])
+    return pos
+
+
+baseByFaction =
+    {
+        "civ" : "lucky"
+        "build" : "build"
+        "med" : "lucky"
+        "mine" : "build"
+        "sci" : "lucky"
+    }
+
+E.newRandomTransport = (faction,inbound=false) ->
+    nav = H.getRandomListValue ["Alpha Octolindis","New Dilgan"]
+    base = baseByFaction[faction]
     a = H.randAng()
     v = (C.transportInitialVelocity +
             H.randPlusMinus(C.transportInitialVelocity/2))
-    H.pt2.setPolar(v,a)
-
-    # civs always go to the lucky base
-    H.pt3.setXY(C.luckyBaseLocation[0],
-                C.luckyBaseLocation[1])
-    name2 = H.getRandomListValue names
-    H.pt4.randomInCircle(C.navPtRadius)
-    H.pt4.transXY(C.navPtLocations[name2][0],
-                  C.navPtLocations[name2][1]).wrap()
-
-    transport = new TransportShipEntity("drop","civ",H.pt1,a,H.pt2,0,H.pt3)
-
-    transport.setAcc C.transportAcc
+    if inbound
+        start = setPosByName H.pt1, nav, false, true
+        stop = setPosByName H.pt2, base, true, false
+        vel = H.pt3.setPolar(v,a)
+    else
+        start = setPosByName H.pt1, base, true, true
+        stop = setPosByName H.pt2, nav, false, false
+        vel = H.origin
+    transport = new TransportShipEntity("drop",faction,start,a,vel,0,stop,inbound)
     return transport
-
 
 
 
@@ -690,6 +765,8 @@ class PlayerShipEntity extends ShipEntity
 
 E.PlayerShip = ->
     playerShip = new PlayerShipEntity("ray","civ",
-            H.pt1.setXY( -C.tileSize/4+50 ,  C.tileSize/4+50), H.HALFPI,
+            H.pt1.setXY(C.navPtLocations["Alpha Octolindis"][0],
+                        C.navPtLocations["Alpha Octolindis"][1]),
+            H.HALFPI,
             H.pt2.setXY(0,C.shipInitialVeloctity), 0)
     return playerShip

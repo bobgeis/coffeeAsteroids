@@ -43,6 +43,8 @@
 
   C.shipDockingTime = 1000;
 
+  C.shipWarpingTime = 1000;
+
   C.shipMass = 10;
 
   C.shipShields = 5;
@@ -61,7 +63,7 @@
 
   C.shipWarpRadius = 120;
 
-  C.transportAcc = 2.5 / 1000;
+  C.transportAcc = 1 / 1000;
 
   C.transportAngVel = 2 / 1000;
 
@@ -129,7 +131,7 @@
 
   C.rockAngVel = 2 / 1000;
 
-  C.rockVel = 200 / 1000;
+  C.rockVel = 120 / 1000;
 
   C.rockRad = 30;
 
@@ -150,9 +152,9 @@
   };
 
   C.rockCalveChance = {
-    C: [0.9, 0.8, 0.1, 0.1],
-    S: [0.9, 0.8, 0.7, 0.2],
-    M: [0.9, 0.5, 0.1, 0.0]
+    C: [0.9, 0.7, 0.1, 0.0],
+    S: [0.9, 0.7, 0.2, 0.1],
+    M: [0.9, 0.7, 0.0, 0.0]
   };
 
   C.rockBaseColors = {
@@ -253,9 +255,9 @@
   C.mouseBaseLocation = [C.tileSize / 4 - 30, C.tileSize / 4 - 70];
 
   C.baseLocations = {
-    "Lucky": C.luckyBaseLocation,
-    "Build": C.buildBaseLocation,
-    "Mouse": C.mouseBaseLocation
+    "lucky": C.luckyBaseLocation,
+    "build": C.buildBaseLocation,
+    "mouse": C.mouseBaseLocation
   };
 
   C.navPtNames = ["Alpha Octolindis", "New Dilgan"];
@@ -292,7 +294,7 @@
     "Rust Belt": "M"
   };
 
-  C.navPtRadius = 180;
+  C.navPtRadius = 120;
 
   C.navPtThickness = 2;
 

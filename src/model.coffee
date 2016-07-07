@@ -58,9 +58,11 @@ class Model
             @navPts.push E.newNavPt(name)
         for name in C.mousePtNames
             @navPts.push E.newNavPt(name)
-
+            @rocks.push E.RockFromNavName(name)
+            @rocks.push E.RockFromNavName(name)
         @cargo =
             {
+                ship : [0,0,0]
                 crystal :   [0,0,0]
                 lifepod :   [0,0,0]
                 mousepod :  [0,0,0]
@@ -121,6 +123,14 @@ class Model
                         @createLifepods ship
             if ship.warped
                 @shipWarped ship
+            for nav in @navPts
+                if ship.collide nav
+                    ship.canWarp = true
+                    if ship.warped
+                        if ship.isPlayer
+                            @playerWarped nav
+                        else
+                            @shipWarped ship, nav
             ship.canDock = false
             for base in @bases
                 if ship.collide base
@@ -146,19 +156,7 @@ class Model
                             @calveRock rock
                             @createCrystal rock
         # maybe spawn at nav points
-        # for navPt in @navPts
-        #     spawn = navPt.getSpawn()
-        #     if spawn and navPt.spawnType == "rock"
-        #         @rocks.push spawn
-        #         @flash spawn
-
-
         @maybeTimerSpawn()
-        # if @spawnTimer > 100
-        #     @spawnTimer = 0
-        #     @maybeTimerSpawn()
-        # else
-        #     @spawnTimer += dt
         # cull
         @shots = _.filter @shots, isAlive
         @rocks = _.filter @rocks, isAlive
@@ -166,6 +164,8 @@ class Model
         @booms = _.filter @booms, isAlive
         @loot = _.filter @loot, isAlive
         @flashes = _.filter @flashes, isAlive
+        @cargo.ship[0] = @ships.length - 1
+        # maybe end game
         if not @player.alive
             @gameOver = true
             @changeMode = 1
@@ -236,9 +236,12 @@ class Model
         # create an explosion w obj's pos & vel
         @booms.push E.newExplosionOnObj obj
 
-    flash : (obj) ->
+    flash : (obj) =>
         # create a flash w obj's pos & vel
         @flashes.push E.newFlashOnObj obj
+
+    tracPulse : (obj) =>
+        @flashes.push E.newTracPulseOnObj obj
 
     tracBeam : (pos1,pos2) ->
         @flashes.push B.newTractorBeam pos1, pos2
@@ -251,9 +254,31 @@ class Model
                 @rocks.push rock
                 @flash rock
         # if @ships.length < 6 and Math.random() < 0.1
-        if Math.random() < 0.1
-            ship = E.newRandomCivTransport()
-            @flash ship
+        @spawnShips(true)
+        @spawnShips(false)
+
+
+
+    spawnShips : (inbound) ->
+        if inbound
+            ephemera = @flash
+        else
+            ephemera = @tracPulse
+        if Math.random() < 0.003
+            ship = E.newRandomTransport("civ",inbound)
+            ephemera ship
+            @ships.push ship
+        if Math.random() < 0.003
+            ship = E.newRandomTransport("build",inbound)
+            ephemera ship
+            @ships.push ship
+        if Math.random() < 0.003
+            ship = E.newRandomTransport("mine",inbound)
+            ephemera ship
+            @ships.push ship
+        if Math.random() < 0.003
+            ship = E.newRandomTransport("med",inbound)
+            ephemera ship
             @ships.push ship
 
 
@@ -281,9 +306,13 @@ class Model
     shipDocked : (ship, base) ->
         @flashes.push E.newTracPulseOnObj ship
         ship.kill()
+        @cargo.ship[1] += 1
         return
 
-    shipWarped : (ship) ->
+    shipWarped : (ship, nav) ->
+        @flash ship
+        ship.kill()
+        @cargo.ship[1] += 1
         return
 
     # for debugging
