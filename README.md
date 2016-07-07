@@ -1,13 +1,14 @@
 
-### Asteroids Coffee
+### Coffee Asteroids
 
 A learning project: an asteroids game written in coffeescript.
-(Because whenver you learn a language, you must write Asteroids in it.)
+(Because whenever you learn a language, you must write Asteroids in it.)
 
 
 #### Controls
 
 * Arrow keys for movement.
 * Spacebar to fire weapon.
+* Enter to dock with stations.
 
 

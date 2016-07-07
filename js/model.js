@@ -331,8 +331,10 @@
           this.flash(rock);
         }
       }
-      this.spawnShips(true);
-      return this.spawnShips(false);
+      if (this.ships.length < 12) {
+        this.spawnShips(true);
+        return this.spawnShips(false);
+      }
     };
 
     Model.prototype.spawnShips = function(inbound) {
@@ -342,22 +344,22 @@
       } else {
         ephemera = this.tracPulse;
       }
-      if (Math.random() < 0.003) {
+      if (Math.random() < 0.0004) {
         ship = E.newRandomTransport("civ", inbound);
         ephemera(ship);
         this.ships.push(ship);
       }
-      if (Math.random() < 0.003) {
+      if (Math.random() < 0.0004) {
         ship = E.newRandomTransport("build", inbound);
         ephemera(ship);
         this.ships.push(ship);
       }
-      if (Math.random() < 0.003) {
+      if (Math.random() < 0.0004) {
         ship = E.newRandomTransport("mine", inbound);
         ephemera(ship);
         this.ships.push(ship);
       }
-      if (Math.random() < 0.003) {
+      if (Math.random() < 0.0004) {
         ship = E.newRandomTransport("med", inbound);
         ephemera(ship);
         return this.ships.push(ship);

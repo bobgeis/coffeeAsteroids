@@ -254,8 +254,9 @@ class Model
                 @rocks.push rock
                 @flash rock
         # if @ships.length < 6 and Math.random() < 0.1
-        @spawnShips(true)
-        @spawnShips(false)
+        if @ships.length < 12
+            @spawnShips(true)
+            @spawnShips(false)
 
 
 
@@ -264,19 +265,19 @@ class Model
             ephemera = @flash
         else
             ephemera = @tracPulse
-        if Math.random() < 0.003
+        if Math.random() < 0.0004
             ship = E.newRandomTransport("civ",inbound)
             ephemera ship
             @ships.push ship
-        if Math.random() < 0.003
+        if Math.random() < 0.0004
             ship = E.newRandomTransport("build",inbound)
             ephemera ship
             @ships.push ship
-        if Math.random() < 0.003
+        if Math.random() < 0.0004
             ship = E.newRandomTransport("mine",inbound)
             ephemera ship
             @ships.push ship
-        if Math.random() < 0.003
+        if Math.random() < 0.0004
             ship = E.newRandomTransport("med",inbound)
             ephemera ship
             @ships.push ship
