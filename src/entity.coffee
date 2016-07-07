@@ -222,8 +222,8 @@ class NavPointEntity extends MovingEntity
         super H.pt1, 0, H.origin, 0
         @friendly = C.navPtDefaults[@name][0]
         @active = C.navPtDefaults[@name][1]
-        # @visible = false
-        @visible = true
+        @visible = false
+        # @visible = true
         @setImg A.img.navPts[@name][@getIndex()]
         @timer = 0
         @spawnCheck = false
@@ -568,42 +568,6 @@ class TransportShipEntity extends ShipEntity
         if @tryDock
             @beginDocking()
         super dt
-
-
-
-
-# E.newInboundCivTransport = ->
-#     name = H.getRandomListValue ["Alpha Octolindis","New Dilgan"]
-#     H.pt1.randomInCircle(C.navPtRadius)
-#     H.pt1.transXY(C.navPtLocations[name][0],
-#                   C.navPtLocations[name][1])
-
-#     a = H.randAng()
-#     v = (C.transportInitialVelocity +
-#             H.randPlusMinus(C.transportInitialVelocity/2))
-#     H.pt2.setPolar(v,a)
-
-#     # civs always go to the lucky base
-#     H.pt3.setXY(C.luckyBaseLocation[0],
-#                 C.luckyBaseLocation[1])
-
-#     transport = new TransportShipEntity("drop","civ",H.pt1,a,H.pt2,0,H.pt3,true)
-#     return transport
-
-# E.newOutboundCivTransport = ->
-#     name = H.getRandomListValue ["Alpha Octolindis","New Dilgan"]
-#     H.pt1.setXY(C.navPtLocations[name][0],
-#                   C.navPtLocations[name][1])
-
-#     a = H.randAng()
-
-#     # civs always go to the lucky base
-#     H.pt3.randomInCircle(50)
-#     H.pt3.transXY(C.luckyBaseLocation[0],
-#                 C.luckyBaseLocation[1])
-
-#     transport = new TransportShipEntity("drop","civ",H.pt3,a,H.origin,0,H.pt1,false)
-#     return transport
 
 
 setPosByName = (pos,name,base=true,start=false) ->
