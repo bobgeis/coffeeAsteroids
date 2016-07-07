@@ -258,7 +258,7 @@
       NavPointEntity.__super__.constructor.call(this, H.pt1, 0, H.origin, 0);
       this.friendly = C.navPtDefaults[this.name][0];
       this.active = C.navPtDefaults[this.name][1];
-      this.visible = true;
+      this.visible = false;
       this.setImg(A.img.navPts[this.name][this.getIndex()]);
       this.timer = 0;
       this.spawnCheck = false;
