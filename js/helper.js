@@ -66,6 +66,16 @@
     return obj[H.getRandomListValue(Object.keys(obj))];
   };
 
+  H.wrapAngle = function(a) {
+    if (a > H.PI) {
+      return a - H.TAU;
+    } else if (a < -H.PI) {
+      return a + H.TAU;
+    } else {
+      return a;
+    }
+  };
+
   Point = (function() {
     function Point(x1, y1) {
       this.x = x1;
@@ -224,6 +234,24 @@
 
     Point.prototype.randomOnCircle = function(r) {
       return this.setPolar(r, H.randAng(TAU));
+    };
+
+    Point.prototype.wrap = function(w) {
+      if (w == null) {
+        w = C.tileSize;
+      }
+      if (this.x < -w / 2) {
+        this.x += w;
+      }
+      if (this.x > w / 2) {
+        this.x -= w;
+      }
+      if (this.y < -w / 2) {
+        this.y += w;
+      }
+      if (this.y > w / 2) {
+        return this.y -= w;
+      }
     };
 
     return Point;

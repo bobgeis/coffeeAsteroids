@@ -67,6 +67,7 @@ C.transportShields =
     }
 C.transportRegen = 1/2500
 C.transportInvincibleDuration = 400
+C.transportDockTime = 10000     # ms
 
 # disruptor beam attributes
 C.beamDamage = 1                #
@@ -135,9 +136,9 @@ C.rockMaxDamage =
     }
 C.rockCalveChance =
     {
-        C : 0.4
-        S : 0.6
-        M : 0.3
+        C : [0.9,0.8,0.1,0.1]
+        S : [0.9,0.8,0.7,0.2]
+        M : [0.9,0.5,0.1,0.0]
     }
 C.rockBaseColors =
     {
@@ -248,9 +249,9 @@ C.flashOuterColor = (ratio) ->
 
 C.crystalChance =           # probability that a booming rock leaves a crystal
     {
-        C: 0.1
-        S: 0.3
-        M: 0.5
+        C: 0.2
+        S: 0.4
+        M: 0.6
     }
 C.crystalMaxAge = 60*1000   # ms
 C.crystalSpin = 4/1000      # rad/ms
@@ -258,12 +259,20 @@ C.crystalSpin = 4/1000      # rad/ms
 C.lifepodMaxAge = 60*1000   # ms
 C.lifepodVel = 100/1000      # px/ms
 C.lifepodSpin = 4/1000      # rad/ms
+C.lifepodChance = [1.0,0.7,0.3,0.1]
 
 
 
 C.luckyBaseLocation = [-C.tileSize/4+50 , -C.tileSize/4+140]
 C.buildBaseLocation = [C.tileSize/4-30 ,  C.tileSize/4-70]
-# C.mouseBaseLocation = [C.tileSize/4-30 ,  C.tileSize/4-70]
+C.mouseBaseLocation = [C.tileSize/4-30 ,  C.tileSize/4-70]
+C.baseLocations =
+    {
+        "Lucky" : C.luckyBaseLocation
+        "Build" : C.buildBaseLocation
+        "Mouse" : C.mouseBaseLocation
+    }
+
 
 C.navPtNames =                      # friendly nav points
     [

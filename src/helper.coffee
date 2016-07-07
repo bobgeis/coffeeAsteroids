@@ -82,6 +82,14 @@ H.getRandomObjValue = (obj) ->
     return obj[H.getRandomListValue(Object.keys(obj))]
 
 
+H.wrapAngle = (a) ->
+    if a > H.PI
+        return a - H.TAU
+    else if a < -H.PI
+        return a + H.TAU
+    else
+        return a
+
 
 
 # 2D vector, point, or position class
@@ -242,6 +250,17 @@ class Point
     # move to a random point *on* the circle
     randomOnCircle : (r) ->
         @setPolar r, H.randAng(TAU)
+
+    # wrap to the game tile
+    wrap : (w=C.tileSize)->
+        if @x < -w/2
+            @x += w
+        if @x > w/2
+            @x -= w
+        if @y < -w/2
+            @y += w
+        if @y > w/2
+            @y -= w
 
 # export Point
 H.Point = Point

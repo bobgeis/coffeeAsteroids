@@ -306,7 +306,7 @@
           this.flash(rock);
         }
       }
-      if (Math.random() < 0.001) {
+      if (Math.random() < 0.1) {
         ship = E.newRandomCivTransport();
         this.flash(ship);
         return this.ships.push(ship);
@@ -339,6 +339,7 @@
 
     Model.prototype.shipDocked = function(ship, base) {
       this.flashes.push(E.newTracPulseOnObj(ship));
+      ship.kill();
     };
 
     Model.prototype.shipWarped = function(ship) {};

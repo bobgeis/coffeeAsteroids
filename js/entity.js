@@ -174,18 +174,7 @@
     };
 
     MovingEntity.prototype.wrap = function() {
-      if (this.pos.x < -C.tileSize / 2) {
-        this.pos.x += C.tileSize;
-      }
-      if (this.pos.x > C.tileSize / 2) {
-        this.pos.x -= C.tileSize;
-      }
-      if (this.pos.y < -C.tileSize / 2) {
-        this.pos.y += C.tileSize;
-      }
-      if (this.pos.y > C.tileSize / 2) {
-        return this.pos.y -= C.tileSize;
-      }
+      return this.pos.wrap();
     };
 
     MovingEntity.prototype.collide = function(obj) {
@@ -263,8 +252,8 @@
   NavPointEntity = (function(superClass) {
     extend(NavPointEntity, superClass);
 
-    function NavPointEntity(name1) {
-      this.name = name1;
+    function NavPointEntity(name3) {
+      this.name = name3;
       H.pt1.setList(C.navPtLocations[this.name]);
       NavPointEntity.__super__.constructor.call(this, H.pt1, 0, H.origin, 0);
       this.friendly = C.navPtDefaults[this.name][0];
@@ -407,10 +396,18 @@
     dvel1 = H.pt1.randomOnCircle(C.lifepodVel);
     dvel2 = H.pt2.randomOnCircle(C.lifepodVel);
     list = [];
-    list.push(new EphemeralEntity(A.img.lifepod, obj.pos, 0, H.pt3.sum(dvel1, obj.vel), H.randPlusMinus(C.lifepodSpin)));
-    list.push(new EphemeralEntity(A.img.lifepod, obj.pos, Math.PI, H.pt4.diff(dvel1, obj.vel), H.randPlusMinus(C.lifepodSpin)));
-    list.push(new EphemeralEntity(A.img.lifepod, obj.pos, 0, H.pt5.sum(dvel2, obj.vel), H.randPlusMinus(C.lifepodSpin)));
-    list.push(new EphemeralEntity(A.img.lifepod, obj.pos, Math.PI, H.pt6.diff(dvel2, obj.vel), H.randPlusMinus(C.lifepodSpin)));
+    if (Math.random() < C.lifepodChance[0]) {
+      list.push(new EphemeralEntity(A.img.lifepod, obj.pos, 0, H.pt3.sum(dvel1, obj.vel), H.randPlusMinus(C.lifepodSpin)));
+    }
+    if (Math.random() < C.lifepodChance[1]) {
+      list.push(new EphemeralEntity(A.img.lifepod, obj.pos, Math.PI, H.pt4.diff(dvel1, obj.vel), H.randPlusMinus(C.lifepodSpin)));
+    }
+    if (Math.random() < C.lifepodChance[2]) {
+      list.push(new EphemeralEntity(A.img.lifepod, obj.pos, 0, H.pt5.sum(dvel2, obj.vel), H.randPlusMinus(C.lifepodSpin)));
+    }
+    if (Math.random() < C.lifepodChance[3]) {
+      list.push(new EphemeralEntity(A.img.lifepod, obj.pos, Math.PI, H.pt6.diff(dvel2, obj.vel), H.randPlusMinus(C.lifepodSpin)));
+    }
     for (j = 0, len = list.length; j < len; j++) {
       pod = list[j];
       pod.setMaxAge(C.lifepodMaxAge);
@@ -544,16 +541,16 @@
     dvel2 = H.pt2.randomOnCircle(C.rockVel);
     chance = C.rockCalveChance[type];
     calves = [];
-    if (0 < chance) {
+    if (0 < chance[0]) {
       calves.push(new RockEntity(type, size, pos, 0, H.pt3.sum(dvel, oldRock.vel), 0));
     }
-    if (Math.random() < chance) {
+    if (Math.random() < chance[1]) {
       calves.push(new RockEntity(type, size, pos, 0, H.pt3.diff(dvel, oldRock.vel), 0));
     }
-    if (Math.random() < chance) {
+    if (Math.random() < chance[2]) {
       calves.push(new RockEntity(type, size, pos, 0, H.pt3.sum(dvel2, oldRock.vel), 0));
     }
-    if (Math.random() < chance) {
+    if (Math.random() < chance[3]) {
       calves.push(new RockEntity(type, size, pos, 0, H.pt3.diff(dvel2, oldRock.vel), 0));
     }
     for (j = 0, len = calves.length; j < len; j++) {
@@ -626,6 +623,14 @@
       return this.docking = 0;
     };
 
+    ShipEntity.prototype.turnTowards = function(pos) {
+      if (H.wrapAngle(this.pos.getFaceAngle(pos) + this.a) > 0) {
+        return -1;
+      } else {
+        return 1;
+      }
+    };
+
     return ShipEntity;
 
   })(DestructibleEntity);
@@ -633,28 +638,43 @@
   TransportShipEntity = (function(superClass) {
     extend(TransportShipEntity, superClass);
 
-    function TransportShipEntity(type, faction, pos, a, vel, va) {
+    function TransportShipEntity(type, faction, pos, a, vel, va, des) {
       TransportShipEntity.__super__.constructor.call(this, type, faction, pos, a, vel, va);
       this.drag = C.transportDrag;
-      this.hasDocked = false;
+      this.maxDamage = C.transportShields[faction];
+      this.regen = C.transportRegen;
+      this.invincibleMax = C.transportInvincibleDuration;
+      this.dockTimer = C.transportDockTime;
       this.canWarp = false;
       this.warping = 0;
       this.warped = false;
+      this.des = des.copyPos();
     }
+
+    TransportShipEntity.prototype.update = function(dt) {
+      this.va = this.turnTowards(this.des) * C.transportAngVel;
+      this.beginDocking();
+      return TransportShipEntity.__super__.update.call(this, dt);
+    };
 
     return TransportShipEntity;
 
   })(ShipEntity);
 
   E.newRandomCivTransport = function() {
-    var a, name, transport, v;
-    name = "Alpha Octolindis";
+    var a, name1, name2, names, transport, v;
+    names = ["Alpha Octolindis", "New Dilgan"];
+    name1 = H.getRandomListValue(names);
     H.pt1.randomInCircle(C.navPtRadius);
-    H.pt1.transXY(C.navPtLocations[name][0], C.navPtLocations[name][1]);
+    H.pt1.transXY(C.navPtLocations[name1][0], C.navPtLocations[name1][1]);
     a = H.randAng();
     v = C.transportInitialVelocity + H.randPlusMinus(C.transportInitialVelocity / 2);
     H.pt2.setPolar(v, a);
-    transport = new TransportShipEntity("drop", "civ", H.pt1, a, H.pt2, 0);
+    H.pt3.setXY(C.luckyBaseLocation[0], C.luckyBaseLocation[1]);
+    name2 = H.getRandomListValue(names);
+    H.pt4.randomInCircle(C.navPtRadius);
+    H.pt4.transXY(C.navPtLocations[name2][0], C.navPtLocations[name2][1]).wrap();
+    transport = new TransportShipEntity("drop", "civ", H.pt1, a, H.pt2, 0, H.pt3);
     transport.setAcc(C.transportAcc);
     return transport;
   };

@@ -215,10 +215,10 @@ S.dockMode = {
     draw : (ctx) ->
         S.play.draw(ctx)
         @msg.draw(ctx)
-        H.drawText ctx, "You are docked.",
-                 ctx.canvas.width/2, ctx.canvas.height/2-200, 30
+        H.drawText ctx, "Your ship is docked and refueled.",
+                 ctx.canvas.width/2, ctx.canvas.height/2-200, 20
         H.drawText ctx, "Press [Escape] to launch.",
-                 ctx.canvas.width/2, ctx.canvas.height/2+250, 15
+                 ctx.canvas.width/2, ctx.canvas.height/2+250, 20
     update : (dt) ->
         return
 

@@ -250,7 +250,8 @@ class Model
                 rock = E.RockFromNavName name
                 @rocks.push rock
                 @flash rock
-        if Math.random() < 0.001
+        # if @ships.length < 6 and Math.random() < 0.1
+        if Math.random() < 0.1
             ship = E.newRandomCivTransport()
             @flash ship
             @ships.push ship
@@ -279,6 +280,7 @@ class Model
 
     shipDocked : (ship, base) ->
         @flashes.push E.newTracPulseOnObj ship
+        ship.kill()
         return
 
     shipWarped : (ship) ->

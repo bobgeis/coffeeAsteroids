@@ -134,14 +134,7 @@ class MovingEntity extends Entity
                 return
 
     wrap : ->
-        if @pos.x < -C.tileSize/2
-            @pos.x += C.tileSize
-        if @pos.x > C.tileSize/2
-            @pos.x -= C.tileSize
-        if @pos.y < -C.tileSize/2
-            @pos.y += C.tileSize
-        if @pos.y > C.tileSize/2
-            @pos.y -= C.tileSize
+        @pos.wrap()
 
     # is obj colliding with this? (both need .r as radius)
     collide : (obj) ->
@@ -333,18 +326,22 @@ E.newLifepodsOnObj = (obj) ->
     dvel1 = H.pt1.randomOnCircle(C.lifepodVel)
     dvel2 = H.pt2.randomOnCircle(C.lifepodVel)
     list = []
-    list.push new EphemeralEntity(A.img.lifepod,obj.pos,0,
-        H.pt3.sum(dvel1,obj.vel),
-        H.randPlusMinus C.lifepodSpin)
-    list.push new EphemeralEntity(A.img.lifepod,obj.pos,Math.PI,
-        H.pt4.diff(dvel1,obj.vel),
-        H.randPlusMinus C.lifepodSpin)
-    list.push new EphemeralEntity(A.img.lifepod,obj.pos,0,
-        H.pt5.sum(dvel2,obj.vel),
-        H.randPlusMinus C.lifepodSpin)
-    list.push new EphemeralEntity(A.img.lifepod,obj.pos,Math.PI,
-        H.pt6.diff(dvel2,obj.vel),
-        H.randPlusMinus C.lifepodSpin)
+    if Math.random() < C.lifepodChance[0]
+        list.push new EphemeralEntity(A.img.lifepod,obj.pos,0,
+            H.pt3.sum(dvel1,obj.vel),
+            H.randPlusMinus C.lifepodSpin)
+    if Math.random() < C.lifepodChance[1]
+        list.push new EphemeralEntity(A.img.lifepod,obj.pos,Math.PI,
+            H.pt4.diff(dvel1,obj.vel),
+            H.randPlusMinus C.lifepodSpin)
+    if Math.random() < C.lifepodChance[2]
+        list.push new EphemeralEntity(A.img.lifepod,obj.pos,0,
+            H.pt5.sum(dvel2,obj.vel),
+            H.randPlusMinus C.lifepodSpin)
+    if Math.random() < C.lifepodChance[3]
+        list.push new EphemeralEntity(A.img.lifepod,obj.pos,Math.PI,
+            H.pt6.diff(dvel2,obj.vel),
+            H.randPlusMinus C.lifepodSpin)
     for pod in list
         pod.setMaxAge C.lifepodMaxAge
         pod.setType "lifepod"
@@ -447,13 +444,13 @@ E.calveRock = (oldRock) ->
     dvel2 = H.pt2.randomOnCircle(C.rockVel)
     chance = C.rockCalveChance[type]
     calves = []
-    if 0 < chance
+    if 0 < chance[0]
         calves.push new RockEntity(type,size,pos,0,H.pt3.sum(dvel,oldRock.vel),0)
-    if Math.random() < chance
+    if Math.random() < chance[1]
         calves.push new RockEntity(type,size,pos,0,H.pt3.diff(dvel,oldRock.vel),0)
-    if Math.random() < chance
+    if Math.random() < chance[2]
         calves.push new RockEntity(type,size,pos,0,H.pt3.sum(dvel2,oldRock.vel),0)
-    if Math.random() < chance
+    if Math.random() < chance[3]
         calves.push new RockEntity(type,size,pos,0,H.pt3.diff(dvel2,oldRock.vel),0)
     for calf in calves
         calf.damage = calf.maxDamage /2
@@ -516,6 +513,12 @@ class ShipEntity extends DestructibleEntity
     stopDocking : ->
         @docking = 0
 
+    # get +1 or -1 * angvel to turn towards pos
+    turnTowards : (pos) ->
+        if H.wrapAngle(@pos.getFaceAngle(pos) + @a) > 0
+            return -1
+        else
+            return 1
 
 
 
@@ -523,28 +526,50 @@ class ShipEntity extends DestructibleEntity
 
 class TransportShipEntity extends ShipEntity
 
-    constructor : (type,faction,pos,a,vel,va) ->
+    constructor : (type,faction,pos,a,vel,va,des) ->
         super type,faction,pos,a,vel,va
         @drag = C.transportDrag
 
-        @hasDocked = false
+        @maxDamage = C.transportShields[faction]
+        @regen = C.transportRegen
+        @invincibleMax = C.transportInvincibleDuration
+
+        @dockTimer = C.transportDockTime
 
         @canWarp = false
         @warping = 0
         @warped = false
 
+        @des = des.copyPos()
+
+    update : (dt) ->
+        @va = @turnTowards(@des) * C.transportAngVel
+        @beginDocking()
+        super dt
+
 
 
 E.newRandomCivTransport = ->
-    name = "Alpha Octolindis"
+    names = ["Alpha Octolindis","New Dilgan"]
+    name1 = H.getRandomListValue names
     H.pt1.randomInCircle(C.navPtRadius)
-    H.pt1.transXY(C.navPtLocations[name][0],C.navPtLocations[name][1])
+    H.pt1.transXY(C.navPtLocations[name1][0],
+                  C.navPtLocations[name1][1])
+
     a = H.randAng()
     v = (C.transportInitialVelocity +
             H.randPlusMinus(C.transportInitialVelocity/2))
     H.pt2.setPolar(v,a)
 
-    transport = new TransportShipEntity("drop","civ",H.pt1,a,H.pt2,0)
+    # civs always go to the lucky base
+    H.pt3.setXY(C.luckyBaseLocation[0],
+                C.luckyBaseLocation[1])
+    name2 = H.getRandomListValue names
+    H.pt4.randomInCircle(C.navPtRadius)
+    H.pt4.transXY(C.navPtLocations[name2][0],
+                  C.navPtLocations[name2][1]).wrap()
+
+    transport = new TransportShipEntity("drop","civ",H.pt1,a,H.pt2,0,H.pt3)
 
     transport.setAcc C.transportAcc
     return transport
