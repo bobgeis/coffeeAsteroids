@@ -60,11 +60,11 @@ C.transportInitialVelocity = 0.25
 C.transportMass = 20
 C.transportShields =
     {
-        "civ" : 2
-        "build" : 3
-        "med" : 4
-        "mine" : 5
-        "sci" : 6
+        "civ" : 0.1
+        "build" : 0.5
+        "med" : 3.0
+        "mine" : 3.0
+        "sci" : 6.0
     }
 C.transportRegen = 1/2500
 C.transportInvincibleDuration = 400
@@ -73,10 +73,10 @@ C.transportDockTime = 10000     # ms
 # disruptor beam attributes
 C.beamDamage = 1                #
 C.beamRange = 500               # px
-C.beamDuration = 110            # ms
+C.beamDuration = 125            # ms
 C.beamScatter = 8/100           # radians
-C.beamCoolDown = 110            # ms
-C.beamBurstCount = 5            # number of times to fire in a row
+C.beamCoolDown = 125            # ms
+C.beamBurstCount = 4            # number of times to fire in a row
 C.beamEnergyMax = 15            # shots
 C.beamEnergyRegen = 2.5/1000    # shots/ms
 C.beamColors = [
@@ -307,12 +307,19 @@ C.navPtDefaults =
     }
 
 C.navPtSpawnRates =
-    {                           # friendly  , active
+    {
         "Alpha Octolindis"  : 0.001
         "New Dilgan"        : 0.001
-        "Locus 3250"        : 0.002
-        "Grim Orchard"      : 0.001
-        "Rust Belt"         : 0.001
+        "Locus 3250"        : 0.003
+        "Grim Orchard"      : 0.002
+        "Rust Belt"         : 0.002
+    }
+
+C.navPtSpawnRateIncrease =
+    {
+        "Locus 3250"        : 0.0002
+        "Grim Orchard"      : 0.0001
+        "Rust Belt"         : 0.0001
     }
 
 C.navPtRockTypes =
@@ -335,4 +342,37 @@ C.navPtColors =
     ]
 
 
+# some things that are functions of player progress
+C.rocksCanSpawn = (numRocks,numShipsAway) ->
+    10 + numShipsAway * 5 > numRocks
 
+C.shipsCanSpawn = (numShips,numShipsAway) ->
+    numShipsAway/4 + 2 > numShips
+
+C.shipSpawnRateBase = 0.0004
+
+C.minersSpawn = (numCrystalsDelivered) ->
+    numCrystalsDelivered * 0.00002 > Math.random()
+
+C.medicsSpawn = (numLifepodsRescued) ->
+    numLifepodsRescued * 0.00003 > Math.random()
+
+# beam improvements from crystals
+C.playerBeamEnergyMaxUpgraded = (crystals) ->
+    C.beamEnergyMax*(1 + crystals/100)
+
+C.playerBeamCooldownMaxUpgraded = (crystals) ->
+    C.beamCoolDown*(1 - crystals/1000)
+
+C.playerBeamEnergyRegenUpgraded = (crystals) ->
+    C.beamEnergyRegen*(1 + crystals/120)
+
+C.playerBurstCountUpgraded = (crystals) ->
+    Math.floor(C.beamBurstCount*(1 + crystals/100))
+
+# shield improvements from lifepods
+C.playerShieldRegenUpgraded = (lifepods) ->
+    C.shipRegen*(1 + lifepods/120)
+
+C.playerShieldMaxUpgraded = (lifepods) ->
+    C.shipShields*(1 + lifepods/100)

@@ -187,6 +187,7 @@ S.play = {
 S.gameOver = {
     enter : ->
         console.log "enter gameOver"
+        @updateHiScores()
     draw : (ctx) ->
         S.play.draw(ctx)
         H.drawText ctx, "You have died. So it goes.",
@@ -201,9 +202,24 @@ S.gameOver = {
                 changeState S.splash
     exit : ->
         console.log "exit gameOver"
+
+    updateHiScores : ->
+        oldHiScore = JSON.parse(localStorage.getItem('HiScore')) or blankHiScore
+        score = S.play.model.getScore()
+        @newHiScore = {}
+        for type in ['ship','crystal','mousepod','lifepod']
+            @newHiScore[type] = Math.max(score[type],oldHiScore[type])
+        localStorage.setItem('HiScore',JSON.stringify(@newHiScore))
+        console.log @newHiScore
 }
 
-
+blankHiScore =
+    {
+        ship : 0
+        crystal : 0
+        lifepod : 0
+        mousepod : 0
+    }
 
 
 S.dockMode = {

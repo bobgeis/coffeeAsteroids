@@ -321,17 +321,20 @@
     };
 
     Model.prototype.maybeTimerSpawn = function() {
-      var i, len, name, ref, rock;
-      ref = C.mousePtNames;
-      for (i = 0, len = ref.length; i < len; i++) {
-        name = ref[i];
-        if (Math.random() < C.navPtSpawnRates[name]) {
-          rock = E.RockFromNavName(name);
-          this.rocks.push(rock);
-          this.flash(rock);
+      var i, len, name, numShipsAway, ref, rock;
+      numShipsAway = this.cargo.ship[1];
+      if (C.rocksCanSpawn(this.rocks.length, numShipsAway)) {
+        ref = C.mousePtNames;
+        for (i = 0, len = ref.length; i < len; i++) {
+          name = ref[i];
+          if (Math.random() < C.navPtSpawnRates[name]) {
+            rock = E.RockFromNavName(name);
+            this.rocks.push(rock);
+            this.flash(rock);
+          }
         }
       }
-      if (this.ships.length < 12) {
+      if (C.shipsCanSpawn(this.ships.length, numShipsAway)) {
         this.spawnShips(true);
         return this.spawnShips(false);
       }
@@ -344,22 +347,22 @@
       } else {
         ephemera = this.tracPulse;
       }
-      if (Math.random() < 0.0004) {
+      if (Math.random() < C.shipSpawnRateBase) {
         ship = E.newRandomTransport("civ", inbound);
         ephemera(ship);
         this.ships.push(ship);
       }
-      if (Math.random() < 0.0004) {
+      if (Math.random() < C.shipSpawnRateBase) {
         ship = E.newRandomTransport("build", inbound);
         ephemera(ship);
         this.ships.push(ship);
       }
-      if (Math.random() < 0.0004) {
+      if (C.minersSpawn(this.cargo.crystal[1])) {
         ship = E.newRandomTransport("mine", inbound);
         ephemera(ship);
         this.ships.push(ship);
       }
-      if (Math.random() < 0.0004) {
+      if (C.medicsSpawn(this.cargo.lifepod[1])) {
         ship = E.newRandomTransport("med", inbound);
         ephemera(ship);
         return this.ships.push(ship);
@@ -380,9 +383,11 @@
       if (base.name === "lucky") {
         this.cargo.lifepod[1] += this.cargo.lifepod[0];
         this.cargo.lifepod[0] = 0;
+        this.player.upgradeShield(this.cargo.lifepod[1]);
       } else {
         this.cargo.crystal[1] += this.cargo.crystal[0];
         this.cargo.crystal[0] = 0;
+        this.player.upgradeBeam(this.cargo.crystal[1]);
       }
       this.quest = Q.getNextQuest(base.name);
       this.cargo.mousepod[1] += this.cargo.mousepod[0];
@@ -400,6 +405,15 @@
       this.flash(ship);
       ship.kill();
       this.cargo.ship[1] += 1;
+    };
+
+    Model.prototype.getScore = function() {
+      return {
+        ship: this.cargo.ship[1],
+        crystal: this.cargo.crystal[1],
+        lifepod: this.cargo.lifepod[1],
+        mousepod: this.cargo.mousepod[1]
+      };
     };
 
     Model.prototype.log = function() {
