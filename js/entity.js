@@ -758,6 +758,7 @@
       this.beamEnergy = 0;
       this.beamEnergyMax = C.beamEnergyMax;
       this.beamEnergyRegen = C.beamEnergyRegen;
+      this.beamBurstCount = C.beamBurstCount;
       this.tarBeam = B.newTargetingBeam(this);
       this.tarBeamOn = false;
       this.tracBeamOn = true;
@@ -801,7 +802,7 @@
       this.beamEnergy = this.beamEnergyMax;
       this.damage = this.maxDamage;
       this.fuel = this.fuelMax;
-      this.beamCoolDown = C.beamCoolDown;
+      this.beamCoolDown = this.beamCoolDownMax;
       this.tracBeamCoolDown = C.tracBeamCoolDown;
       return PlayerShipEntity.__super__.kill.call(this);
     };
@@ -836,12 +837,20 @@
       if (this.beamTriggered) {
         return this.beamTriggered = 0;
       } else {
-        return this.beamTriggered = C.beamBurstCount;
+        return this.beamTriggered = this.beamBurstCount;
       }
     };
 
     PlayerShipEntity.prototype.canFire = function() {
-      return !this.beamCoolDown && this.beamEnergy < this.beamEnergyMax;
+      if (this.beamEnergy > this.beamEnergyMax) {
+        this.beamTriggered = 0;
+        return false;
+      }
+      if (this.beamCoolDown) {
+        return false;
+      } else {
+        return true;
+      }
     };
 
     PlayerShipEntity.prototype.setJustFired = function() {
@@ -893,6 +902,18 @@
 
     PlayerShipEntity.prototype.log = function() {
       return console.log(this.pos);
+    };
+
+    PlayerShipEntity.prototype.upgradeBeam = function(crystals) {
+      this.beamCoolDownMax = C.playerBeamCooldownMaxUpgraded(crystals);
+      this.beamEnergyMax = C.playerBeamEnergyMaxUpgraded(crystals);
+      this.beamEnergyRegen = C.playerBeamEnergyRegenUpgraded(crystals);
+      return this.beamBurstCount = C.playerBurstCountUpgraded(crystals);
+    };
+
+    PlayerShipEntity.prototype.upgradeShield = function(lifepods) {
+      this.maxDamage = C.playerShieldMaxUpgraded(lifepods);
+      return this.regen = C.playerShieldRegenUpgraded(lifepods);
     };
 
     return PlayerShipEntity;

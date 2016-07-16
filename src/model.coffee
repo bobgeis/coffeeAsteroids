@@ -248,16 +248,16 @@ class Model
 
 
     maybeTimerSpawn : ->
-        for name in C.mousePtNames
-            if Math.random() < C.navPtSpawnRates[name]
-                rock = E.RockFromNavName name
-                @rocks.push rock
-                @flash rock
-        # if @ships.length < 6 and Math.random() < 0.1
-        if @ships.length < 12
+        numShipsAway = @cargo.ship[1]
+        if C.rocksCanSpawn(@rocks.length,numShipsAway)
+            for name in C.mousePtNames
+                if Math.random() < C.navPtSpawnRates[name]
+                    rock = E.RockFromNavName name
+                    @rocks.push rock
+                    @flash rock
+        if C.shipsCanSpawn(@ships.length,numShipsAway)
             @spawnShips(true)
             @spawnShips(false)
-
 
 
     spawnShips : (inbound) ->
@@ -265,23 +265,22 @@ class Model
             ephemera = @flash
         else
             ephemera = @tracPulse
-        if Math.random() < 0.0004
+        if Math.random() < C.shipSpawnRateBase
             ship = E.newRandomTransport("civ",inbound)
             ephemera ship
             @ships.push ship
-        if Math.random() < 0.0004
+        if Math.random() < C.shipSpawnRateBase
             ship = E.newRandomTransport("build",inbound)
             ephemera ship
             @ships.push ship
-        if Math.random() < 0.0004
+        if C.minersSpawn(@cargo.crystal[1])
             ship = E.newRandomTransport("mine",inbound)
             ephemera ship
             @ships.push ship
-        if Math.random() < 0.0004
+        if C.medicsSpawn(@cargo.lifepod[1])
             ship = E.newRandomTransport("med",inbound)
             ephemera ship
             @ships.push ship
-
 
 
     pickupLoot : (loot) ->
@@ -296,9 +295,11 @@ class Model
         if base.name == "lucky"
             @cargo.lifepod[1] += @cargo.lifepod[0]
             @cargo.lifepod[0] = 0
+            @player.upgradeShield @cargo.lifepod[1]
         else
             @cargo.crystal[1] += @cargo.crystal[0]
             @cargo.crystal[0] = 0
+            @player.upgradeBeam @cargo.crystal[1]
         @quest = Q.getNextQuest(base.name)
         @cargo.mousepod[1] += @cargo.mousepod[0]
         @cargo.mousepod[0] = 0
@@ -315,6 +316,14 @@ class Model
         ship.kill()
         @cargo.ship[1] += 1
         return
+
+    getScore : ->
+        {
+            ship : @cargo.ship[1]
+            crystal : @cargo.crystal[1]
+            lifepod : @cargo.lifepod[1]
+            mousepod : @cargo.mousepod[1]
+        }
 
     # for debugging
     log : ->

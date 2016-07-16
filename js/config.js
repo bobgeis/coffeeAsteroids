@@ -74,11 +74,11 @@
   C.transportMass = 20;
 
   C.transportShields = {
-    "civ": 2,
-    "build": 3,
-    "med": 4,
-    "mine": 5,
-    "sci": 6
+    "civ": 0.1,
+    "build": 0.5,
+    "med": 3.0,
+    "mine": 3.0,
+    "sci": 6.0
   };
 
   C.transportRegen = 1 / 2500;
@@ -91,13 +91,13 @@
 
   C.beamRange = 500;
 
-  C.beamDuration = 110;
+  C.beamDuration = 125;
 
   C.beamScatter = 8 / 100;
 
-  C.beamCoolDown = 110;
+  C.beamCoolDown = 125;
 
-  C.beamBurstCount = 5;
+  C.beamBurstCount = 4;
 
   C.beamEnergyMax = 15;
 
@@ -283,9 +283,15 @@
   C.navPtSpawnRates = {
     "Alpha Octolindis": 0.001,
     "New Dilgan": 0.001,
-    "Locus 3250": 0.002,
-    "Grim Orchard": 0.001,
-    "Rust Belt": 0.001
+    "Locus 3250": 0.003,
+    "Grim Orchard": 0.002,
+    "Rust Belt": 0.002
+  };
+
+  C.navPtSpawnRateIncrease = {
+    "Locus 3250": 0.0002,
+    "Grim Orchard": 0.0001,
+    "Rust Belt": 0.0001
   };
 
   C.navPtRockTypes = {
@@ -301,5 +307,47 @@
   C.navPtFontSize = 14;
 
   C.navPtColors = ["rgba(100, 255, 255, 0.8)", "rgba(100, 100, 255, 0.8)", "rgba(255, 200,   0, 0.8)", "rgba(255, 100, 100, 0.8)"];
+
+  C.rocksCanSpawn = function(numRocks, numShipsAway) {
+    return 10 + numShipsAway * 5 > numRocks;
+  };
+
+  C.shipsCanSpawn = function(numShips, numShipsAway) {
+    return numShipsAway / 4 + 2 > numShips;
+  };
+
+  C.shipSpawnRateBase = 0.0004;
+
+  C.minersSpawn = function(numCrystalsDelivered) {
+    return numCrystalsDelivered * 0.00002 > Math.random();
+  };
+
+  C.medicsSpawn = function(numLifepodsRescued) {
+    return numLifepodsRescued * 0.00003 > Math.random();
+  };
+
+  C.playerBeamEnergyMaxUpgraded = function(crystals) {
+    return C.beamEnergyMax * (1 + crystals / 100);
+  };
+
+  C.playerBeamCooldownMaxUpgraded = function(crystals) {
+    return C.beamCoolDown * (1 - crystals / 1000);
+  };
+
+  C.playerBeamEnergyRegenUpgraded = function(crystals) {
+    return C.beamEnergyRegen * (1 + crystals / 120);
+  };
+
+  C.playerBurstCountUpgraded = function(crystals) {
+    return Math.floor(C.beamBurstCount * (1 + crystals / 100));
+  };
+
+  C.playerShieldRegenUpgraded = function(lifepods) {
+    return C.shipRegen * (1 + lifepods / 120);
+  };
+
+  C.playerShieldMaxUpgraded = function(lifepods) {
+    return C.shipShields * (1 + lifepods / 100);
+  };
 
 }).call(this);

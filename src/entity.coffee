@@ -629,6 +629,7 @@ class PlayerShipEntity extends ShipEntity
         @beamEnergy = 0
         @beamEnergyMax = C.beamEnergyMax
         @beamEnergyRegen = C.beamEnergyRegen
+        @beamBurstCount = C.beamBurstCount
 
         @tarBeam = B.newTargetingBeam(this)
         @tarBeamOn = false
@@ -665,7 +666,7 @@ class PlayerShipEntity extends ShipEntity
         @beamEnergy = @beamEnergyMax
         @damage = @maxDamage
         @fuel = @fuelMax
-        @beamCoolDown = C.beamCoolDown
+        @beamCoolDown = @beamCoolDownMax
         @tracBeamCoolDown = C.tracBeamCoolDown
         super()
 
@@ -690,10 +691,16 @@ class PlayerShipEntity extends ShipEntity
         if @beamTriggered
             @beamTriggered = 0
         else
-            @beamTriggered = C.beamBurstCount
+            @beamTriggered = @beamBurstCount
 
     canFire : ->
-        not @beamCoolDown and @beamEnergy < @beamEnergyMax
+        if @beamEnergy > @beamEnergyMax
+            @beamTriggered = 0
+            return false
+        if @beamCoolDown
+            return false
+        else
+            return true
 
     setJustFired : ->
         @beamCoolDown = @beamCoolDownMax
@@ -726,6 +733,17 @@ class PlayerShipEntity extends ShipEntity
 
     log : ->
         console.log @pos
+
+    upgradeBeam : (crystals) ->
+        @beamCoolDownMax = C.playerBeamCooldownMaxUpgraded crystals
+        @beamEnergyMax = C.playerBeamEnergyMaxUpgraded crystals
+        @beamEnergyRegen = C.playerBeamEnergyRegenUpgraded crystals
+        @beamBurstCount = C.playerBurstCountUpgraded crystals
+
+    upgradeShield : (lifepods) ->
+        @maxDamage = C.playerShieldMaxUpgraded(lifepods)
+        @regen = C.playerShieldRegenUpgraded(lifepods)
+
 
 E.PlayerShip = ->
     playerShip = new PlayerShipEntity("ray","civ",
