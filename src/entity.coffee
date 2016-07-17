@@ -637,7 +637,7 @@ class PlayerShipEntity extends ShipEntity
         @tracBeamOn = true
         @tracBeamCoolDown = 0
 
-        @fuel = C.shipFuelMax / 2
+        @fuel = C.shipFuelMax * (3/5)
         @fuelMax = C.shipFuelMax
 
     update : (dt) ->

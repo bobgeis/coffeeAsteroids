@@ -47,7 +47,7 @@
 
   C.shipMass = 10;
 
-  C.shipShields = 5;
+  C.shipShields = 3;
 
   C.shipRegen = 1 / 2500;
 
@@ -99,7 +99,7 @@
 
   C.beamBurstCount = 4;
 
-  C.beamEnergyMax = 15;
+  C.beamEnergyMax = 16;
 
   C.beamEnergyRegen = 2.5 / 1000;
 
@@ -248,9 +248,9 @@
 
   C.lifepodChance = [1.0, 0.7, 0.3, 0.1];
 
-  C.luckyBaseLocation = [-C.tileSize / 4 + 50, -C.tileSize / 4 + 140];
+  C.luckyBaseLocation = [C.tileSize / 4 - 30, C.tileSize / 4 - 70];
 
-  C.buildBaseLocation = [C.tileSize / 4 - 30, C.tileSize / 4 - 70];
+  C.buildBaseLocation = [-C.tileSize / 4 + 100, -C.tileSize / 4 + 140];
 
   C.mouseBaseLocation = [C.tileSize / 4 - 30, C.tileSize / 4 - 70];
 
@@ -343,11 +343,11 @@
   };
 
   C.playerShieldRegenUpgraded = function(lifepods) {
-    return C.shipRegen * (1 + lifepods / 120);
+    return C.shipRegen * (1 + lifepods / 80);
   };
 
   C.playerShieldMaxUpgraded = function(lifepods) {
-    return C.shipShields * (1 + lifepods / 100);
+    return C.shipShields * (1 + lifepods / 80);
   };
 
 }).call(this);

@@ -84,7 +84,7 @@
     var bar, emptyColor, fullColor;
     fullColor = [100, 255, 100, 1.0];
     emptyColor = [255, 200, 0, 1.0];
-    bar = new BarGraph("Core", ship, "fuel", "fuelMax", emptyColor, fullColor, 10, 70);
+    bar = new BarGraph("Fuel", ship, "fuel", "fuelMax", emptyColor, fullColor, 10, 70);
     return bar;
   };
 
@@ -156,7 +156,7 @@
       ctx.lineWidth = 1;
       ctx.strokeRect(cx - this.dx / 2, cy - this.dy / 2, this.dx, this.dy);
       ctx.fillStyle = this.fgColor;
-      ctx.font = "12px Arial";
+      ctx.font = "15px Arial";
       x = cx - this.dx / 2;
       y = cy - this.dy / 2;
       dx = 20;

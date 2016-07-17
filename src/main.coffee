@@ -8,11 +8,13 @@ This is a learning project made while learning coffeescript.
 """
 
 """
-Some things learned:
-
 
 TODO:
-
+1) Implement space mice and mousepods.
+2) Changing message text at bases.
+3) Save/Restore games.
+4) Mouse station.
+5) Better asteroid graphics.
 
 Things to try:
 1) Proper build tools/package managers.

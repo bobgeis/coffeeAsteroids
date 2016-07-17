@@ -60,6 +60,8 @@ class Model
             @navPts.push E.newNavPt(name)
             @rocks.push E.RockFromNavName(name)
             @rocks.push E.RockFromNavName(name)
+            @rocks.push E.RockFromNavName(name)
+            @rocks.push E.RockFromNavName(name)
         @cargo =
             {
                 ship : [0,0,0]
