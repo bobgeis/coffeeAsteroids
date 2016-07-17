@@ -67,6 +67,8 @@
         this.navPts.push(E.newNavPt(name));
         this.rocks.push(E.RockFromNavName(name));
         this.rocks.push(E.RockFromNavName(name));
+        this.rocks.push(E.RockFromNavName(name));
+        this.rocks.push(E.RockFromNavName(name));
       }
       this.cargo = {
         ship: [0, 0, 0],

@@ -43,7 +43,7 @@ C.shipDockingDrag = 5/1000      # ""
 C.shipDockingTime = 1000        # ms time it takes to dock
 C.shipWarpingTime = 1000        # ms time to warp
 C.shipMass = 10                 # arbitrary mass units
-C.shipShields =  5              # arbitrary damage units
+C.shipShields =  3              # arbitrary damage units
 C.shipRegen = 1/2500            # dmg/ms
 C.shipBeamCoolDown = 1 * 1000
 C.shipInvincibleDuration = 400  # ms  minimum time bt taking damage for ships
@@ -77,7 +77,7 @@ C.beamDuration = 125            # ms
 C.beamScatter = 8/100           # radians
 C.beamCoolDown = 125            # ms
 C.beamBurstCount = 4            # number of times to fire in a row
-C.beamEnergyMax = 15            # shots
+C.beamEnergyMax = 16            # shots
 C.beamEnergyRegen = 2.5/1000    # shots/ms
 C.beamColors = [
         "rgba(100, 255, 255, 1)"
@@ -264,8 +264,10 @@ C.lifepodChance = [1.0,0.7,0.3,0.1]
 
 
 
-C.luckyBaseLocation = [-C.tileSize/4+50 , -C.tileSize/4+140]
-C.buildBaseLocation = [C.tileSize/4-30 ,  C.tileSize/4-70]
+# C.luckyBaseLocation = [-C.tileSize/4+50 , -C.tileSize/4+140]
+# C.buildBaseLocation = [C.tileSize/4-30 ,  C.tileSize/4-70]
+C.luckyBaseLocation = [C.tileSize/4-30 ,  C.tileSize/4-70]
+C.buildBaseLocation = [-C.tileSize/4+100 , -C.tileSize/4+140]
 C.mouseBaseLocation = [C.tileSize/4-30 ,  C.tileSize/4-70]
 C.baseLocations =
     {
@@ -372,7 +374,7 @@ C.playerBurstCountUpgraded = (crystals) ->
 
 # shield improvements from lifepods
 C.playerShieldRegenUpgraded = (lifepods) ->
-    C.shipRegen*(1 + lifepods/120)
+    C.shipRegen*(1 + lifepods/80)
 
 C.playerShieldMaxUpgraded = (lifepods) ->
-    C.shipShields*(1 + lifepods/100)
+    C.shipShields*(1 + lifepods/80)

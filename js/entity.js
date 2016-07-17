@@ -763,7 +763,7 @@
       this.tarBeamOn = false;
       this.tracBeamOn = true;
       this.tracBeamCoolDown = 0;
-      this.fuel = C.shipFuelMax / 2;
+      this.fuel = C.shipFuelMax * (3 / 5);
       this.fuelMax = C.shipFuelMax;
     }
 

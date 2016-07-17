@@ -190,6 +190,8 @@
           return this.model.command(98);
         } else if (data.code === "KeyK") {
           return this.model.command(99);
+        } else if (data.code === "KeyP") {
+          return changeState(S.pause);
         }
       } else if (type === "keyup") {
         if (data.code === "ArrowLeft") {
@@ -228,11 +230,23 @@
   S.gameOver = {
     enter: function() {
       console.log("enter gameOver");
+      this.score = S.play.model.getScore();
       return this.updateHiScores();
     },
     draw: function(ctx) {
       S.play.draw(ctx);
       H.drawText(ctx, "You have died. So it goes.", ctx.canvas.width / 2, ctx.canvas.height / 2 - 200, 30);
+      H.drawText(ctx, "Your Score", ctx.canvas.width / 2, ctx.canvas.height / 2 - 180, 15);
+      H.drawText(ctx, "High Score", ctx.canvas.width / 2 + 100, ctx.canvas.height / 2 - 180, 15);
+      H.drawText(ctx, "Ships protected:", ctx.canvas.width / 2 - 100, ctx.canvas.height / 2 - 150, 15);
+      H.drawText(ctx, "" + this.score.ship, ctx.canvas.width / 2, ctx.canvas.height / 2 - 150, 18);
+      H.drawText(ctx, "" + this.newHiScore.ship, ctx.canvas.width / 2 + 100, ctx.canvas.height / 2 - 150, 18);
+      H.drawText(ctx, "Lifepods rescued:", ctx.canvas.width / 2 - 100, ctx.canvas.height / 2 - 120, 15);
+      H.drawText(ctx, "" + this.score.lifepod, ctx.canvas.width / 2, ctx.canvas.height / 2 - 120, 18);
+      H.drawText(ctx, "" + this.newHiScore.lifepod, ctx.canvas.width / 2 + 100, ctx.canvas.height / 2 - 120, 18);
+      H.drawText(ctx, "Crystals delivered:", ctx.canvas.width / 2 - 100, ctx.canvas.height / 2 - 90, 15);
+      H.drawText(ctx, "" + this.score.crystal, ctx.canvas.width / 2, ctx.canvas.height / 2 - 90, 18);
+      H.drawText(ctx, "" + this.newHiScore.crystal, ctx.canvas.width / 2 + 100, ctx.canvas.height / 2 - 90, 18);
       return H.drawText(ctx, "Press [Escape] to go to the intro.", ctx.canvas.width / 2, ctx.canvas.height / 2 + 250, 15);
     },
     update: function(dt) {
@@ -249,14 +263,13 @@
       return console.log("exit gameOver");
     },
     updateHiScores: function() {
-      var i, len, oldHiScore, ref, score, type;
+      var i, len, oldHiScore, ref, type;
       oldHiScore = JSON.parse(localStorage.getItem('HiScore')) || blankHiScore;
-      score = S.play.model.getScore();
       this.newHiScore = {};
-      ref = ['ship', 'crystal', 'mousepod', 'lifepod'];
+      ref = ['ship', 'crystal', 'lifepod'];
       for (i = 0, len = ref.length; i < len; i++) {
         type = ref[i];
-        this.newHiScore[type] = Math.max(score[type], oldHiScore[type]);
+        this.newHiScore[type] = Math.max(this.score[type], oldHiScore[type]);
       }
       localStorage.setItem('HiScore', JSON.stringify(this.newHiScore));
       return console.log(this.newHiScore);
@@ -294,6 +307,26 @@
     },
     exit: function() {
       return console.log("exit dockMode");
+    }
+  };
+
+  S.pause = {
+    enter: function() {
+      return console.log("enter pause");
+    },
+    exit: function() {
+      return console.log("exit pause");
+    },
+    draw: function(ctx) {
+      S.play.draw(ctx);
+      H.drawText(ctx, "Game Paused.", ctx.canvas.width / 2, ctx.canvas.height / 2 - 200, 20);
+      return H.drawText(ctx, "Press [P] to resume.", ctx.canvas.width / 2, ctx.canvas.height / 2 + 250, 20);
+    },
+    update: function(dt) {},
+    input: function(type, data) {
+      if (type === "keydown") {
+        return changeState(S.play);
+      }
     }
   };
 

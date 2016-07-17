@@ -156,6 +156,8 @@ S.play = {
                 @model.command 98
             else if data.code == "KeyK"
                 @model.command 99
+            else if data.code == "KeyP"
+                changeState S.pause
         else if type == "keyup"
             if data.code == "ArrowLeft"
                 @model.command 11
@@ -187,11 +189,36 @@ S.play = {
 S.gameOver = {
     enter : ->
         console.log "enter gameOver"
+        @score = S.play.model.getScore()
         @updateHiScores()
     draw : (ctx) ->
         S.play.draw(ctx)
         H.drawText ctx, "You have died. So it goes.",
                  ctx.canvas.width/2, ctx.canvas.height/2-200, 30
+        # scores
+        H.drawText ctx, "Your Score",
+                 ctx.canvas.width/2, ctx.canvas.height/2-180, 15
+        H.drawText ctx, "High Score",
+                 ctx.canvas.width/2+100, ctx.canvas.height/2-180, 15
+        H.drawText ctx, "Ships protected:",
+                 ctx.canvas.width/2-100, ctx.canvas.height/2-150, 15
+        H.drawText ctx, "#{@score.ship}",
+                 ctx.canvas.width/2, ctx.canvas.height/2-150, 18
+        H.drawText ctx, "#{@newHiScore.ship}",
+                 ctx.canvas.width/2+100, ctx.canvas.height/2-150, 18
+        H.drawText ctx, "Lifepods rescued:",
+                 ctx.canvas.width/2-100, ctx.canvas.height/2-120, 15
+        H.drawText ctx, "#{@score.lifepod}",
+                 ctx.canvas.width/2, ctx.canvas.height/2-120, 18
+        H.drawText ctx, "#{@newHiScore.lifepod}",
+                 ctx.canvas.width/2+100, ctx.canvas.height/2-120, 18
+        H.drawText ctx, "Crystals delivered:",
+                 ctx.canvas.width/2-100, ctx.canvas.height/2-90, 15
+        H.drawText ctx, "#{@score.crystal}",
+                 ctx.canvas.width/2, ctx.canvas.height/2-90, 18
+        H.drawText ctx, "#{@newHiScore.crystal}",
+                 ctx.canvas.width/2+100, ctx.canvas.height/2-90, 18
+        # restart text
         H.drawText ctx, "Press [Escape] to go to the intro.",
                  ctx.canvas.width/2, ctx.canvas.height/2+250, 15
     update : (dt) ->
@@ -205,10 +232,9 @@ S.gameOver = {
 
     updateHiScores : ->
         oldHiScore = JSON.parse(localStorage.getItem('HiScore')) or blankHiScore
-        score = S.play.model.getScore()
         @newHiScore = {}
-        for type in ['ship','crystal','mousepod','lifepod']
-            @newHiScore[type] = Math.max(score[type],oldHiScore[type])
+        for type in ['ship','crystal','lifepod']
+            @newHiScore[type] = Math.max(@score[type],oldHiScore[type])
         localStorage.setItem('HiScore',JSON.stringify(@newHiScore))
         console.log @newHiScore
 }
@@ -249,7 +275,23 @@ S.dockMode = {
 }
 
 
-
+S.pause = {
+    enter : ->
+        console.log "enter pause"
+    exit : ->
+        console.log "exit pause"
+    draw : (ctx) ->
+        S.play.draw(ctx)
+        H.drawText ctx, "Game Paused.",
+                 ctx.canvas.width/2, ctx.canvas.height/2-200, 20
+        H.drawText ctx, "Press [P] to resume.",
+                 ctx.canvas.width/2, ctx.canvas.height/2+250, 20
+    update : (dt) ->
+        return
+    input : (type,data) ->
+        if type == "keydown"
+            changeState S.play
+}
 
 
 

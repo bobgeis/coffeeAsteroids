@@ -76,7 +76,7 @@ U.shipBeamEnergyBar = (ship) ->
 U.shipFuelBar = (ship) ->
     fullColor =     [100,255,100,1.0]
     emptyColor =    [255,200,  0,1.0]
-    bar = new BarGraph("Core",ship,"fuel","fuelMax",
+    bar = new BarGraph("Fuel",ship,"fuel","fuelMax",
             emptyColor,fullColor,10,70)
     return bar
 
@@ -128,7 +128,7 @@ class MessageWindow
         ctx.strokeRect(cx - @dx/2, cy - @dy/2, @dx, @dy)
         # now for text
         ctx.fillStyle = @fgColor
-        ctx.font = "12px Arial"
+        ctx.font = "15px Arial"
         x = cx - @dx/2
         y = cy - @dy/2
         dx = 20
